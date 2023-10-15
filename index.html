@@ -1,0 +1,717 @@
+
+<!-- v0.1.2. Licensed under GPL. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>an alt gallery using tiles</title>
+    <style>
+        /**
+         * font faces
+         * 
+         * "Fantasque Sans Mono" is from: https://github.com/belluzj/fantasque-sans
+         * CDN links are from Revolt since there weren't any real CDNs hosting
+         * the individual font styles.
+         */
+
+        @font-face {
+            font-family: "Fantasque Sans Mono";
+            font-style: normal;
+            font-weight: 400;
+            src: url("https://autumn.revolt.chat/attachments/download/-Lu07z00YobRtzcN6-43W0QZ0ueNv0Yop8PzGuOdZS") format("woff2");
+        }
+
+        @font-face {
+            font-family: "Fantasque Sans Mono";
+            font-style: italic;
+            font-weight: 400;
+            src: url("https://autumn.revolt.chat/attachments/download/R_7PLN3q4B6XevjsD5BuWRBfE5iKyDQnujdxt9O-6U") format("woff2");
+        }
+
+        @font-face {
+            font-family: "Fantasque Sans Mono";
+            font-style: normal;
+            font-weight: 700;
+            src: url("https://autumn.revolt.chat/attachments/download/H__O22X39avENjeQR9EUTTwvaFshm0hm7r16CI7hil") format("woff2");
+        }
+
+        @font-face {
+            font-family: "Fantasque Sans Mono";
+            font-style: italic;
+            font-weight: 700;
+            src: url("https://autumn.revolt.chat/attachments/download/J386H6i6Aiv-qt6J_AiGbxLRQFjpury78Lzg5d9ZnM") format("woff2");
+        }
+    </style>
+    <style>
+        body {
+            padding: 10px;
+            font-family: "Fantasque Sans Mono", monospace;
+            max-width: 1000px;
+            margin: auto;
+
+            background-color: #111;
+            color: #fff;
+        }
+
+        a, a:visited {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        i, i > a {
+            color: #fff9;
+        }
+
+        /* <header> styles */
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 0px 10px;
+        }
+
+        h1 {
+            text-align: left;
+            flex: 0 0 auto;
+        }
+
+        ul {
+            text-align: left;
+            list-style: none;
+            padding: 0;
+            font-size: 14px;
+
+            flex: 1 0 auto;
+        }
+
+        nav {
+            text-align: right;
+            flex: 0 1 auto;
+            align-self: flex-end;
+            padding: 10px 0px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        nav .refresh-text {
+            visibility: hidden;
+            color: #fff9;
+        }
+
+        nav .refresh-text.show {
+            visibility: visible;
+        }
+
+
+        /* <main> styles */
+
+        main {
+            padding: 10px;
+            border: 2px solid #0003;
+            overflow-wrap: anywhere;
+
+            background-color: #333;
+        }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 12px 0px;
+        }
+
+        .tile :first-child {
+            flex: 0 1 auto;
+        }
+
+        .tile :first-child:not(img),    /* (<-- for dummy left-column tiles that aren't images) */
+        .tile img.tile-image {
+            width: 400px;
+        }
+
+        .tile .tile-caption {
+            flex: 1 1 auto;
+            padding: 0px 10px;
+            margin: 0;
+        }
+
+        .tile.selected {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tile.selected :first-child:not(img),
+        .tile.selected img.tile-image {
+            width: 100%;
+        }
+
+        .tile-section {
+            background-color: #fff;
+            color: #000;
+            text-align: center;
+            padding: 12px;
+        }
+
+        .tile-section.type-2 {
+            background-color: #444;
+            color: #fff;
+        }
+
+        .tile-section + .tile-section {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 800px) {
+            .tile :first-child:not(img),
+            .tile img.tile-image {
+                width: 250px;
+            }
+        }
+
+        /* column-based format */
+
+        @media (max-width: 550px) {
+            /* <header> styles */
+
+            header {
+                display: grid;
+                grid-template-areas:
+                    "h1 h1 "
+                    "ul nav";
+                gap: 0px;
+            }
+
+            header > h1 {
+                grid-area: h1;
+            }
+
+            header > ul {
+                grid-area: ul;
+            }
+
+            header > nav {
+                grid-area: nav;
+            }
+
+            /* <main> styles */
+
+            .tile {
+                flex-direction: column;
+            }
+            .tile :first-child:not(img),
+            .tile img.tile-image {
+                width: 100%;
+            }
+            .tile .tile-caption {
+                padding: 12px 10px;
+            }
+        }
+    </style>
+    <script>
+        // @ts-check
+
+        /* constants and type definitions */
+
+        /**
+         * The archive details of a sketch.
+         * 
+         * @typedef {object} SketchDetails
+         * @property {number} id
+         * @property {string} data
+         * @property {number} archive_timestamp
+         * @property {number?} timestamp
+         * @property {string?} origin
+         */
+
+        /**
+         * The current statistics of the gallery.
+         * 
+         * @typedef {object} Stats
+         * @property {number} sketches
+         * @property {number} artists
+         * @property {number} peekers
+         * @property {number} minID
+         * @property {number} maxID
+         */
+
+        /**
+         * The current loading state of the gallery's tiles.
+         * 
+         * @typedef {"idle" | "loading" | "gallery-end"} LoadingState
+         */
+
+        // constants: gallery state
+
+        /** @type {number?} */
+        let min = null;
+        /** @type {number?} */
+        let max = null;
+        /** @type {number?} */
+        let first = null;
+        /** @type {number?} */
+        let last = null;
+        /** @type {Date?} */
+        let firstDate = null;
+        /** @type {Date?} */
+        let lastDate = null;
+        /** Whether tiles are currently being added or not. */
+        let sketchesLoading = false;
+        /**
+         * The current state of the gallery tile loading.
+         * @type {LoadingState}
+         */
+        let loadingState = "idle";
+        /**
+         * Whether the gallery is currently supposed to be showing the latest
+         * sketches, or not.
+         */
+        let showingLatest = false;
+
+        /* endpoints */
+
+        /**
+         * @returns {Promise<number[]>}
+         *      A promise that returns a two-tuple of the
+         *      gallery's minimum and maximum IDs.
+         */
+        async function getMinMax() {
+            const {minID, maxID} = await getStats();
+            return [minID, maxID];
+        }
+
+        /**
+         * @returns {Promise<Stats>}
+         *      A promise that returns the current statistics of the
+         *      gallery.
+         */
+        async function getStats() {
+            const resp = await fetch("https://garyc.me/sketch/getStats.php?details");
+            const stats = await resp.json();
+            return stats;
+        }
+
+        /**
+         * @param {number} id
+         * @returns {Promise<SketchDetails>}
+         *      A promise that returns the details of a sketch.
+         */
+        async function getSketchDetails(id) {
+            const resp = await fetch(
+                `https://garyc.me/sketch/get.php?details&id=${id}`,
+                {cache: "force-cache"}
+            );
+            const details = await resp.json();
+            return details;
+        }
+
+        /**
+         * @param {number} id
+         * @returns {string}
+         *      The URL for a sketch with the ID.
+         */
+        function getImageURL(id) {
+            return `https://garyc.me/sketch/getIMG.php?id=${id}&save`;
+        }
+
+        /* element factory methods */
+
+        /**
+         * @param {SketchDetails} details The sketch's details.
+         */
+        function createTile(details) {
+            const tileImageA = document.createElement("a");
+            const tileImage = document.createElement("img");
+            const tileCaption = document.createElement("p");
+
+            tileImage.src = getImageURL(details.id);
+            tileImage.classList.add("tile-image");
+            tileImageA.href = tileImage.src;
+            tileImageA.download = `${details.id}`;
+            tileImageA.append(tileImage);
+
+            const ink = details.data.length / 65535;
+            const link = `https://garyc.me/sketch/gallery.php#${details.id}`
+            let timestamp = new Date(details.timestamp * 1000)
+                .toLocaleString("default", {
+                    weekday: "short",
+                    month: "long",
+                    day: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+            const today = new Date();
+            const yesterday = new Date(today.getTime() - 86_400_000);
+            const dateOptions = {
+                weekday: "short",
+                month: "long",
+                day: "2-digit",
+                year: "numeric",
+            };
+            timestamp = timestamp
+                // @ts-ignore
+                .replace(today.toLocaleString("default", dateOptions), "Today")
+                // @ts-ignore
+                .replace(yesterday.toLocaleString("default", dateOptions), "Yesterday");
+            const captionL = [
+                `<i><a href=${link}>${link}</a></i>`,
+                `${Math.floor(ink * 1000) / 10}% ink used`,
+                `<i>from ${details.origin}</i>`,
+                `<i>${timestamp}</i>`,
+            ];
+            const caption = captionL.join("<br>");
+            tileCaption.innerHTML = caption;
+            tileCaption.classList.add("tile-caption");
+
+            const tile = document.createElement("div");
+            tile.classList.add("tile");
+            tile.append(tileImageA);
+            tile.append(tileCaption);
+
+            return tile;
+        }
+
+        /**
+         * @param {number} id The ID of the sketch that wasn't found.
+         */
+        function createNotFoundTile(id) {
+            const dummy = document.createElement("div");
+            const tileCaption = document.createElement("p");
+            tileCaption.innerHTML = `Can't get #${id}.`;
+            tileCaption.classList.add("tile-caption");
+
+            const tile = document.createElement("div");
+            tile.classList.add("tile");
+            tile.append(dummy);
+            tile.append(tileCaption);
+            return tile;
+        }
+
+        /**
+         * @param {Date} date The date labelled on the section.
+         */
+        function createSection(date) {
+            const timestamp = date
+                .toLocaleString("default", {
+                    weekday: "short",
+                    month: "long",
+                    day: "2-digit",
+                    year: "numeric",
+                });
+
+            const section = document.createElement("div");
+            section.innerHTML = timestamp;
+            section.classList.add("tile-section");
+            return section;
+        }
+
+        /**
+         * @param {number} id The first ID of a set of sketches that weren't found.
+         */
+        function createNotFoundSection(id) {
+            let sectionHTML;
+            if(id < min) {
+                sectionHTML = `No sketches were found before #${min}.`;
+            }
+            else if(id > max) {
+                sectionHTML = `No sketches were found after #${max}.`;
+            }
+            else {
+                sectionHTML = `No sketches were found around #${id}.`;
+            }
+
+            const section = document.createElement("div");
+            section.innerHTML = sectionHTML;
+            section.classList.add("tile-section", "type-2");
+            return section;
+        }
+
+        /**
+         * @param {number} id The first ID of the displayed set of sketches.
+         */
+        function createTileHeaderSection(id) {
+            const section = document.createElement("div");
+            section.innerHTML = `Showing from #${id}`;
+            section.classList.add("tile-section", "type-2");
+            return section;
+        }
+
+        function createGalleryEndSection(id) {
+            const section = document.createElement("div");
+            section.innerHTML = `End of the gallery.`;
+            section.classList.add("tile-section", "type-2");
+            return section;
+        }
+
+        /* element updating methods */
+
+        /**
+         * @param {Stats} stats
+         */
+        function updateStats(stats) {
+            const statsE = document.querySelector("#stats");
+            const [sketchE, artistE, peekE] = statsE.children;
+
+            function tag(strings, count, plural) {
+                const [a, middle, b] = strings;
+                const plingular = count != 1 ? plural : '';
+                return `${count}${middle}${plingular}`;
+            }
+
+            sketchE.innerHTML = tag`${stats.sketches} sketch${'es'}`;
+            artistE.innerHTML = tag`${stats.artists} artist${'s'}`;
+            peekE.innerHTML = tag`${stats.peekers} peeker${'s'}`;
+        }
+
+        /* gallery extension methods */
+
+        /**
+         * Extends the bottom of the tile list.
+         * 
+         * @param {number} newlast
+         */
+        async function extendTo(newlast) {
+            sketchesLoading = true;
+            newlast = Math.max(newlast, min);
+
+            const mainE = document.querySelector("main");
+            for(let id = last - 1; id >= newlast; id--) {
+                const details = await getSketchDetails(id);
+                const tile = createTile(details);
+
+                const detailsDate = new Date(
+                    new Date(details.timestamp * 1000)
+                        .setHours(0, 0, 0, 0)
+                );
+                if(!lastDate || lastDate.getTime() != detailsDate.getTime()) {
+                    const section = createSection(detailsDate);
+                    mainE.append(section);
+                    lastDate = detailsDate;
+                }
+
+                if(!firstDate || !first) {
+                    firstDate = detailsDate;
+                    first = id;
+                }
+
+                mainE.append(tile);
+
+                // add the footer of the gallery when necessary
+                if(id == min) {
+                    const section = createGalleryEndSection();
+                    mainE.append(section);
+                }
+            }
+
+            const endOfGallery = newlast == min;
+
+            last = newlast;
+            sketchesLoading = false;
+        }
+
+        /**
+         * Extends the top of the tile list.
+         * Unlike extendTo, `newfirst` won't be clamped to the gallery limits.
+         * 
+         * @param {number} newfirst
+         */
+        async function extendAbove(newfirst) {
+            sketchesLoading = true;
+
+            const mainE = document.querySelector("main");
+            const anchorSection = mainE.querySelector(".tile-section:first-of-type");
+            let anchor = anchorSection;
+
+            // going from oldest -> latest, because seeing new sketches that way
+            // is probably more satisfying than the other way around
+
+            for(let id = first + 1; id <= newfirst; id++) {
+                const details = await getSketchDetails(id);
+                const tile = createTile(details);
+
+                const detailsDate = new Date(
+                    new Date(details.timestamp * 1000)
+                        .setHours(0, 0, 0, 0)
+                );
+                if(!firstDate || firstDate.getTime() != detailsDate.getTime()) {
+                    const section = createSection(detailsDate);
+                    anchor.before(section);
+                    anchor = section;
+                    firstDate = detailsDate;
+                }
+
+                if(!lastDate || !last) {
+                    lastDate = detailsDate;
+                    last = id;
+                }
+
+                anchor.after(tile);
+            }
+
+            const endOfGallery = last == min;
+
+            first = newfirst;
+            sketchesLoading = false;
+        }
+
+        /**
+         * Rebuilds the entire tile list.
+         * 
+         * @param {number} newfirst
+         */
+        async function refreshFrom(newfirst) {
+            const mainE = document.querySelector("main");
+            mainE.querySelectorAll(".tile-section, .tile").forEach(node => node.remove());
+
+            if(newfirst < min || newfirst > max) {
+                firstDate = null;
+                lastDate = null;
+                first = null;
+                last = null;
+
+                const section = createNotFoundSection(newfirst);
+                mainE.append(section);
+                return;
+            }
+
+            if(!showingLatest) {
+                const section = createTileHeaderSection(newfirst);
+                mainE.append(section);
+            }
+
+            firstDate = null;
+            lastDate = null;
+            first = null;
+            last = newfirst + 1;
+            extendTo(newfirst - 10);
+        }
+
+        /* background runners */
+
+        async function maxLoop() {
+            const refreshText = document.querySelector(".refresh-text");
+            refreshText.classList.add("show");
+
+            const stats = await getStats();
+            const newmin = stats.minID;
+            const newmax = stats.maxID;
+            if(newmax > max) {
+                if(showingLatest) {
+                    extendAbove(newmax);
+                }
+                max = newmax;
+            }
+
+            updateStats(stats);
+            refreshText.classList.remove("show");
+        }
+
+        /* main */
+
+        async function main() {
+            const refreshText = document.querySelector(".refresh-text");
+            refreshText.classList.add("show");
+
+            const stats = await getStats();
+            min = stats.minID;
+            max = stats.maxID;
+            updateStats(stats);
+
+            /** @type {HTMLInputElement} */
+            const maxInputElem = document.querySelector("input#maxid");
+            // ...really? the string casting?
+            maxInputElem.min = min.toString();
+            maxInputElem.max = max.toString();
+            maxInputElem.addEventListener("change", (event) => {
+                window.location.hash = maxInputElem.value;
+            });
+
+            // let the hashchange handler do the ID handling work.
+            // hugely inspired from sketch.rip.
+            window.dispatchEvent(new HashChangeEvent("hashchange"));
+
+            refreshText.classList.remove("show");
+            setInterval(maxLoop, 30000);
+        }
+
+        /* listeners */
+
+        document.addEventListener("DOMContentLoaded", main);
+        document.addEventListener("scroll", () => {
+            if(sketchesLoading) {
+                return;
+            }
+
+            let pageHeight = document.documentElement.scrollHeight;
+            let pageScroll = window.scrollY + window.innerHeight;
+            let bottom = pageHeight - pageScroll <= 100;
+            if(bottom) {
+                extendTo(last - 10);
+            }
+        });
+        window.addEventListener("hashchange", () => {
+            /** @type {HTMLInputElement} */
+            const maxInputElem = document.querySelector("input#maxid");
+
+            const hashSlice = window.location.hash.slice(1);
+            const hash = parseInt(hashSlice);
+            if(!hashSlice || Number.isNaN(hash)) {
+                showingLatest = true;
+                refreshFrom(max);
+                maxInputElem.value = "";
+                return;
+            }
+
+            showingLatest = false;
+            refreshFrom(hash);
+            maxInputElem.value = hash.toString();
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>alt gallery!</h1>
+        <ul id="stats">
+            <li id="sketches"></li>
+            <li id="artists"></li>
+            <li id="peekers"></li>
+        </ul>
+        <nav>
+            <search>
+                <label for="maxid">Jump to ID:</label>
+                <input type="number" id="maxid">
+            </search>
+            <div class="refresh-text">
+                refreshing...
+            </div>
+        </nav>
+    </header>
+    <main>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+        <br>
+        <br>
+
+        Leaving the ID field blank would show the latest sketches on the gallery.
+        <br>
+        Clicking/tapping on the sketches saves the sketch.
+
+        <br>
+        <br>
+    </main>
+</body>
+</html>
