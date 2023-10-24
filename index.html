@@ -152,8 +152,6 @@
         .tile .tile-status span {
             display: inline-block;
             padding: 5px;
-            /* Way too big of a padding on the left, probably caused by writing-mode */
-            padding-left: 0px;
         }
 
         .tile .tile-status .new-status {
@@ -223,14 +221,27 @@
             /* <main> styles */
 
             .tile {
-                flex-direction: column;
+                display: grid;
+                grid-template-areas:
+                    "img  img"
+                    "capt stat";
+                grid-template-columns: auto min-content;
             }
             .tile :first-child:not(img),
             .tile img.tile-image {
+                grid-area: img;
                 width: 100%;
             }
             .tile .tile-caption {
+                grid-area: capt;
                 padding: 12px 10px;
+            }
+            .tile .tile-status {
+                grid-area: stat;
+            }
+            .tile .tile-status span {
+                /* Way too big of a padding on the left, probably caused by writing-mode..? */
+                padding-left: 0px;
             }
         }
     </style>
