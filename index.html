@@ -1,5 +1,5 @@
 
-<!-- v0.1.2. Licensed under GPL. -->
+<!-- v0.2.0. Licensed under GPL. -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -445,7 +445,7 @@
             return section;
         }
 
-        function createGalleryEndSection(id) {
+        function createGalleryEndSection() {
             const section = document.createElement("div");
             section.innerHTML = `End of the gallery.`;
             section.classList.add("tile-section", "type-2");
@@ -706,8 +706,7 @@
         <br>
         <br>
 
-        Leaving the ID field blank would show the latest sketches on the gallery.
-        <br>
+        Leaving the ID field blank would show the latest sketches on the gallery.<br>
         Clicking/tapping on the sketches saves the sketch.
 
         <br>
