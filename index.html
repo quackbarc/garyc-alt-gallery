@@ -133,7 +133,7 @@
             flex: 0 1 auto;
         }
 
-        .tile :first-child:not(img),    /* (<-- for dummy left-column tiles that aren't images) */
+        .tile > :first-child:not(img),    /* (<-- for dummy left-column tiles that aren't images) */
         .tile img.tile-image {
             width: 400px;
         }
@@ -144,12 +144,30 @@
             margin: 0;
         }
 
+        .tile .tile-status {
+            flex: 0 1 auto;
+            writing-mode: vertical-rl;
+        }
+
+        .tile .tile-status span {
+            display: inline-block;
+            padding: 5px;
+            /* Way too big of a padding on the left, probably caused by writing-mode */
+            padding-left: 0px;
+        }
+
+        .tile .tile-status .new-status {
+            background-color: #484cbb;
+        }
+
+        /* Unused; for expand-on-click tiles */
         .tile.selected {
             flex-direction: column;
             gap: 12px;
         }
 
-        .tile.selected :first-child:not(img),
+        /* Unused; for expand-on-click tiles */
+        .tile.selected > :first-child:not(img),
         .tile.selected img.tile-image {
             width: 100%;
         }
@@ -244,6 +262,14 @@
          */
 
         /**
+         * The state of the gallery from when it left off.
+         * 
+         * @typedef {object} GalleryState
+         * @property {number} last_max
+         * @property {number} last_updated
+         */
+
+        /**
          * The current loading state of the gallery's tiles.
          * 
          * @typedef {"idle" | "loading" | "gallery-end"} LoadingState
@@ -275,6 +301,9 @@
          * sketches, or not.
          */
         let showingLatest = false;
+
+        /** @type {number?} */
+        let lastmax = null;
 
         /* endpoints */
 
@@ -331,6 +360,7 @@
             const tileImageA = document.createElement("a");
             const tileImage = document.createElement("img");
             const tileCaption = document.createElement("p");
+            const tileStatus = document.createElement("div");
 
             tileImage.src = getImageURL(details.id);
             tileImage.classList.add("tile-image");
@@ -372,10 +402,19 @@
             tileCaption.innerHTML = caption;
             tileCaption.classList.add("tile-caption");
 
+            if(lastmax != null && details.id > lastmax) {
+                const newStatus = document.createElement("span");
+                newStatus.innerHTML = "new!";
+                newStatus.classList.add("new-status");
+                tileStatus.classList.add("tile-status");
+                tileStatus.append(newStatus);
+            }
+
             const tile = document.createElement("div");
             tile.classList.add("tile");
             tile.append(tileImageA);
             tile.append(tileCaption);
+            tile.append(tileStatus);
 
             return tile;
         }
@@ -617,6 +656,14 @@
 
         /* main */
 
+        function JSmain() {
+            /** @type {GalleryState?} */
+            const state = JSON.parse(localStorage.getItem("tilegallery-state"));
+            if(state) {
+                lastmax = state["last_max"];
+            }
+        }
+
         async function main() {
             const refreshText = document.querySelector(".refresh-text");
             refreshText.classList.add("show");
@@ -642,6 +689,8 @@
             refreshText.classList.remove("show");
             setInterval(maxLoop, 30000);
         }
+
+        JSmain();
 
         /* listeners */
 
@@ -674,6 +723,15 @@
             showingLatest = false;
             refreshFrom(hash);
             maxInputElem.value = hash.toString();
+        });
+        window.addEventListener("pagehide", (event) => {
+            /** @type {GalleryState} */
+            const state = {
+                "last_max": max,
+                "last_updated": Date.now()
+            };
+
+            localStorage.setItem("tilegallery-state", JSON.stringify(state));
         });
     </script>
 </head>
