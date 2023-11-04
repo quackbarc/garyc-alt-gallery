@@ -186,6 +186,27 @@
             margin-top: 10px;
         }
 
+        /* block-based format */
+
+        #tiles.block {
+            text-align: center;
+        }
+
+        #tiles.block .tile {
+            display: inline-block;
+            padding: 8px;
+            width: auto;
+        }
+
+        #tiles.block .tile :not(:first-child) {
+            display: none;
+        }
+
+        #tiles.block .tile > :first-child:not(img),
+        #tiles.block .tile img.tile-image {
+            width: 200px;
+        }
+
         @media (max-width: 800px) {
             .tile :first-child:not(img),
             .tile img.tile-image {
