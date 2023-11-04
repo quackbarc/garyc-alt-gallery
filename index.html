@@ -533,7 +533,7 @@
             sketchesLoading = true;
             newlast = Math.max(newlast, min);
 
-            const mainE = document.querySelector("main");
+            const tilesE = document.querySelector("#tiles");
             for(let id = last - 1; id >= newlast; id--) {
                 const details = await getSketchDetails(id);
                 const tile = createTile(details);
@@ -544,7 +544,7 @@
                 );
                 if(!lastDate || lastDate.getTime() != detailsDate.getTime()) {
                     const section = createSection(detailsDate);
-                    mainE.append(section);
+                    tilesE.append(section);
                     lastDate = detailsDate;
                 }
 
@@ -553,12 +553,12 @@
                     first = id;
                 }
 
-                mainE.append(tile);
+                tilesE.append(tile);
 
                 // add the footer of the gallery when necessary
                 if(id == min) {
                     const section = createGalleryEndSection();
-                    mainE.append(section);
+                    tilesE.append(section);
                 }
             }
 
@@ -577,8 +577,8 @@
         async function extendAbove(newfirst) {
             sketchesLoading = true;
 
-            const mainE = document.querySelector("main");
-            const anchorSection = mainE.querySelector(".tile-section:first-of-type");
+            const tilesE = document.querySelector("#tiles");
+            const anchorSection = tilesE.querySelector(".tile-section:first-of-type");
             let anchor = anchorSection;
 
             // going from oldest -> latest, because seeing new sketches that way
@@ -619,8 +619,10 @@
          * @param {number} newfirst
          */
         async function refreshFrom(newfirst) {
-            const mainE = document.querySelector("main");
-            mainE.querySelectorAll(".tile-section, .tile").forEach(node => node.remove());
+            const tilesE = document.querySelector("#tiles");
+            // i would've used .children if HTMLCollection supported forEach()...
+            // i need that syntactic sugar W3C
+            tilesE.querySelectorAll("*").forEach(node => node.remove());
 
             if(newfirst < min || newfirst > max) {
                 firstDate = null;
@@ -629,13 +631,13 @@
                 last = null;
 
                 const section = createNotFoundSection(newfirst);
-                mainE.append(section);
+                tilesE.append(section);
                 return;
             }
 
             if(!showingLatest) {
                 const section = createTileHeaderSection(newfirst);
-                mainE.append(section);
+                tilesE.append(section);
             }
 
             firstDate = null;
@@ -765,21 +767,24 @@
         </nav>
     </header>
     <main>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <section id="prelude">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-        <br>
-        <br>
+            <br>
+            <br>
 
-        Leaving the ID field blank would show the latest sketches on the gallery.<br>
-        Clicking/tapping on the sketches saves the sketch.
+            Leaving the ID field blank would show the latest sketches on the gallery.<br>
+            Clicking/tapping on the sketches saves the sketch.
 
-        <br>
-        <br>
+            <br>
+            <br>
+        </section>
+        <section id="tiles"></section>
     </main>
 </body>
 </html>
