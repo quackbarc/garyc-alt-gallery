@@ -717,6 +717,21 @@
             extendTo(newfirst - 10);
         }
 
+        /* uh hey quackbarc we should put this somewhere */
+
+        /**
+         * Updates the localStorage state with the current state of the gallery.
+         */
+        function updateStorageState() {
+            /** @type {GalleryState} */
+            const state = {
+                "last_max": max,
+                "last_updated": Date.now(),
+            };
+
+            localStorage.setItem("tilegallery-state", JSON.stringify(state));
+        }
+
         /* background runners */
 
         async function maxLoop() {
@@ -733,6 +748,7 @@
                 max = newmax;
             }
 
+            updateStorageState();
             updateStats(stats);
             refreshText.classList.remove("show");
         }
@@ -863,15 +879,7 @@
             refreshFrom(hash);
             maxInputElem.value = hash.toString();
         });
-        window.addEventListener("pagehide", (event) => {
-            /** @type {GalleryState} */
-            const state = {
-                "last_max": max,
-                "last_updated": Date.now()
-            };
-
-            localStorage.setItem("tilegallery-state", JSON.stringify(state));
-        });
+        window.addEventListener("pagehide", updateStorageState.bind(this));
     </script>
 </head>
 <body>
