@@ -111,6 +111,42 @@
             visibility: visible;
         }
 
+        /* settings styles */
+
+        #settings {
+            /* styles specifically for its position in <main> */
+            float: right;
+            padding: 10px;
+            margin: 0px 10px 10px;
+
+            user-select: none;
+            text-align: right;
+            background-color: #444;
+            border-bottom: 2px solid #0003;
+        }
+
+        #settings > summary {
+            cursor: pointer;
+        }
+
+        #settings > summary:hover {
+            text-decoration: underline;
+        }
+
+        #settings[open] > summary {
+            padding-bottom: 4px;
+        }
+
+        #settings > * > input {
+            /**
+             * Align the input elements to the bottom of the text.
+             * Worked for checkboxes so far; hope it works for the others. */
+            vertical-align: bottom;
+        }
+
+        #settings > *:hover > label {
+            font-style: italic;
+        }
 
         /* <main> styles */
 
@@ -307,7 +343,18 @@
          * @typedef {"idle" | "loading" | "gallery-end"} LoadingState
          */
 
+        /**
+         * The user configuration of the gallery. Settings, if you insist.
+         *
+         * @typedef {object} Settings
+         * @property {boolean} gridView
+         */
+
         /* constants */
+
+        // gallery settings
+
+        const settings = getSettings();
 
         // gallery state
 
@@ -690,6 +737,41 @@
             refreshText.classList.remove("show");
         }
 
+        /* settings */
+
+        /**
+         * @returns {Settings}
+         */
+        function getSettings() {
+            /** @type {Settings} */
+            const defaultSettings = {
+                gridView: false,
+            };
+
+            const settings = JSON.parse(localStorage.settings || "{}");
+            return {...defaultSettings, ...settings};
+        }
+
+        /**
+         * @param {string} key
+         * @param {any} value
+         */
+        function setSetting(key, value) {
+            switch(key) {
+                case "gridView": {
+                    const toggled = value;
+                    document.querySelector("#tiles").classList.toggle("block", toggled);
+                    break;
+                }
+                default: {
+                    console.warn(`Unknown key: ${key}`);
+                }
+            }
+
+            settings[key] = value;
+            localStorage.setItem("settings", JSON.stringify(settings));
+        }
+
         /* main */
 
         function JSmain() {
@@ -703,6 +785,27 @@
         async function main() {
             const refreshText = document.querySelector(".refresh-text");
             refreshText.classList.add("show");
+
+            const settingsE = document.querySelector("#settings");
+            const settingsInputs = settingsE.querySelectorAll("input");
+            settingsInputs.forEach((elem) => {
+                switch(elem.type) {
+                    case "checkbox": {
+                        // CHRIST this is the laziest implementation of a settings menu ever
+                        // PLEASE fix this quabar
+                        if(settings[elem.id]) {
+                            setSetting(elem.id, settings[elem.id]);
+                        }
+
+                        elem.checked = settings[elem.id];
+                        elem.addEventListener(
+                            "change",
+                            (event) => setSetting(elem.id, elem.checked)
+                        );
+                        break;
+                    }
+                }
+            });
 
             const stats = await getStats();
             min = stats.minID;
@@ -791,6 +894,14 @@
     </header>
     <main>
         <section id="prelude">
+            <details id="settings">
+                <summary>Gallery preferences</summary>
+                <div class="setting">
+                    <label for="gridView">Grid view:</label>
+                    <input type="checkbox" id="gridView">
+                </div>
+            </details>
+
             Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
             tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
             quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
