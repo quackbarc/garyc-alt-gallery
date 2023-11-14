@@ -45,6 +45,10 @@
         }
     </style>
     <style>
+        html {
+            color-scheme: dark;
+        }
+
         body {
             padding: 10px;
             font-family: "Fantasque Sans Mono", monospace;
@@ -100,6 +104,13 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+        }
+
+        nav input {
+            /**
+             * Prefer light color-scheme for the nav inputs,
+             * just so it stands out a little. */
+            color-scheme: light;
         }
 
         nav .refresh-text {
