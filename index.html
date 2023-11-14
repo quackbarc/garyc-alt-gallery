@@ -856,6 +856,7 @@
 
         /* listeners */
 
+        // Page events
         document.addEventListener("DOMContentLoaded", main);
         document.addEventListener("scroll", () => {
             if(sketchesLoading) {
@@ -887,6 +888,22 @@
             maxInputElem.value = hash.toString();
         });
         window.addEventListener("pagehide", updateStorageState.bind(this));
+
+        // Keyboard events
+        document.addEventListener("keydown", (event) => {
+            const noModifiers = !event.ctrlKey && !event.altKey && !event.shiftKey && !event.metaKey;
+            switch(event.key) {
+                case "/":
+                    if(!noModifiers) {
+                        break;
+                    }
+
+                    /** @type {HTMLInputElement} */
+                    const maxInputElem = document.querySelector("input#maxid");
+                    maxInputElem.focus();
+                    break;
+            }
+        });
     </script>
 </head>
 <body>
@@ -927,6 +944,7 @@
             <br>
             <br>
 
+            Pressing / would jump to the ID field.<br>
             Leaving the ID field blank would show the latest sketches on the gallery.<br>
             Clicking/tapping on the sketches saves the sketch.
 
