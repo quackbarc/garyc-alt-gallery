@@ -138,9 +138,16 @@
         .tile {
             display: flex;
             align-items: center;
+            text-align: left;
             width: 100%;
             padding: 12px 0px;
             gap: 6px;
+
+            /* for the column-based formats */
+            grid-template-areas:
+                "img  img"
+                "capt stat";
+            grid-template-columns: auto min-content;
         }
 
         .tile :first-child {
@@ -150,17 +157,20 @@
         .tile > :first-child:not(img),    /* (<-- for dummy left-column tiles that aren't images) */
         .tile img.tile-image {
             width: 400px;
+            grid-area: img;
         }
 
         .tile .tile-caption {
             flex: 1 1 auto;
             padding: 0px 6px;
             margin: 0;
+            grid-area: capt;
         }
 
         .tile .tile-status {
             flex: 0 1 auto;
             writing-mode: vertical-rl;
+            grid-area: stat;
         }
 
         .tile .tile-status span {
@@ -212,20 +222,44 @@
             text-align: center;
         }
 
-        #tiles.block .tile {
+        #tiles.block .tile:not(.expanded) {
             display: inline-block;
             padding: 8px;
             width: auto;
         }
 
-        #tiles.block .tile :not(:first-child) {
+        #tiles.block .tile:not(.expanded) :not(:first-child) {
             display: none;
         }
 
-        #tiles.block .tile > :first-child:not(img),
-        #tiles.block .tile img.tile-image {
+        #tiles.block .tile:not(.expanded) > :first-child:not(img),
+        #tiles.block .tile:not(.expanded) img.tile-image {
             width: 200px;
         }
+
+        /* column-based format */
+
+        .tile.expanded {
+            display: inline-grid;
+            text-align: left;
+            max-width: 800px;
+        }
+
+        .tile.expanded :first-child:not(img),
+        .tile.expanded img.tile-image {
+            width: 100%;
+        }
+
+        .tile.expanded .tile-caption {
+            padding: 6px 10px;
+        }
+
+        .tile.expanded .tile-status span {
+            /* Way too big of a padding on the left, probably caused by writing-mode..? */
+            padding-left: 0px;
+        }
+
+        /* other media queries */
 
         @media (max-width: 800px) {
             .tile > :first-child:not(img),
@@ -265,22 +299,13 @@
 
             .tile {
                 display: grid;
-                grid-template-areas:
-                    "img  img"
-                    "capt stat";
-                grid-template-columns: auto min-content;
             }
             .tile :first-child:not(img),
             .tile img.tile-image {
-                grid-area: img;
                 width: 100%;
             }
             .tile .tile-caption {
-                grid-area: capt;
                 padding: 6px 10px;
-            }
-            .tile .tile-status {
-                grid-area: stat;
             }
             .tile .tile-status span {
                 /* Way too big of a padding on the left, probably caused by writing-mode..? */
@@ -369,6 +394,8 @@
          */
         let showingLatest = false;
 
+        let holdingShift = false;
+
         /** @type {number?} */
         let lastmax = null;
         /** @type {Date?} */
@@ -440,6 +467,7 @@
          * @param {SketchDetails} details The sketch's details.
          */
         function createTile(details) {
+            const tile = document.createElement("div");
             const tileImageA = document.createElement("a");
             const tileImage = document.createElement("img");
             const tileCaption = document.createElement("p");
@@ -450,6 +478,12 @@
             tileImageA.href = tileImage.src;
             tileImageA.download = `${details.id}`;
             tileImageA.append(tileImage);
+            tileImageA.addEventListener("click", (event) => {
+                if(holdingShift) {
+                    tile.classList.toggle("expanded");
+                    event.preventDefault();
+                }
+            });
 
             const ink = details.data.length / 65535;
             const link = `https://garyc.me/sketch/gallery.php#${details.id}`
@@ -492,7 +526,6 @@
                 tileStatus.append(newStatus);
             }
 
-            const tile = document.createElement("div");
             tile.classList.add("tile");
             tile.append(tileImageA);
             tile.append(tileCaption);
@@ -939,6 +972,19 @@
                     const maxInputElem = document.querySelector("input#maxid");
                     maxInputElem.focus();
                     break;
+            }
+        });
+
+        /* keyboard listeners */
+
+        document.addEventListener("keydown", (event) => {
+            if(event.key == "Shift") {
+                holdingShift = true;
+            }
+        });
+        document.addEventListener("keyup", (event) => {
+            if(event.key == "Shift") {
+                holdingShift = false;
             }
         });
     </script>
