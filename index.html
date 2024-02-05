@@ -196,6 +196,11 @@
             color: #fff;
         }
 
+        .tile-section.type-3 {
+            background-color: #484cbb;
+            color: #fff;
+        }
+
         .tile-section + .tile-section {
             margin-top: 10px;
         }
@@ -365,6 +370,8 @@
 
         /** @type {number?} */
         let lastmax = null;
+        /** @type {Date?} */
+        let lastmaxDate = null;
 
         /* endpoints */
 
@@ -545,6 +552,48 @@
             return section;
         }
 
+        /**
+         * @param {number} oldmax   The previous max ID the page was last left at.
+         * @param {Date} olddate    The date the page was last updated.
+         * @param {number} newmax   The current max ID.
+         * @returns {HTMLDivElement}
+         */
+        function createUnseenCountSection(oldmax, olddate, newmax) {
+            const section = document.createElement("div");
+
+            const now = new Date();
+            const date = new Date(olddate);
+            let sinceDate = date.toLocaleString("default", {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+
+            /**
+             * @param {Date} date   The date to get the day value from.
+             * @returns {number}    The day value of the date.
+             */
+            function getComparableDay(date) {
+                return Math.floor((date.getTime() - (date.getTimezoneOffset() * 60*1000)) / (24*60*60*1000));
+            }
+            const nowDay = getComparableDay(now);
+            const dateDay = getComparableDay(date);
+
+            if(nowDay != dateDay) {
+                // Yields a shorter date compared to the ones from tiles and date headers.
+                // I don't think the date on this kind of header has to be *too* long.
+                sinceDate = date.toLocaleString("default", {
+                    month: "long",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+            }
+
+            section.innerHTML = `${newmax - oldmax} new sketch(es) since ${sinceDate}`;
+            section.classList.add("tile-section", "type-3");
+            return section;
+        }
+
         function createGalleryEndSection() {
             const section = document.createElement("div");
             section.innerHTML = `End of the gallery.`;
@@ -690,6 +739,13 @@
                 tilesE.append(section);
             }
 
+            if(showingLatest) {
+                if(lastmax != null && max > lastmax) {
+                    const section = createUnseenCountSection(lastmax, lastmaxDate, max);
+                    tilesE.append(section);
+                }
+            }
+
             firstDate = null;
             lastDate = null;
             first = null;
@@ -775,6 +831,7 @@
             const state = JSON.parse(localStorage.getItem("tilegallery-state"));
             if(state) {
                 lastmax = state["last_max"];
+                lastmaxDate = new Date(state["last_updated"]);
             }
         }
 
