@@ -463,6 +463,7 @@
                 });
             const today = new Date();
             const yesterday = new Date(today.getTime() - 86_400_000);
+            /** @type {Intl.DateTimeFormatOptions} */
             const dateOptions = {
                 weekday: "short",
                 month: "long",
@@ -470,9 +471,7 @@
                 year: "numeric",
             };
             timestamp = timestamp
-                // @ts-ignore
                 .replace(today.toLocaleString("default", dateOptions), "Today")
-                // @ts-ignore
                 .replace(yesterday.toLocaleString("default", dateOptions), "Yesterday");
             const captionL = [
                 `<i><a href=${link}>${link}</a></i>`,
