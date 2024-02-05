@@ -373,6 +373,20 @@
         /** @type {Date?} */
         let lastmaxDate = null;
 
+        /* utilities */
+
+        /**
+         * Returns the very date of a given date as an integer, allowing
+         * for easier date comparisons. This returned date will be
+         * timezone-aware.
+         * 
+         * @param {Date} date   The date to get the day value from.
+         * @returns {number}    The day value of the date.
+         */
+        function getComparableDay(date) {
+            return Math.floor((date.getTime() - (date.getTimezoneOffset() * 60*1000)) / (24*60*60*1000));
+        }
+
         /* endpoints */
 
         /**
@@ -568,13 +582,6 @@
                 minute: "2-digit",
             });
 
-            /**
-             * @param {Date} date   The date to get the day value from.
-             * @returns {number}    The day value of the date.
-             */
-            function getComparableDay(date) {
-                return Math.floor((date.getTime() - (date.getTimezoneOffset() * 60*1000)) / (24*60*60*1000));
-            }
             const nowDay = getComparableDay(now);
             const dateDay = getComparableDay(date);
 
@@ -637,11 +644,11 @@
                 const details = await getSketchDetails(id);
                 const tile = createTile(details);
 
-                const detailsDate = new Date(
-                    new Date(details.timestamp * 1000)
-                        .setHours(0, 0, 0, 0)
-                );
-                if(!lastDate || lastDate.getTime() != detailsDate.getTime()) {
+                const detailsDate = new Date(details.timestamp * 1000);
+                const detailsDay = getComparableDay(detailsDate);
+                const lastDay = lastDate ? getComparableDay(lastDate) : 0;
+
+                if(lastDay != detailsDay) {
                     const section = createSection(detailsDate);
                     tilesE.append(section);
                     lastDate = detailsDate;
@@ -687,11 +694,11 @@
                 const details = await getSketchDetails(id);
                 const tile = createTile(details);
 
-                const detailsDate = new Date(
-                    new Date(details.timestamp * 1000)
-                        .setHours(0, 0, 0, 0)
-                );
-                if(!firstDate || firstDate.getTime() != detailsDate.getTime()) {
+                const detailsDate = new Date(details.timestamp * 1000);
+                const detailsDay = getComparableDay(detailsDate);
+                const firstDay = firstDate ? getComparableDay(firstDate) : 0;
+
+                if(firstDay != detailsDay) {
                     const section = createSection(detailsDate);
                     anchor.before(section);
                     anchor = section;
