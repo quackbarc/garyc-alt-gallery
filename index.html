@@ -358,6 +358,7 @@
          * The user configuration of the gallery. Settings, if you insist.
          *
          * @typedef {object} Settings
+         * @property {boolean} endlessScroll
          * @property {boolean} gridView
          * @property {boolean} clickSaving
          */
@@ -840,6 +841,7 @@
         function getSettings() {
             /** @type {Settings} */
             const defaultSettings = {
+                endlessScroll: true,
                 gridView: false,
                 clickSaving: false,
             };
@@ -859,7 +861,11 @@
                     document.querySelector("#tiles").classList.toggle("block", toggled);
                     break;
                 }
+                case "endlessScroll":
                 case "clickSaving": {
+                    // These are expected values! We don't really have to do anything with these.
+                    // That being said, I might have to deal with unknown keys in a different way.
+                    // This sounds like painful typing.
                     break;
                 }
                 default: {
@@ -937,6 +943,10 @@
         document.addEventListener("DOMContentLoaded", main);
         document.addEventListener("scroll", () => {
             if(sketchesLoading) {
+                return;
+            }
+
+            if(!settings.endlessScroll) {
                 return;
             }
 
@@ -1018,6 +1028,10 @@
         <section id="prelude">
             <details id="settings">
                 <summary>Gallery preferences</summary>
+                <div class="setting">
+                    <label for="endlessScroll">Endless scrolling:</label>
+                    <input type="checkbox" id="endlessScroll">
+                </div>
                 <div class="setting">
                     <label for="gridView">Grid view:</label>
                     <input type="checkbox" id="gridView">
