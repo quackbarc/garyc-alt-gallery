@@ -359,6 +359,7 @@
          *
          * @typedef {object} Settings
          * @property {boolean} gridView
+         * @property {boolean} clickSaving
          */
 
         /* constants */
@@ -479,10 +480,12 @@
             tileImageA.download = `${details.id}`;
             tileImageA.append(tileImage);
             tileImageA.addEventListener("click", (event) => {
-                if(holdingShift) {
-                    tile.classList.toggle("expanded");
-                    event.preventDefault();
+                if(settings.clickSaving) {
+                    return;
                 }
+
+                tile.classList.toggle("expanded");
+                event.preventDefault();
             });
 
             const ink = details.data.length / 65535;
@@ -838,6 +841,7 @@
             /** @type {Settings} */
             const defaultSettings = {
                 gridView: false,
+                clickSaving: false,
             };
 
             const settings = JSON.parse(localStorage.settings || "{}");
@@ -853,6 +857,9 @@
                 case "gridView": {
                     const toggled = value;
                     document.querySelector("#tiles").classList.toggle("block", toggled);
+                    break;
+                }
+                case "clickSaving": {
                     break;
                 }
                 default: {
@@ -1014,6 +1021,10 @@
                 <div class="setting">
                     <label for="gridView">Grid view:</label>
                     <input type="checkbox" id="gridView">
+                </div>
+                <div class="setting">
+                    <label for="clickSaving">Save sketch on thumbnail click/tap:</label>
+                    <input type="checkbox" id="clickSaving">
                 </div>
             </details>
 
