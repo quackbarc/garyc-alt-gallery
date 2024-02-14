@@ -125,6 +125,12 @@
             vertical-align: bottom;
         }
 
+        /* <footer> styles */
+
+        footer {
+            text-align: center;
+        }
+
         /* <main> styles */
 
         main {
@@ -676,6 +682,10 @@
             sketchesLoading = true;
             newlast = Math.max(newlast, min);
 
+            /** @type {HTMLButtonElement} */
+            const moreButton = document.querySelector("button#more");
+            moreButton.disabled = true;
+
             const tilesE = document.querySelector("#tiles");
             for(let id = last - 1; id >= newlast; id--) {
                 const details = await getSketchDetails(id);
@@ -709,6 +719,8 @@
 
             last = newlast;
             sketchesLoading = false;
+
+            moreButton.disabled = endOfGallery;
         }
 
         /**
@@ -719,6 +731,10 @@
          */
         async function extendAbove(newfirst) {
             sketchesLoading = true;
+
+            /** @type {HTMLButtonElement} */
+            const moreButton = document.querySelector("button#more");
+            moreButton.disabled = true;
 
             const tilesE = document.querySelector("#tiles");
             const anchorSection = tilesE.querySelector(".tile-section:first-of-type");
@@ -754,6 +770,8 @@
 
             first = newfirst;
             sketchesLoading = false;
+
+            moreButton.disabled = endOfGallery;
         }
 
         /**
@@ -762,6 +780,12 @@
          * @param {number} newfirst
          */
         async function refreshFrom(newfirst) {
+            // "show more" button becomes disabled, and if there's no reason
+            // down the road to re-enable it, it should stay disabled.
+            /** @type {HTMLButtonElement} */
+            const moreButton = document.querySelector("button#more");
+            moreButton.disabled = true;
+
             const tilesE = document.querySelector("#tiles");
             // i would've used .children if HTMLCollection supported forEach()...
             // i need that syntactic sugar W3C
@@ -927,6 +951,12 @@
                 window.location.hash = maxInputElem.value;
             });
 
+            /** @type {HTMLButtonElement} */
+            const moreButton = document.querySelector("button#more");
+            moreButton.addEventListener("click", () => {
+                extendTo(last - 10);
+            });
+
             // let the hashchange handler do the ID handling work.
             // hugely inspired from sketch.rip.
             window.dispatchEvent(new HashChangeEvent("hashchange"));
@@ -1070,6 +1100,9 @@
             </ul>
         </section>
         <section id="tiles"></section>
+        <footer>
+            <button id="more">show more</button>
+        </footer>
     </main>
 </body>
 </html>
