@@ -495,6 +495,13 @@
                 event.preventDefault();
             });
 
+            // TODO: feature:
+            // - tile.scrollIntoView();
+            // - requires all the tiles to have the css "scroll-margin-top: 100px;"
+
+            // TODO: bugfix
+            // race condition continues when loading images, but ID gets jumped
+
             const ink = details.data.length / 65535;
             const link = `https://garyc.me/sketch/gallery.php#${details.id}`
             let timestamp = new Date(details.timestamp * 1000)
