@@ -558,7 +558,7 @@
                 tileStatus.append(newStatus);
             }
 
-            tile.classList.add("tile");
+            tile.classList.add("tile", "anchorable");
             tile.append(tileImageA);
             tile.append(tileCaption);
             tile.append(tileStatus);
@@ -596,7 +596,7 @@
 
             const section = document.createElement("div");
             section.innerHTML = timestamp;
-            section.classList.add("tile-section");
+            section.classList.add("tile-section", "anchorable");
             return section;
         }
 
@@ -759,7 +759,7 @@
             moreButton.disabled = true;
 
             const tilesE = document.querySelector("#tiles");
-            const anchorSection = tilesE.querySelector(".tile-section:first-of-type");
+            const anchorSection = tilesE.querySelector(".tile-section.anchorable");
             let anchor = anchorSection;
 
             // going from oldest -> latest, because seeing new sketches that way
