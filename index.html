@@ -552,6 +552,10 @@
             tileCaption.innerHTML = caption;
             tileCaption.classList.add("tile-caption");
 
+            // Putting this line over here feels a bit off...
+            // can't I just put this near the tileImage chunk that's a couple lines up?
+            tileImage.title = `#${details.id}, ${timestamp}`;
+
             if(lastmax != null && details.id > lastmax) {
                 const newStatus = document.createElement("span");
                 newStatus.innerHTML = "new!";
