@@ -12,8 +12,45 @@
     <title>an alt gallery using tiles</title>
 
     <style>
+        /* Variables */
+
+        :root,
+        :root[theme="dark"] {
+            --background-color: #111;
+            --main-background-color: #222;
+            --settings-background-color: #444;
+            --text-color: #fff;
+            --text-italic-color: #fff9;
+            --text-anchor-color: #808fff;
+            --refreshing-text-color: var(--text-italic-color);
+            --color-scheme: dark;
+
+            --tile-section-background-color: #fff;
+            --tile-section-text-color: #000;
+            --tile-section-2-background-color: #444;
+            --tile-section-2-text-color: var(--text-color);
+        }
+
+        :root[theme="light"] {
+            --background-color: #fff;
+            --main-background-color: #eee;
+            --settings-background-color: #ccc;
+            --text-color: #000;
+            --text-italic-color: #0009;
+            --text-anchor-color: #484cbb;
+            --refreshing-text-color: var(--text-italic-color);
+            --color-scheme: light;
+
+            --tile-section-background-color: #000;
+            --tile-section-text-color: #fff;
+            --tile-section-2-background-color: #bbb;
+            --tile-section-2-text-color: var(--text-color);
+        }
+
+        /* Styles */
+
         html {
-            color-scheme: dark;
+            color-scheme: var(--color-scheme);
         }
 
         body {
@@ -22,12 +59,12 @@
             max-width: 1000px;
             margin: auto;
 
-            background-color: #111;
-            color: #fff;
+            background-color: var(--background-color);
+            color: var(--text-color);
         }
 
         a, a:visited {
-            color: #808fff;
+            color: var(--text-anchor-color);
             text-decoration: none;
         }
 
@@ -36,7 +73,7 @@
         }
 
         i, i > a {
-            color: #fff9;
+            color: var(--text-italic-color);
         }
 
         /* <header> styles */
@@ -49,7 +86,7 @@
 
             position: sticky;
             top: 0px;
-            background-color: #111;
+            background-color: var(--background-color);
         }
 
         h1 {
@@ -86,7 +123,7 @@
 
         nav .refresh-text {
             visibility: hidden;
-            color: #fff9;
+            color: var(--refreshing-text-color);
         }
 
         nav .refresh-text.show {
@@ -103,7 +140,7 @@
 
             user-select: none;
             text-align: right;
-            background-color: #444;
+            background-color: var(--settings-background-color);
             border-bottom: 2px solid #0003;
         }
 
@@ -139,7 +176,7 @@
             border: 2px solid #0003;
             overflow-wrap: anywhere;
 
-            background-color: #222;
+            background-color: var(--main-background-color);
         }
 
         .tile {
@@ -187,6 +224,7 @@
 
         .tile .tile-status .new-status {
             background-color: #484cbb;
+            color: #fff;
         }
 
         /* Unused; for expand-on-click tiles */
@@ -202,16 +240,16 @@
         }
 
         .tile-section {
-            background-color: #fff;
-            color: #000;
+            background-color: var(--tile-section-background-color);
+            color: var(--tile-section-text-color);
             text-align: center;
             padding: 12px;
             margin: 8px 0px;
         }
 
         .tile-section.type-2 {
-            background-color: #444;
-            color: #fff;
+            background-color: var(--tile-section-2-background-color);
+            color: var(--tile-section-2-text-color);
         }
 
         .tile-section.type-3 {
