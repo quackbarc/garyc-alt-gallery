@@ -230,18 +230,6 @@
             color: #fff;
         }
 
-        /* Unused; for expand-on-click tiles */
-        .tile.selected {
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        /* Unused; for expand-on-click tiles */
-        .tile.selected > :first-child:not(img),
-        .tile.selected img.tile-image {
-            width: 100%;
-        }
-
         .tile-section {
             background-color: var(--tile-section-background-color);
             color: var(--tile-section-text-color);
@@ -471,6 +459,8 @@
         let sketchesLoading = false;
         /**
          * The current state of the gallery tile loading.
+         * Currently unused.
+         * 
          * @type {LoadingState}
          */
         let loadingState = "idle";
@@ -479,8 +469,6 @@
          * sketches, or not.
          */
         let showingLatest = false;
-
-        let holdingShift = false;
 
         /** @type {number?} */
         let lastmax = null;
@@ -548,16 +536,6 @@
         }
 
         /* endpoints */
-
-        /**
-         * @returns {Promise<number[]>}
-         *      A promise that returns a two-tuple of the
-         *      gallery's minimum and maximum IDs.
-         */
-        async function getMinMax() {
-            const {minID, maxID} = await getStats();
-            return [minID, maxID];
-        }
 
         /**
          * @returns {Promise<Stats>}
@@ -974,21 +952,6 @@
             extendTo(newfirst - 10);
         }
 
-        /* uh hey quackbarc we should put this somewhere */
-
-        /**
-         * Updates the localStorage state with the current state of the gallery.
-         */
-        function updateStorageState() {
-            /** @type {GalleryState} */
-            const state = {
-                "last_max": max,
-                "last_updated": Date.now(),
-            };
-
-            localStorage.setItem("tilegallery-state", JSON.stringify(state));
-        }
-
         /* background runners */
 
         async function maxLoop() {
@@ -1010,7 +973,20 @@
             refreshText.classList.remove("show");
         }
 
-        /* settings */
+        /* settings and state */
+
+        /**
+         * Updates the localStorage state with the current state of the gallery.
+         */
+        function updateStorageState() {
+            /** @type {GalleryState} */
+            const state = {
+                "last_max": max,
+                "last_updated": Date.now(),
+            };
+
+            localStorage.setItem("tilegallery-state", JSON.stringify(state));
+        }
 
         /**
          * @returns {Settings}
@@ -1201,19 +1177,6 @@
                     const maxInputElem = document.querySelector("input#maxid");
                     maxInputElem.focus();
                     break;
-            }
-        });
-
-        /* keyboard listeners */
-
-        document.addEventListener("keydown", (event) => {
-            if(event.key == "Shift") {
-                holdingShift = true;
-            }
-        });
-        document.addEventListener("keyup", (event) => {
-            if(event.key == "Shift") {
-                holdingShift = false;
             }
         });
     </script>
