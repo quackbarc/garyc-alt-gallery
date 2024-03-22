@@ -510,13 +510,20 @@
                     return;
                 }
 
+                const oldOffset = tile.offsetTop;
+                const willScrollToBottom = window.scrollY >= tile.offsetTop;
+
                 tile.classList.toggle("expanded");
+
+                // Scroll to the top of the tile instead of the bottom of the tile
+                // whenever browsers tend to do that.
+                if(willScrollToBottom) {
+                    const newOffset = tile.offsetTop;
+                    window.scrollTo(window.scrollX, newOffset);
+                }
+
                 event.preventDefault();
             });
-
-            // TODO: feature:
-            // - tile.scrollIntoView();
-            // - requires all the tiles to have the css "scroll-margin-top: 100px;"
 
             // TODO: bugfix
             // race condition continues when loading images, but ID gets jumped
