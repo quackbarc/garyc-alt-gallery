@@ -445,6 +445,15 @@
         offctx.strokeStyle = "#000";
         offctx.fillRect(0, 0, offcanv.width, offcanv.height);
 
+        /** @type {string?} */
+        let missingSketch = null;
+        offctx.save();
+        offctx.fillStyle = "#888";  // combined with CSS opacity, this gray should fit dark+light themes
+        render("").then((url) => {
+            missingSketch = url;
+            offctx.restore();
+        });
+
         // gallery settings
 
         const settings = getSettings();
@@ -602,9 +611,12 @@
             const tileStatus = document.createElement("div");
 
             if(settings.clientSideRendering) {
+                tileImage.src = missingSketch;
+                tileImage.style.opacity = "40%"
                 render(details.data).then((url) => {
                     tileImage.src = url;
                     tileImageA.href = tileImage.src;
+                    tileImage.style.opacity = "";
                 });
             }
             else {
