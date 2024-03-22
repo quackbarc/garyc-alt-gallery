@@ -156,11 +156,16 @@
             padding-bottom: 4px;
         }
 
-        #settings > * > input {
+        #settings > * > input,
+        #settings > * > select {
             /**
              * Align the input elements to the bottom of the text.
              * Worked for checkboxes so far; hope it works for the others. */
             vertical-align: bottom;
+        }
+
+        #settings > * > select {
+            margin: 0px 3px;
         }
 
         /* <footer> styles */
@@ -424,6 +429,7 @@
          * @property {boolean} endlessScroll
          * @property {boolean} gridView
          * @property {boolean} clickSaving
+         * @property {string} pageTheme
          */
 
         /* constants */
@@ -943,6 +949,7 @@
                 endlessScroll: true,
                 gridView: false,
                 clickSaving: false,
+                pageTheme: "dark",
             };
 
             const settings = JSON.parse(localStorage.settings || "{}");
@@ -958,6 +965,10 @@
                 case "gridView": {
                     const toggled = value;
                     document.querySelector("#tiles").classList.toggle("block", toggled);
+                    break;
+                }
+                case "pageTheme": {
+                    document.documentElement.setAttribute("theme", value);
                     break;
                 }
                 case "endlessScroll":
@@ -1010,6 +1021,28 @@
                         break;
                     }
                 }
+            });
+            const settingsSelects = settingsE.querySelectorAll("select");
+            settingsSelects.forEach((select) => {
+                if(settings[select.id]) {
+                    setSetting(select.id, settings[select.id]);
+                }
+
+                const options = Array.from(select.options);
+                const selValue = settings[select.id];
+                const [selElem] = options.filter((option) => option.value == selValue);
+                if(selElem) {
+                    const index = options.indexOf(selElem);
+                    select.selectedIndex = index;
+                }
+
+                select.addEventListener(
+                    "change",
+                    (event) => {
+                        const selected = select.options[select.selectedIndex];
+                        setSetting(select.id, selected.value);
+                    }
+                );
             });
 
             const stats = await getStats();
@@ -1133,6 +1166,13 @@
         <section id="prelude">
             <details id="settings">
                 <summary>Gallery preferences</summary>
+                <div class="setting">
+                    <label for="pageTheme">Webpage theme:</label>
+                    <select id="pageTheme">
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                    </select>
+                </div>
                 <div class="setting">
                     <label for="endlessScroll">Endless scrolling:</label>
                     <input type="checkbox" id="endlessScroll">
