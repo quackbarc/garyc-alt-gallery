@@ -430,6 +430,7 @@
          * @property {boolean} endlessScroll
          * @property {boolean} gridView
          * @property {boolean} clickSaving
+         * @property {boolean} clientSideRendering
          * @property {string} pageTheme
          */
 
@@ -600,12 +601,16 @@
             const tileCaption = document.createElement("p");
             const tileStatus = document.createElement("div");
 
-            // tileImage.src = getImageURL(details.id);
-            // tileImageA.href = tileImage.src;
-            render(details.data).then((url) => {
-                tileImage.src = url
+            if(settings.clientSideRendering) {
+                render(details.data).then((url) => {
+                    tileImage.src = url;
+                    tileImageA.href = tileImage.src;
+                });
+            }
+            else {
+                tileImage.src = getImageURL(details.id);
                 tileImageA.href = tileImage.src;
-            });
+            }
             tileImage.classList.add("tile-image");
             tileImageA.download = `${details.id}`;
             tileImageA.append(tileImage);
@@ -1009,6 +1014,7 @@
                 endlessScroll: true,
                 gridView: false,
                 clickSaving: false,
+                clientSideRendering: false,
                 pageTheme: "dark",
             };
 
@@ -1032,7 +1038,8 @@
                     break;
                 }
                 case "endlessScroll":
-                case "clickSaving": {
+                case "clickSaving":
+                case "clientSideRendering": {
                     // These are expected values! We don't really have to do anything with these.
                     // That being said, I might have to deal with unknown keys in a different way.
                     // This sounds like painful typing.
@@ -1240,6 +1247,10 @@
                 <div class="setting">
                     <label for="gridView">Grid view:</label>
                     <input type="checkbox" id="gridView">
+                </div>
+                <div class="setting">
+                    <label for="clientSideRendering">Client-side sketch rendering:</label>
+                    <input type="checkbox" id="clientSideRendering">
                 </div>
                 <div class="setting">
                     <label for="clickSaving">Save sketch on thumbnail click/tap:</label>
