@@ -435,6 +435,15 @@
 
         /* constants */
 
+        const offcanv = new OffscreenCanvas(800, 600);
+        const offctx = offcanv.getContext("2d", {alpha: false});
+        offctx.lineCap = "butt";
+        offctx.lineJoin = "round";
+        offctx.lineWidth = 3;
+        offctx.fillStyle = "#fff";
+        offctx.strokeStyle = "#000";
+        offctx.fillRect(0, 0, offcanv.width, offcanv.height);
+
         // gallery settings
 
         const settings = getSettings();
@@ -485,6 +494,52 @@
          */
         function getComparableDay(date) {
             return Math.floor((date.getTime() - (date.getTimezoneOffset() * 60*1000)) / (24*60*60*1000));
+        }
+
+        /* canvas utilities */
+
+        /**
+         * Renders the given sketch data and promises a URL of the render.
+         *
+         * @param {string} data
+         * @returns {Promise<string>}
+         *      The Blob URL of the rendered sketch.
+         */
+        async function render(data) {
+            /** @type {number[][][]} */
+            const lines = [];
+            for(const dataline of data.split(" ")) {
+                const line = [];
+                for(let pos = 0; pos < dataline.length; pos += 4) {
+                    const x = parseInt(dataline.slice(pos, pos+2), 36);
+                    const y = parseInt(dataline.slice(pos+2, pos+4), 36);
+                    console.assert(!(isNaN(x) || isNaN(y)), dataline.slice(pos, pos+2), dataline.slice(pos+2, pos+4));
+                    line.push([x, y]);
+                }
+                lines.push(line);
+            }
+
+            offctx.fillRect(0, 0, offcanv.width, offcanv.height);
+            for(const line of lines) {
+                for(const pos in line) {
+                    const [x, y] = line[pos];
+                    if(pos == "0") {
+                        offctx.beginPath();
+                        offctx.moveTo(x, y);
+                    }
+                    else {
+                        offctx.lineTo(x, y);
+                    }
+                }
+
+                if(line.length) {
+                    offctx.stroke();
+                }
+            }
+
+            const blob = await offcanv.convertToBlob();
+            const blobURL = URL.createObjectURL(blob);
+            return blobURL;
         }
 
         /* endpoints */
@@ -545,9 +600,13 @@
             const tileCaption = document.createElement("p");
             const tileStatus = document.createElement("div");
 
-            tileImage.src = getImageURL(details.id);
+            // tileImage.src = getImageURL(details.id);
+            // tileImageA.href = tileImage.src;
+            render(details.data).then((url) => {
+                tileImage.src = url
+                tileImageA.href = tileImage.src;
+            });
             tileImage.classList.add("tile-image");
-            tileImageA.href = tileImage.src;
             tileImageA.download = `${details.id}`;
             tileImageA.append(tileImage);
             tileImageA.addEventListener("click", (event) => {
