@@ -975,7 +975,6 @@
                 max = newmax;
             }
 
-            updateStorageState();
             updateStats(stats);
             refreshText.classList.remove("show");
         }
@@ -1151,6 +1150,17 @@
             if(bottom) {
                 extendTo(last - 10);
             }
+
+            // Mark sketches as read, only when we're reading the tiles section.
+            /** @type {HTMLElement} */
+            const tiles = document.querySelector("section#tiles");
+            const tilesTop = tiles.offsetTop;
+            const withinTiles = window.scrollY - tilesTop >= 0;
+            if(withinTiles && lastmax != max) {
+                updateStorageState();
+                lastmax = max;
+                lastmaxDate = new Date();
+            }
         });
         window.addEventListener("hashchange", () => {
             /** @type {HTMLInputElement} */
@@ -1169,7 +1179,6 @@
             refreshFrom(hash);
             maxInputElem.value = hash.toString();
         });
-        window.addEventListener("pagehide", updateStorageState.bind(this));
 
         // Keyboard events
         document.addEventListener("keydown", (event) => {
