@@ -207,6 +207,11 @@
             grid-area: img;
         }
 
+        .tile img.rendering {
+            /* TODO: wait, shouldn't we just use a background instead? */
+            opacity: 30%;
+        }
+
         .tile .tile-caption {
             flex: 1 1 auto;
             padding: 0px 6px;
@@ -250,6 +255,11 @@
 
         .tile-section + .tile-section {
             margin-top: 10px;
+        }
+
+        :root[theme="light"] .tile img.rendering {
+            /* Silly little trick just to achieve a darker gray */
+            filter: invert();
         }
 
         /* block-based format */
@@ -430,11 +440,8 @@
 
         /** @type {string?} */
         let missingSketch = null;
-        offctx.save();
-        offctx.fillStyle = "#888";  // combined with CSS opacity, this gray should fit dark+light themes
         render("").then((url) => {
             missingSketch = url;
-            offctx.restore();
         });
 
         // gallery settings
@@ -585,11 +592,11 @@
 
             if(settings.clientSideRendering) {
                 tileImage.src = missingSketch;
-                tileImage.style.opacity = "40%"
+                tileImage.classList.add("rendering");
                 render(details.data).then((url) => {
                     tileImage.src = url;
                     tileImageA.href = tileImage.src;
-                    tileImage.style.opacity = "";
+                    tileImage.classList.remove("rendering");
                 });
             }
             else {
