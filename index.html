@@ -1182,13 +1182,14 @@
 
         // Keyboard events
         document.addEventListener("keydown", (event) => {
-            const noModifiers = !event.ctrlKey && !event.altKey && !event.shiftKey && !event.metaKey;
-            switch(event.key) {
-                case "/":
-                    if(!noModifiers) {
-                        break;
-                    }
+            let modifiers = "";
+            if(event.ctrlKey)   modifiers += "Ctrl+";
+            if(event.altKey)    modifiers += "Alt+";
+            if(event.shiftKey)  modifiers += "Shift+";
+            if(event.metaKey)   modifiers += "Meta+";
 
+            switch(modifiers + event.key) {
+                case "/":
                     /** @type {HTMLInputElement} */
                     const maxInputElem = document.querySelector("input#maxid");
                     maxInputElem.focus();
