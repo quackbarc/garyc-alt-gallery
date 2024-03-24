@@ -1014,7 +1014,12 @@
                 pageTheme: "dark",
             };
 
-            const settings = JSON.parse(localStorage.settings || "{}");
+            // the support for the old localStorage.settings key is temporary.
+            // remove on v0.7.0.
+            const settings = JSON.parse(localStorage["tilegallery-settings"] || localStorage.settings || "{}");
+            if(localStorage.settings) {
+                localStorage.removeItem("settings");
+            }
             return {...defaultSettings, ...settings};
         }
 
@@ -1047,7 +1052,7 @@
             }
 
             settings[key] = value;
-            localStorage.setItem("settings", JSON.stringify(settings));
+            localStorage.setItem("tilegallery-settings", JSON.stringify(settings));
         }
 
         /* main */
