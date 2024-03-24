@@ -372,6 +372,13 @@
                 /* Way too big of a padding on the left, probably caused by writing-mode..? */
                 padding-left: 0px;
             }
+
+            /* block-based format */
+
+            #tiles.block .tile:not(.expanded) > :first-child:not(img),
+            #tiles.block .tile:not(.expanded) img.tile-image {
+                width: 160px;
+            }
         }
     </style>
 
