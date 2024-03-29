@@ -1168,7 +1168,7 @@
             const tiles = document.querySelector("section#tiles");
             const tilesTop = tiles.offsetTop;
             const withinTiles = window.scrollY - tilesTop >= 0;
-            if(withinTiles && lastmax != max) {
+            if(showingLatest && withinTiles && lastmax != max) {
                 updateStorageState();
                 lastmax = max;
                 lastmaxDate = new Date();
