@@ -438,12 +438,7 @@
 
         const offcanv = new OffscreenCanvas(800, 600);
         const offctx = offcanv.getContext("2d", {alpha: false});
-        offctx.lineCap = "butt";
-        offctx.lineJoin = "round";
-        offctx.lineWidth = 3;
-        offctx.fillStyle = "#fff";
-        offctx.strokeStyle = "#000";
-        offctx.fillRect(0, 0, offcanv.width, offcanv.height);
+        initializeCanvas();
 
         /** @type {string?} */
         let missingSketch = null;
@@ -504,6 +499,15 @@
         }
 
         /* canvas utilities */
+
+        function initializeCanvas() {
+            offctx.lineCap = "butt";
+            offctx.lineJoin = "round";
+            offctx.lineWidth = 3;
+            offctx.fillStyle = "#fff";
+            offctx.strokeStyle = "#000";
+            offctx.fillRect(0, 0, offcanv.width, offcanv.height);
+        }
 
         /**
          * Renders the given sketch data and promises a URL of the render.
@@ -1067,6 +1071,10 @@
         }
 
         async function main() {
+            // Restore canvas context init after GPU crashes.
+            // Canvas would've generated black sketches otherwise.
+            offcanv.addEventListener("contextlost", () => initializeCanvas());
+
             const refreshText = document.querySelector(".refresh-text");
             refreshText.classList.add("show");
 
