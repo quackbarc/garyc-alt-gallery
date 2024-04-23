@@ -203,6 +203,7 @@
 
         .tile > :first-child:not(img),    /* (<-- for dummy left-column tiles that aren't images) */
         .tile img.tile-image {
+            display: block;  /* https://stackoverflow.com/a/5804278 */
             width: 400px;
             grid-area: img;
         }
@@ -281,6 +282,7 @@
         #tiles.block .tile:not(.expanded) > :first-child:not(img),
         #tiles.block .tile:not(.expanded) img.tile-image {
             width: 200px;
+            box-shadow: 0px 0px 2px #0004;
         }
 
         /* column-based format */
