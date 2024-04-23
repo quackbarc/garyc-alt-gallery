@@ -186,7 +186,7 @@
             align-items: center;
             text-align: left;
             width: 100%;
-            padding: 12px 0px;
+            padding: 8px 0px;
             gap: 6px;
 
             /* for the column-based formats */
@@ -270,7 +270,8 @@
 
         #tiles.block .tile:not(.expanded) {
             display: inline-block;
-            padding: 8px;
+            vertical-align: middle;  /* https://stackoverflow.com/a/5804278 */
+            padding: 4px;
             width: auto;
         }
 
@@ -290,6 +291,7 @@
             display: inline-grid;
             text-align: left;
             max-width: 800px;
+            padding: 12px 0px;
         }
 
         .tile.expanded :first-child:not(img),
@@ -360,6 +362,7 @@
             /* <main> styles */
 
             .tile {
+                padding: 12px 0px;
                 display: grid;
             }
             .tile :first-child:not(img),
