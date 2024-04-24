@@ -482,6 +482,7 @@
          * sketches, or not.
          */
         let showingLatest = false;
+        let wasWithinTiles = false;
 
         /** @type {number?} */
         let lastmax = null;
@@ -1175,15 +1176,15 @@
                 extendTo(last - 10);
             }
 
-            // Mark sketches as read, only when we're reading the tiles section.
+            // Mark sketches as read, only when we've seen the maximum ID
+            // that's currently on the gallery.
             /** @type {HTMLElement} */
             const tiles = document.querySelector("section#tiles");
             const tilesTop = tiles.offsetTop;
             const withinTiles = window.scrollY - tilesTop >= 0;
-            if(showingLatest && withinTiles && lastmax != max) {
+            if(showingLatest && withinTiles != wasWithinTiles) {
                 updateStorageState();
-                lastmax = max;
-                lastmaxDate = new Date();
+                wasWithinTiles = withinTiles;
             }
         });
         window.addEventListener("hashchange", () => {
