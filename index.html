@@ -795,6 +795,7 @@
 
             section.innerHTML = `${newmax - oldmax} new sketch(es) since ${sinceDate}`;
             section.classList.add("tile-section", "type-3");
+            section.id = "unseen-section";
             return section;
         }
 
@@ -986,6 +987,15 @@
             const newmax = stats.maxID;
             if(newmax > max) {
                 if(showingLatest) {
+                    const unseenSection = document.querySelector("#unseen-section");
+                    const newSection = createUnseenCountSection(lastmax, lastmaxDate, newmax);
+                    if(unseenSection) {
+                        unseenSection.replaceWith(newSection);
+                    }
+                    else {
+                        const tilesE = document.querySelector("#tiles");
+                        tilesE.prepend(newSection);
+                    }
                     extendAbove(newmax);
                 }
                 max = newmax;
