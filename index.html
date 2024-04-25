@@ -331,6 +331,12 @@
 
         /* other media queries */
 
+        @media not all and (hover: hover) {
+            a:not([href]) {
+                text-decoration: underline;
+            }
+        }
+
         @media (max-width: 800px) {
             .tile > :first-child:not(img),
             .tile img.tile-image {
@@ -396,6 +402,12 @@
             .tile .tile-status span {
                 /* Way too big of a padding on the left, probably caused by writing-mode..? */
                 padding-left: 0px;
+            }
+            .tile-section .section-text-right {
+                position: revert;
+                margin-right: 0;
+
+                display: block;
             }
 
             /* block-based format */
