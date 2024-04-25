@@ -1145,7 +1145,7 @@
         async function main() {
             // Restore canvas context init after GPU crashes.
             // Canvas would've generated black sketches otherwise.
-            offcanv.addEventListener("contextlost", () => initializeCanvas());
+            offcanv.addEventListener("contextrestored", initializeCanvas);
 
             const refreshText = document.querySelector(".refresh-text");
             refreshText.classList.add("show");
