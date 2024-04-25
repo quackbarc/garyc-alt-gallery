@@ -828,7 +828,8 @@
 
             const textE = document.createElement("span");
             const markReadE = document.createElement("a");  // i guess this makes sense...?
-            textE.innerHTML = `${newmax - oldmax} new sketch(es) since ${sinceDate}`;
+            const es = (newmax - oldmax) != 1 ? "es" : "";
+            textE.innerHTML = `${newmax - oldmax} new sketch${es} since ${sinceDate}`;
             markReadE.role = "button";
             markReadE.tabIndex = 0;
             markReadE.innerHTML = "Mark as read";
