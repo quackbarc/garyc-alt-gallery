@@ -834,8 +834,8 @@
             markReadE.innerHTML = "Mark as read";
             markReadE.id = "mark-read";
             markReadE.classList.add("section-text-right");
-            markReadE.addEventListener("click", markRead);
-            markReadE.addEventListener("keydown", (event) => event.key == "Enter" ? markRead() : null);
+            markReadE.addEventListener("click", markGalleryAsRead);
+            markReadE.addEventListener("keydown", (event) => event.key == "Enter" ? markGalleryAsRead() : null);
 
             section.append(textE, markReadE);
             section.classList.add("tile-section", "type-3");
@@ -870,7 +870,7 @@
             peekE.innerHTML = tag`${stats.peekers} peeker${'s'}`;
         }
 
-        function markRead() {
+        function markGalleryAsRead() {
             lastmax = max;
             lastmaxDate = new Date();
             updateStorageState();
