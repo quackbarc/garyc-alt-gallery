@@ -559,10 +559,12 @@
          * Renders the given sketch data and promises a URL of the render.
          *
          * @param {string} data
+         * @param {number?} id
+         *      For testing purposes.
          * @returns {Promise<string>}
          *      The Blob URL of the rendered sketch.
          */
-        async function render(data) {
+        async function render(data, id=null) {
             /** @type {number[][][]} */
             const lines = [];
             for(const dataline of data.split(" ")) {
@@ -570,7 +572,7 @@
                 for(let pos = 0; pos < dataline.length; pos += 4) {
                     const x = parseInt(dataline.slice(pos, pos+2), 36);
                     const y = parseInt(dataline.slice(pos+2, pos+4), 36);
-                    console.assert(!(isNaN(x) || isNaN(y)), dataline.slice(pos, pos+2), dataline.slice(pos+2, pos+4));
+                    console.assert(!(isNaN(x) || isNaN(y)), id, dataline.slice(pos, pos+4));
                     line.push([x, y]);
                 }
                 lines.push(line);
@@ -650,7 +652,7 @@
             if(settings.clientSideRendering) {
                 tileImage.src = missingSketch;
                 tileImage.classList.add("rendering");
-                render(details.data).then((url) => {
+                render(details.data, details.id).then((url) => {
                     tileImage.src = url;
                     tileImageA.href = tileImage.src;
                     tileImage.classList.remove("rendering");
