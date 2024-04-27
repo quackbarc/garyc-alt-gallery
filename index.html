@@ -483,6 +483,14 @@
             missingSketch = url;
         });
 
+        /**
+         * The controller to immediately halt the extend___() methods.
+         * Gets assigned a new controller everytime one of them gets called.
+         * 
+         * @type {AbortController?}
+         */
+        let fetchAbortController = null;
+
         // gallery settings
 
         const settings = getSettings();
@@ -674,9 +682,6 @@
 
                 event.preventDefault();
             });
-
-            // TODO: bugfix
-            // race condition continues when loading images, but ID gets jumped
 
             const ink = details.data.length / 65535;
             const link = `https://garyc.me/sketch/gallery.php#${details.id}`
@@ -894,6 +899,9 @@
             sketchesLoading = true;
             newlast = Math.max(newlast, min);
 
+            fetchAbortController = new AbortController();
+            const fetchAbortSignal = fetchAbortController.signal;
+
             /** @type {HTMLButtonElement} */
             const moreButton = document.querySelector("button#more");
             moreButton.disabled = true;
@@ -901,6 +909,11 @@
             const tilesE = document.querySelector("#tiles");
             for(let id = last - 1; id >= newlast; id--) {
                 const details = await getSketchDetails(id);
+
+                if(fetchAbortSignal.aborted) {
+                    return;
+                }
+
                 const tile = createTile(details);
 
                 const detailsDate = new Date(details.timestamp * 1000);
@@ -944,6 +957,9 @@
         async function extendAbove(newfirst) {
             sketchesLoading = true;
 
+            fetchAbortController = new AbortController();
+            const fetchAbortSignal = fetchAbortController.signal;
+
             /** @type {HTMLButtonElement} */
             const moreButton = document.querySelector("button#more");
             moreButton.disabled = true;
@@ -957,6 +973,11 @@
 
             for(let id = first + 1; id <= newfirst; id++) {
                 const details = await getSketchDetails(id);
+
+                if(fetchAbortSignal.aborted) {
+                    return;
+                }
+
                 const tile = createTile(details);
 
                 const detailsDate = new Date(details.timestamp * 1000);
@@ -992,6 +1013,10 @@
          * @param {number} newfirst
          */
         async function refreshFrom(newfirst) {
+            if(fetchAbortController) {
+                fetchAbortController.abort();
+            }
+
             // "show more" button becomes disabled, and if there's no reason
             // down the road to re-enable it, it should stay disabled.
             /** @type {HTMLButtonElement} */
