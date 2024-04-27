@@ -1140,6 +1140,10 @@
                 lastmax = state["last_max"];
                 lastmaxDate = new Date(state["last_updated"]);
             }
+
+            // Apply settings that need to be applied before the DOM is ready,
+            // e.g. changing the theme on <html>.
+            setSetting("pageTheme", settings.pageTheme);
         }
 
         async function main() {
