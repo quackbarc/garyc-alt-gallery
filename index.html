@@ -938,14 +938,12 @@
                     const section = createGalleryEndSection();
                     tilesE.append(section);
                 }
+
+                last = id;
             }
 
-            const endOfGallery = newlast == min;
-
-            last = newlast;
             sketchesLoading = false;
-
-            moreButton.disabled = endOfGallery;
+            moreButton.disabled = newlast == min;
         }
 
         /**
@@ -997,14 +995,12 @@
                 }
 
                 anchor.after(tile);
+
+                first = id;
             }
 
-            const endOfGallery = last == min;
-
-            first = newfirst;
             sketchesLoading = false;
-
-            moreButton.disabled = endOfGallery;
+            moreButton.disabled = last == min;
         }
 
         /**
