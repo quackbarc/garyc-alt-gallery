@@ -1317,6 +1317,55 @@
                     const maxInputElem = document.querySelector("input#maxid");
                     maxInputElem.focus();
                     break;
+                case "ArrowLeft":
+                case "ArrowRight": {
+                    if(!settings.gridView) {
+                        break;
+                    }
+
+                    const tilesE = document.querySelector("#tiles")
+                    const expanded = tilesE.querySelector(".expanded");
+                    /** @type {HTMLElement} */
+                    let newExpanded = null;
+
+                    if(!expanded) {
+                        const firstTile = tilesE.querySelector(".tile");
+                        // @ts-ignore
+                        newExpanded = firstTile;
+                    }
+                    else {
+                        const siblingDirection = event.key == "ArrowLeft"
+                            ? "previousElementSibling"
+                            : "nextElementSibling";
+
+                        let anchor = expanded;
+                        while(anchor[siblingDirection]) {
+                            const sibling = anchor[siblingDirection];
+                            anchor = sibling;
+
+                            if(sibling && sibling.matches(".tile")) {
+                                // @ts-ignore
+                                newExpanded = sibling;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(!newExpanded) {
+                        break;
+                    }
+
+                    const expandedAll = document.querySelectorAll(".expanded");
+                    expandedAll.forEach((elem) => elem.classList.remove("expanded"));
+                    newExpanded.classList.add("expanded");
+
+                    const scrollCenterOffset = (window.innerHeight - newExpanded.offsetHeight) / 2;
+                    const scrollPos = newExpanded.offsetTop - Math.max(0, Math.floor(scrollCenterOffset));
+                    window.scrollTo(window.scrollX, scrollPos);
+
+                    event.preventDefault();
+                    break;
+                }
             }
         });
     </script>
@@ -1384,6 +1433,7 @@
                 <li>Clicking/tapping on the sketches expands the sketch into full size.</li>
                 <li>Middle-clicking on the sketches saves the sketch.</li>
                 <li>Pressing <kbd>/</kbd> would jump to the ID field.</li>
+                <li>Pressing <kbd>←</kbd> or <kbd>→</kbd> would navigate across sketches (in grid view).</li>
                 <li>Leaving the ID field blank would show the latest sketches on the gallery.</li>
             </ul>
         </section>
