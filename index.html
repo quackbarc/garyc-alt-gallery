@@ -1363,6 +1363,11 @@
                     const scrollPos = newExpanded.offsetTop - Math.max(0, Math.floor(scrollCenterOffset));
                     window.scrollTo(window.scrollX, scrollPos);
 
+                    const canExtend = settings.endlessScroll && !sketchesLoading;
+                    if(canExtend && newExpanded.matches(":last-of-type")) {
+                        extendTo(last - 10);
+                    }
+
                     event.preventDefault();
                     break;
                 }
