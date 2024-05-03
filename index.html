@@ -1117,12 +1117,7 @@
                 pageTheme: "dark",
             };
 
-            // the support for the old localStorage.settings key is temporary.
-            // remove on v0.7.0.
-            const settings = JSON.parse(localStorage["tilegallery-settings"] || localStorage.settings || "{}");
-            if(localStorage.settings) {
-                localStorage.removeItem("settings");
-            }
+            const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
             return {...defaultSettings, ...settings};
         }
 
