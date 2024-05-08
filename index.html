@@ -479,7 +479,7 @@
 
         /** @type {string?} */
         let missingSketch = null;
-        render("").then((url) => {
+        const missingSketchPromise = render("").then((url) => {
             missingSketch = url;
         });
 
@@ -1057,6 +1057,13 @@
             lastDate = null;
             first = null;
             last = newfirst + 1;
+
+            if(settings.clientSideRendering) {
+                // Wait for the placeholder to be set up first before creating tiles.
+                // This can also be seen as "wait for the off-canvas to be ready".
+                // TODO: when createTile() becomes async, please put this over there instead.
+                await missingSketchPromise;
+            }
             extendTo(newfirst - 9);
         }
 
