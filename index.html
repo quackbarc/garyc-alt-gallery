@@ -1325,10 +1325,13 @@
                         break;
                     }
 
-                    const tilesE = document.querySelector("#tiles")
+                    const tilesE = document.querySelector("#tiles");
+                    /** @type {HTMLElement} */
                     const expanded = tilesE.querySelector(".expanded");
                     /** @type {HTMLElement} */
                     let newExpanded = null;
+                    /** @type {ScrollBehavior} */
+                    let scrollingBehavior = "instant";
 
                     if(!expanded) {
                         const firstTile = tilesE.querySelector(".tile");
@@ -1343,6 +1346,7 @@
                         let anchor = expanded;
                         while(anchor[siblingDirection]) {
                             const sibling = anchor[siblingDirection];
+                            // @ts-ignore
                             anchor = sibling;
 
                             if(sibling && sibling.matches(".tile")) {
@@ -1352,9 +1356,19 @@
                             }
                         }
                     }
-
                     if(!newExpanded) {
                         break;
+                    }
+
+                    if(expanded) {
+                        const expandedCenterOffset = (window.innerHeight - expanded.offsetHeight) / 2;
+                        const expandedPos = expanded.offsetTop - Math.max(0, Math.floor(expandedCenterOffset));
+                        if(Math.floor(window.scrollY) != expandedPos) {
+                            scrollingBehavior = "smooth";
+                        }
+                    }
+                    else {
+                        scrollingBehavior = "smooth";
                     }
 
                     const expandedAll = document.querySelectorAll(".expanded");
@@ -1363,7 +1377,13 @@
 
                     const scrollCenterOffset = (window.innerHeight - newExpanded.offsetHeight) / 2;
                     const scrollPos = newExpanded.offsetTop - Math.max(0, Math.floor(scrollCenterOffset));
-                    window.scrollTo(window.scrollX, scrollPos);
+                    window.scroll({
+                        top: scrollPos,
+                        // Known issue w/ Chrome:
+                        // Scrolling with the wheel is known to interrupt programmatic smooth scrolling:
+                        // https://issues.chromium.org/issues/40715316
+                        behavior: scrollingBehavior,
+                    });
 
                     const canExtend = settings.endlessScroll && !sketchesLoading;
                     if(canExtend && newExpanded.matches(":last-of-type")) {
