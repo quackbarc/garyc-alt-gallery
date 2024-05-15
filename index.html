@@ -690,7 +690,14 @@
             });
 
             const ink = details.data.length / 65535;
-            const link = `https://garyc.me/sketch/gallery.php#${details.id}`
+            const linkParts = [
+                "https://garyc.me",
+                "/sketch",
+                "/gallery.php",
+                `#${details.id}`,
+            ];
+            const link = linkParts.join("");
+            const linkWBR = linkParts.join("<wbr>");
             let timestamp = new Date(details.timestamp * 1000)
                 .toLocaleString("default", {
                     weekday: "short",
@@ -712,8 +719,9 @@
             timestamp = timestamp
                 .replace(today.toLocaleString("default", dateOptions), "Today")
                 .replace(yesterday.toLocaleString("default", dateOptions), "Yesterday");
+
             const captionL = [
-                `<i><a href=${link}>${link}</a></i>`,
+                `<i><a href=${link}>${linkWBR}</a></i>`,
                 `${Math.floor(ink * 1000) / 10}% ink used`,
                 `<i>from ${details.origin}</i>`,
                 `<i>${timestamp}</i>`,
