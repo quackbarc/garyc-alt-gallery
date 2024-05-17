@@ -1315,6 +1315,10 @@
 
         // Keyboard events
         document.addEventListener("keydown", (event) => {
+            if(document.activeElement.nodeName == "INPUT") {
+                return;
+            }
+
             let modifiers = "";
             if(event.ctrlKey)   modifiers += "Ctrl+";
             if(event.altKey)    modifiers += "Alt+";
