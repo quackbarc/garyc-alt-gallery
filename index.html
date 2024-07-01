@@ -47,6 +47,13 @@
 
         /* Styles */
 
+        * {
+            /* For transitioning between themes. */
+            transition: 0.2s background-color ease;
+        }
+
+        /* general styles */
+
         html {
             color-scheme: var(--color-scheme);
         }
@@ -205,6 +212,8 @@
             display: block;  /* https://stackoverflow.com/a/5804278 */
             width: 400px;
             grid-area: img;
+
+            transition: 0.1s opacity ease;
         }
 
         .tile img.rendering {
