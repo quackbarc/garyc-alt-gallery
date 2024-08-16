@@ -1277,7 +1277,10 @@
 
         // Page events
         document.addEventListener("DOMContentLoaded", main);
-        document.addEventListener("scroll", () => {
+        document.addEventListener("scroll", scrollHandler);
+        document.addEventListener("wheel", scrollHandler);
+
+        function scrollHandler() {
             if(sketchesLoading) {
                 return;
             }
@@ -1303,7 +1306,8 @@
                 updateStorageState();
                 wasWithinTiles = withinTiles;
             }
-        });
+        }
+
         window.addEventListener("hashchange", () => {
             /** @type {HTMLInputElement} */
             const maxInputElem = document.querySelector("input#maxid");
