@@ -1335,6 +1335,18 @@
             if(event.metaKey)   modifiers += "Meta+";
 
             switch(modifiers + event.key) {
+                case "Escape": {
+                    const tilesE = document.querySelector("#tiles");
+                    const expandeds = tilesE.querySelectorAll(".expanded");
+
+                    if(expandeds.length == 0) {
+                        break;
+                    }
+
+                    event.preventDefault();
+                    expandeds.forEach((tile) => tile.classList.remove("expanded"));
+                    break;
+                }
                 case "/":
                     /** @type {HTMLInputElement} */
                     const maxInputElem = document.querySelector("input#maxid");
@@ -1480,6 +1492,7 @@
             <ul>
                 <li>Clicking/tapping on the sketches expands the sketch into full size.</li>
                 <li>Middle-clicking on the sketches saves the sketch.</li>
+                <li>Pressing <kbd>Esc</kbd> would collapse any expanded sketches.</li>
                 <li>Pressing <kbd>/</kbd> would jump to the ID field.</li>
                 <li>Pressing <kbd>←</kbd> or <kbd>→</kbd> would navigate across sketches (in grid view).</li>
                 <li>Leaving the ID field blank would show the latest sketches on the gallery.</li>
