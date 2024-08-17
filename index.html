@@ -206,7 +206,7 @@
             grid-template-columns: auto min-content;
         }
 
-        .tile :first-child {
+        .tile > :first-child {
             flex: 0 1 auto;
         }
 
@@ -308,7 +308,7 @@
             width: auto;
         }
 
-        #tiles.block .tile:not(.expanded) :not(:first-child) {
+        #tiles.block .tile:not(.expanded) > :not(:first-child) {
             display: none;
         }
 
@@ -331,7 +331,7 @@
             padding: 12px 0px;
         }
 
-        .tile.expanded :first-child:not(img),
+        .tile.expanded > :first-child:not(img),
         .tile.expanded img.tile-image {
             width: 100%;
         }
@@ -408,7 +408,7 @@
                 padding: 12px 0px;
                 display: grid;
             }
-            .tile :first-child:not(img),
+            .tile > :first-child:not(img),
             .tile img.tile-image {
                 width: 100%;
             }
