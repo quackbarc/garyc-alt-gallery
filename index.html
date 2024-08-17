@@ -1204,6 +1204,14 @@
             const stats = await getStats();
             min = stats.minID;
             max = stats.maxID;
+
+            const state = localStorage.getItem("tilegallery-state");
+            if(!state) {
+                lastmax = max;
+                lastmaxDate = new Date();
+                updateStorageState();
+            }
+
             updateStats(stats);
 
             const settingsE = document.querySelector("#settings");
