@@ -1201,6 +1201,11 @@
             const refreshText = document.querySelector(".refresh-text");
             refreshText.classList.add("show");
 
+            const stats = await getStats();
+            min = stats.minID;
+            max = stats.maxID;
+            updateStats(stats);
+
             const settingsE = document.querySelector("#settings");
             const settingsInputs = settingsE.querySelectorAll("input");
             settingsInputs.forEach((elem) => {
@@ -1243,11 +1248,6 @@
                     }
                 );
             });
-
-            const stats = await getStats();
-            min = stats.minID;
-            max = stats.maxID;
-            updateStats(stats);
 
             /** @type {HTMLInputElement} */
             const maxInputElem = document.querySelector("input#maxid");
