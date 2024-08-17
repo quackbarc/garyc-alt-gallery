@@ -1188,16 +1188,16 @@
                 lastmaxDate = new Date(state["last_updated"]);
             }
 
+            // Restore canvas context init after GPU crashes.
+            // Canvas would've generated black sketches otherwise.
+            offcanv.addEventListener("contextrestored", initializeCanvas);
+
             // Apply settings that need to be applied before the DOM is ready,
             // e.g. changing the theme on <html>.
             setSetting("pageTheme", settings.pageTheme);
         }
 
         async function main() {
-            // Restore canvas context init after GPU crashes.
-            // Canvas would've generated black sketches otherwise.
-            offcanv.addEventListener("contextrestored", initializeCanvas);
-
             const refreshText = document.querySelector(".refresh-text");
             refreshText.classList.add("show");
 
