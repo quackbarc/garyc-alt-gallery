@@ -231,6 +231,18 @@
             grid-area: capt;
         }
 
+        .tile .tile-actions {
+            display: flex;
+            gap: 8px;
+            margin-block-start: 0.5em;
+            padding-bottom: 0.5em;  /* Padding between this elem and potential scrollbar */
+            overflow-x: auto;
+        }
+
+        .tile .tile-actions > * {
+            flex: 0 0 auto;
+        }
+
         .tile .tile-status {
             flex: 0 1 auto;
             writing-mode: vertical-rl;
@@ -668,6 +680,9 @@
             const tileImageA = document.createElement("a");
             const tileImage = document.createElement("img");
             const tileCaption = document.createElement("p");
+            const tileSaveButton = document.createElement("button");
+            const tileGIFButton = document.createElement("button");
+            const tileActions = document.createElement("div");
             const tileStatus = document.createElement("div");
 
             if(settings.clientSideRendering) {
@@ -758,6 +773,25 @@
                 tileStatus.classList.add("tile-status");
                 tileStatus.append(newStatus);
             }
+
+            const tileGIFLink = `https://garyc2gif.neocities.org/?id=${details.id}`;
+            tileSaveButton.innerHTML = "save";
+            tileGIFButton.innerHTML = "generate GIF on neocities &UpperRightArrow;";
+
+            tileSaveButton.addEventListener("click", () => {
+                // Can't use tileImageA directly because of how it's wired up to
+                // handle tile expansion; use a plain <a> instead.
+                const saveA = document.createElement("a");
+                saveA.href = tileImageA.href;
+                saveA.download = tileImageA.download;
+                saveA.click();
+            });
+            tileGIFButton.addEventListener("click", () => window.open(tileGIFLink));
+
+            tileActions.classList.add("tile-actions");
+            tileActions.append(tileSaveButton);
+            tileActions.append(tileGIFButton);
+            tileCaption.append(tileActions);
 
             tile.classList.add("tile", "anchorable");
             tile.append(tileImageA);
