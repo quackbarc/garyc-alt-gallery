@@ -1361,15 +1361,13 @@
                 return;
             }
 
-            if(!settings.endlessScroll) {
-                return;
-            }
-
-            let pageHeight = document.documentElement.scrollHeight;
-            let pageScroll = window.scrollY + window.innerHeight;
-            let bottom = pageHeight - pageScroll <= 100;
-            if(bottom) {
-                extendTo(last - 10);
+            if(settings.endlessScroll) {
+                let pageHeight = document.documentElement.scrollHeight;
+                let pageScroll = window.scrollY + window.innerHeight;
+                let bottom = pageHeight - pageScroll <= 100;
+                if(bottom) {
+                    extendTo(last - 10);
+                }
             }
 
             // Mark sketches as read, only when we've seen the maximum ID
