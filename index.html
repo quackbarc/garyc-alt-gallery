@@ -331,6 +331,7 @@
         }
 
         #tiles.block .tile.expanded {
+            padding: 4px;  /* same as :not(.expanded) */
             margin: auto;
         }
 
@@ -353,7 +354,7 @@
             display: grid;
             text-align: left;
             max-width: 800px;
-            padding: 12px 0px;
+            padding: 8px 0px;
         }
 
         .tile.expanded .tile-image-holder:not(:has(img)),
@@ -425,7 +426,7 @@
             /* <main> styles */
 
             .tile {
-                padding: 12px 0px;
+                padding: 8px 0px;
                 display: grid;
             }
             .tile .tile-image-holder:not(:has(img)),
