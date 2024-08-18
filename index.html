@@ -820,7 +820,7 @@
             tileCaption.classList.add("tile-caption");
 
             const tile = document.createElement("div");
-            tile.classList.add("tile");
+            tile.classList.add("tile", "anchorable", "not-found");
             tile.append(dummy);
             tile.append(tileCaption);
             return tile;
