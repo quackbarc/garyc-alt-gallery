@@ -50,7 +50,10 @@
 
         /* Styles */
 
-        *:not(.tile-section) {
+        *:not(
+            .tile-section,
+            .tile.not-found
+        ) {
             /* For transitioning between themes. */
             transition: 0.2s background-color ease;
         }
@@ -351,6 +354,11 @@
         #tiles.block .tile.expanded {
             padding: 4px;  /* same as :not(.expanded) */
             margin: auto;
+        }
+
+        #tiles.block .tile.not-found {
+            background-color: var(--background-color);
+            margin: 4px;
         }
 
         /* wide block-based format */
@@ -675,7 +683,7 @@
 
         /**
          * @param {number} id
-         * @returns {Promise<SketchDetails>}
+         * @returns {Promise<SketchDetails?>}
          *      A promise that returns the details of a sketch.
          */
         async function getSketchDetails(id) {
@@ -683,7 +691,14 @@
                 `https://garyc.me/sketch/get.php?details&id=${id}`,
                 {cache: "force-cache"}
             );
-            const details = await resp.json();
+
+            const respText = await resp.text();
+            const notFound = respText == "wait";
+            if(notFound) {
+                return null;
+            }
+
+            const details = JSON.parse(respText);
             return details;
         }
 
@@ -1020,24 +1035,31 @@
                     return;
                 }
 
-                const tile = createTile(details);
+                if(details) {
+                    const tile = createTile(details);
 
-                const detailsDate = new Date(details.timestamp * 1000);
-                const detailsDay = getComparableDay(detailsDate);
-                const lastDay = lastDate ? getComparableDay(lastDate) : 0;
+                    const detailsDate = new Date(details.timestamp * 1000);
+                    const detailsDay = getComparableDay(detailsDate);
+                    const lastDay = lastDate ? getComparableDay(lastDate) : 0;
 
-                if(lastDay != detailsDay) {
-                    const section = createSection(detailsDate);
-                    tilesE.append(section);
-                    lastDate = detailsDate;
+                    if(lastDay != detailsDay) {
+                        const section = createSection(detailsDate);
+                        tilesE.append(section);
+                        lastDate = detailsDate;
+                    }
+
+                    if(!firstDate || !first) {
+                        firstDate = detailsDate;
+                        first = id;
+                    }
+
+                    tilesE.append(tile);
                 }
 
-                if(!firstDate || !first) {
-                    firstDate = detailsDate;
-                    first = id;
+                else {
+                    const notFoundTile = createNotFoundTile(id);
+                    tilesE.append(notFoundTile);
                 }
-
-                tilesE.append(tile);
 
                 // add the footer of the gallery when necessary
                 if(id == min) {
@@ -1082,25 +1104,32 @@
                     return;
                 }
 
-                const tile = createTile(details);
+                if(details) {
+                    const tile = createTile(details);
 
-                const detailsDate = new Date(details.timestamp * 1000);
-                const detailsDay = getComparableDay(detailsDate);
-                const firstDay = firstDate ? getComparableDay(firstDate) : 0;
+                    const detailsDate = new Date(details.timestamp * 1000);
+                    const detailsDay = getComparableDay(detailsDate);
+                    const firstDay = firstDate ? getComparableDay(firstDate) : 0;
 
-                if(firstDay != detailsDay) {
-                    const section = createSection(detailsDate);
-                    anchor.before(section);
-                    anchor = section;
-                    firstDate = detailsDate;
+                    if(firstDay != detailsDay) {
+                        const section = createSection(detailsDate);
+                        anchor.before(section);
+                        anchor = section;
+                        firstDate = detailsDate;
+                    }
+
+                    if(!lastDate || !last) {
+                        lastDate = detailsDate;
+                        last = id;
+                    }
+
+                    anchor.after(tile);
                 }
 
-                if(!lastDate || !last) {
-                    lastDate = detailsDate;
-                    last = id;
+                else {
+                    const notFoundTile = createNotFoundTile(id);
+                    anchor.after(notFoundTile);
                 }
-
-                anchor.after(tile);
 
                 first = id;
             }
