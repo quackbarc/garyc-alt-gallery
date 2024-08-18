@@ -221,6 +221,7 @@
             display: block;  /* https://stackoverflow.com/a/5804278 */
             width: 400px;
 
+            border-bottom: 0px solid #484cbb;
             transition: 0.1s opacity ease;
         }
 
@@ -262,6 +263,10 @@
         .tile .tile-status .new-status {
             background-color: #484cbb;
             color: #fff;
+        }
+
+        .tile.new img.tile-image {
+            border-bottom-width: 6px;
         }
 
         .tile-section {
@@ -320,7 +325,7 @@
 
         #tiles.block .tile:not(.expanded) {
             display: inline-block;
-            vertical-align: middle;  /* https://stackoverflow.com/a/5804278 */
+            vertical-align: top;  /* https://stackoverflow.com/a/5804278 */ /* <-- outdated comment */
             padding: 4px;
             width: auto;
         }
@@ -785,6 +790,8 @@
                 newStatus.classList.add("new-status");
                 tileStatus.classList.add("tile-status");
                 tileStatus.append(newStatus);
+
+                tile.classList.add("new");
             }
 
             const tileGIFLink = `https://garyc2gif.neocities.org/?id=${details.id}`;
@@ -962,10 +969,12 @@
             updateStorageState();
 
             document.querySelectorAll(".new-status").forEach((elem) => elem.remove());
-            const unseenSection = document.querySelector("#unseen-section")
+            document.querySelectorAll(".tile.new").forEach((tile) => tile.classList.remove("new"));
+            const unseenSection = document.querySelector("#unseen-section");
             if(unseenSection) {
                 unseenSection.remove();
             }
+
         }
 
         /* gallery extension methods */
