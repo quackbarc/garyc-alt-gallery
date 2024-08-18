@@ -206,15 +206,15 @@
             grid-template-columns: auto min-content;
         }
 
-        .tile > :first-child {
+        .tile .tile-image-holder {
+            grid-area: img;
             flex: 0 1 auto;
         }
 
-        .tile > :first-child:not(img),    /* (<-- for dummy left-column tiles that aren't images) */
+        .tile .tile-image-holder:not(:has(img)),
         .tile img.tile-image {
             display: block;  /* https://stackoverflow.com/a/5804278 */
             width: 400px;
-            grid-area: img;
 
             transition: 0.1s opacity ease;
         }
@@ -320,11 +320,11 @@
             width: auto;
         }
 
-        #tiles.block .tile:not(.expanded) > :not(:first-child) {
+        #tiles.block .tile:not(.expanded) > :not(.tile-image-holder) {
             display: none;
         }
 
-        #tiles.block .tile:not(.expanded) > :first-child:not(img),
+        #tiles.block .tile:not(.expanded) .tile-image-holder:not(:has(img)),
         #tiles.block .tile:not(.expanded) img.tile-image {
             width: var(--grid-image-size);
             box-shadow: 0px 0px 2px #0004;
@@ -356,18 +356,13 @@
             padding: 12px 0px;
         }
 
-        .tile.expanded > :first-child:not(img),
+        .tile.expanded .tile-image-holder:not(:has(img)),
         .tile.expanded img.tile-image {
             width: 100%;
         }
 
         .tile.expanded .tile-caption {
             padding: 6px 10px;
-        }
-
-        .tile.expanded .tile-status span {
-            /* Way too big of a padding on the left, probably caused by writing-mode..? */
-            padding-left: 0px;
         }
 
         /* other media queries */
@@ -379,7 +374,7 @@
         }
 
         @media (max-width: 800px) {
-            .tile > :first-child:not(img),
+            .tile .tile-image-holder:not(:has(img)),
             .tile img.tile-image {
                 width: 250px;
             }
@@ -433,16 +428,12 @@
                 padding: 12px 0px;
                 display: grid;
             }
-            .tile > :first-child:not(img),
+            .tile .tile-image-holder:not(:has(img)),
             .tile img.tile-image {
                 width: 100%;
             }
             .tile .tile-caption {
                 padding: 6px 10px;
-            }
-            .tile .tile-status span {
-                /* Way too big of a padding on the left, probably caused by writing-mode..? */
-                padding-left: 0px;
             }
             .tile-section .section-text-right {
                 position: revert;
@@ -453,7 +444,7 @@
 
             /* block-based format */
 
-            #tiles.block .tile:not(.expanded) > :first-child:not(img),
+            #tiles.block .tile:not(.expanded) .tile-image-holder:not(:has(img)),
             #tiles.block .tile:not(.expanded) img.tile-image {
                 width: 160px;
             }
@@ -712,7 +703,9 @@
                 tileImage.src = getImageURL(details.id);
                 tileImageA.href = tileImage.src;
             }
+
             tileImage.classList.add("tile-image");
+            tileImageA.classList.add("tile-image-holder");
             tileImageA.download = `${details.id}`;
             tileImageA.append(tileImage);
             tileImageA.addEventListener("click", (event) => {
@@ -821,6 +814,8 @@
         function createNotFoundTile(id) {
             const dummy = document.createElement("div");
             const tileCaption = document.createElement("p");
+
+            dummy.classList.add("tile-image-holder");
             tileCaption.innerHTML = `Can't get #${id}.`;
             tileCaption.classList.add("tile-caption");
 
