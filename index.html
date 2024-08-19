@@ -87,6 +87,13 @@
             color: var(--text-italic-color);
         }
 
+        #version {
+            /**
+             * Podkova tends to add kerning to decimal numbers like on "6.7"
+             * The version number looked weird with that. */
+            font-kerning: none;
+        }
+
         /* <header> styles */
 
         header {
@@ -1678,7 +1685,7 @@
                     <label for="clickSaving">Save sketch on thumbnail click/tap:</label>
                     <input type="checkbox" id="clickSaving">
                 </div>
-                <i>current version: v0.6.4</i>
+                <i>current version: <span id="version">v0.6.4</span></i>
             </details>
 
             <p>
