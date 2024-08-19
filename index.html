@@ -196,6 +196,16 @@
             text-align: center;
         }
 
+        footer .filter-note-text {
+            display: none;
+            margin: 1em;
+            font-size: 0.9em;
+        }
+
+        footer .filter-note-text.show {
+            display: unset;
+        }
+
         /* <main> styles */
 
         main {
@@ -1314,6 +1324,10 @@
                         const toggle = ink10 < inkThreshold10;
                         tile.classList.toggle("filtered", toggle);
                     }
+
+                    const filtering = value > 0;
+                    const note = document.querySelector(".filter-note-text");
+                    note.classList.toggle("show", filtering);
                     break;
                 }
                 case "endlessScroll":
@@ -1721,6 +1735,7 @@
             </noscript>
         </section>
         <footer>
+            <i class="filter-note-text">note: an ink filter is currently active</i>
             <button id="more">show more</button>
         </footer>
     </main>
