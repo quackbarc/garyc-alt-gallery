@@ -241,7 +241,8 @@
             transition: 0.1s opacity ease;
         }
 
-        .tile img.rendering {
+        .tile img.rendering,
+        .tile img.loading {
             /* TODO: wait, shouldn't we just use a background instead? */
             opacity: 30%;
         }
@@ -747,7 +748,11 @@
                 });
             }
             else {
+                tileImage.classList.add("loading");
                 tileImage.src = getImageURL(details.id);
+                tileImage.addEventListener("load", () => {
+                    tileImage.classList.remove("loading");
+                });
                 tileImageA.href = tileImage.src;
             }
 
