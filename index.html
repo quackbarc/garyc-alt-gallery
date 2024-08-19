@@ -907,6 +907,7 @@
             const section = document.createElement("div");
             section.innerHTML = sectionHTML;
             section.classList.add("tile-section", "type-2");
+            section.id = "not-found-section";
             return section;
         }
 
@@ -917,6 +918,7 @@
             const section = document.createElement("div");
             section.innerHTML = `Showing from #${id}`;
             section.classList.add("tile-section", "type-2");
+            section.id = "showing-header-section";
             return section;
         }
 
@@ -972,6 +974,7 @@
             const section = document.createElement("div");
             section.innerHTML = `End of the gallery.`;
             section.classList.add("tile-section", "type-2");
+            section.id = "gallery-end-section";
             return section;
         }
 
