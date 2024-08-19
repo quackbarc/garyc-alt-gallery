@@ -546,14 +546,6 @@
             missingSketch = url;
         });
 
-        /**
-         * The controller to immediately halt the extend___() methods.
-         * Gets assigned a new controller everytime one of them gets called.
-         * 
-         * @type {AbortController?}
-         */
-        let fetchAbortController = null;
-
         // gallery settings
 
         const settings = getSettings();
@@ -592,6 +584,14 @@
         let lastmax = null;
         /** @type {Date?} */
         let lastmaxDate = null;
+
+        /**
+         * The controller to immediately halt the extend___() methods.
+         * Gets assigned a new controller everytime one of them gets called.
+         * 
+         * @type {AbortController?}
+         */
+        let fetchAbortController = null;
 
         /* utilities */
 
