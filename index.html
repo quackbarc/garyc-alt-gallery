@@ -170,6 +170,10 @@
             vertical-align: bottom;
         }
 
+        #settings > * > input[type=number] {
+            width: 3em;
+        }
+
         #settings > * > select {
             margin: 0px 3px;
         }
@@ -267,6 +271,10 @@
 
         .tile.new img.tile-image {
             border-bottom-width: 6px;
+        }
+
+        .tile.filtered {
+            display: none !important;
         }
 
         .tile-section {
@@ -515,6 +523,7 @@
          * @property {string} pageTheme
          * @property {number} gridImageSize
          * @property {boolean} wideGridView
+         * @property {number} inkFilterThreshold
          */
 
         /* constants */
@@ -740,7 +749,9 @@
                 event.preventDefault();
             });
 
-            const ink = details.data.length / 65535;
+            const inkRaw = details.data.length / 65535;
+            const ink = Math.round(inkRaw * 1000) / 10;
+
             const linkParts = [
                 "https://garyc.me",
                 "/sketch",
@@ -773,7 +784,7 @@
 
             const captionL = [
                 `<i><a href=${link}>${linkWBR}</a></i>`,
-                `${Math.floor(ink * 1000) / 10}% ink used`,
+                `${ink}% ink used`,
                 `<i>from ${details.origin}</i>`,
                 `<i>${timestamp}</i>`,
             ];
@@ -814,10 +825,15 @@
             tileActions.append(tileGIFButton);
             tileCaption.append(tileActions);
 
+            tile.setAttribute("ink", (ink * 10).toString());  // int-casted b/c i'm scared of floats
             tile.classList.add("tile", "anchorable");
             tile.append(tileImageA);
             tile.append(tileCaption);
             tile.append(tileStatus);
+
+            if(ink < settings.inkFilterThreshold) {
+                tile.classList.add("filtered");
+            }
 
             return tile;
         }
@@ -1208,6 +1224,7 @@
                 pageTheme: "dark",
                 gridImageSize: 200,
                 wideGridView: false,
+                inkFilterThreshold: 0,
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
@@ -1237,6 +1254,17 @@
                 case "wideGridView": {
                     const toggled = value;
                     document.body.classList.toggle("widened", toggled);
+                    break;
+                }
+                case "inkFilterThreshold": {
+                    const tilesE = document.querySelector("#tiles");
+                    for(const tile of tilesE.querySelectorAll(".tile")) {
+                        const ink10 = parseInt(tile.getAttribute("ink"));
+                        const inkThreshold10 = value * 10;
+                        const toggle = ink10 < inkThreshold10;
+                        tile.classList.toggle("filtered", toggle);
+                    }
+                    break;
                 }
                 case "endlessScroll":
                 case "clickSaving":
@@ -1293,6 +1321,32 @@
                             "change",
                             (event) => setSetting(elem.id, elem.checked)
                         );
+                        break;
+                    }
+                    case "number": {
+                        if(settings.hasOwnProperty(elem.id)) {
+                            setSetting(elem.id, settings[elem.id]);
+                        }
+
+                        // Save hard-coded HTML value as default
+                        const defaultValue = elem.value;
+
+                        elem.value = settings[elem.id].toString();
+                        elem.addEventListener(
+                            "change",
+                            (event) => {
+                                const numvalue = parseInt(elem.value);
+
+                                if(isNaN(numvalue)) {
+                                    elem.value = defaultValue;
+                                    setSetting(elem.value, parseInt(defaultValue));
+                                    return;
+                                }
+
+                                setSetting(elem.id, numvalue);
+                            }
+                        );
+
                         break;
                     }
                 }
@@ -1459,7 +1513,7 @@
                     let scrollingBehavior = "instant";
 
                     if(!expanded) {
-                        const firstTile = tilesE.querySelector(".tile");
+                        const firstTile = tilesE.querySelector(".tile:not(.filtered)");
                         // @ts-ignore
                         newExpanded = firstTile;
                     }
@@ -1474,7 +1528,7 @@
                             // @ts-ignore
                             anchor = sibling;
 
-                            if(sibling && sibling.matches(".tile")) {
+                            if(sibling && sibling.matches(".tile:not(.filtered)")) {
                                 // @ts-ignore
                                 newExpanded = sibling;
                                 break;
@@ -1544,6 +1598,10 @@
         <section id="prelude">
             <details id="settings">
                 <summary>Gallery preferences</summary>
+                <div class="setting">
+                    <label for="inkFilterThreshold">Ink filter (%):</label>
+                    <input type="number" id="inkFilterThreshold" min="0" max="100" value="0">
+                </div>
                 <div class="setting">
                     <label for="gridImageSize">Grid thumbnail size:</label>
                     <select id="gridImageSize">
