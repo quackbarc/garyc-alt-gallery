@@ -1357,10 +1357,6 @@
                 lastmaxDate = new Date(state["last_updated"]);
             }
 
-            // Restore canvas context init after GPU crashes.
-            // Canvas would've generated black sketches otherwise.
-            offcanv.addEventListener("contextrestored", initializeCanvas);
-
             // Apply settings that need to be applied before the DOM is ready,
             // e.g. changing the theme on <html>.
             setSetting("pageTheme", settings.pageTheme);
@@ -1482,6 +1478,10 @@
         JSmain();
 
         /* listeners */
+
+        // Restore canvas context init after GPU crashes.
+        // Canvas would've generated black sketches otherwise.
+        offcanv.addEventListener("contextrestored", initializeCanvas);
 
         // Page events
         document.addEventListener("DOMContentLoaded", main);
