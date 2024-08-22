@@ -1764,6 +1764,14 @@
             });
 
             /** @type {HTMLButtonElement} */
+            const randomButton = document.querySelector("button#random");
+            randomButton.addEventListener("click", () => {
+                const randomID = min + Math.floor(Math.random() * (max - min + 1));
+                const randomIDHash = randomID.toString();
+                window.location.hash = randomIDHash;
+            });
+
+            /** @type {HTMLButtonElement} */
             const latestButton = document.querySelector("button#latest");
             latestButton.addEventListener("click", () => {
                 window.location.hash = "";
@@ -2126,6 +2134,7 @@
         <section id="jump-header">
             <span class="jump-header-text">Showing from...</span>
             <div class="jump-header-actions">
+                <button id="random">random</button>
                 <button id="latest">return to latest</button>
                 <button id="moreAbove">show more above</button>
             </div>
