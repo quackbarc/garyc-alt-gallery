@@ -122,6 +122,10 @@
             flex: 1 0 auto;
         }
 
+        header > ul.fade {
+            opacity: 50%;
+        }
+
         nav {
             text-align: right;
             flex: 0 1 auto;
@@ -1059,6 +1063,8 @@
             sketchE.innerHTML = tag`${stats.sketches} sketch${'es'}`;
             artistE.innerHTML = tag`${stats.artists} artist${'s'}`;
             peekE.innerHTML = tag`${stats.peekers} peeker${'s'}`;
+
+            statsE.classList.toggle("fade", stats.sketches == 0);
         }
 
         function markGalleryAsRead() {
