@@ -1093,6 +1093,10 @@
             const moreButton = document.querySelector("button#more");
             moreButton.disabled = true;
 
+            /** @type {HTMLButtonElement} */
+            const moreAboveButton = document.querySelector("button#moreAbove");
+            moreAboveButton.disabled = true;
+
             const tilesE = document.querySelector("#tiles");
             for(let id = last - 1; id >= newlast; id--) {
                 const details = await getSketchDetails(id);
@@ -1138,6 +1142,7 @@
 
             sketchesLoading = false;
             moreButton.disabled = newlast == min;
+            moreAboveButton.disabled = first == max;
         }
 
         /**
@@ -1155,6 +1160,10 @@
             /** @type {HTMLButtonElement} */
             const moreButton = document.querySelector("button#more");
             moreButton.disabled = true;
+
+            /** @type {HTMLButtonElement} */
+            const moreAboveButton = document.querySelector("button#moreAbove");
+            moreAboveButton.disabled = true;
 
             const jumpheader = document.querySelector("#jump-header");
             const showingJumpHeader = jumpheader.classList.contains("show");
@@ -1209,6 +1218,7 @@
 
             sketchesLoading = false;
             moreButton.disabled = last == min;
+            moreAboveButton.disabled = newfirst == max;
         }
 
         /**
@@ -1226,6 +1236,10 @@
             /** @type {HTMLButtonElement} */
             const moreButton = document.querySelector("button#more");
             moreButton.disabled = true;
+
+            /** @type {HTMLButtonElement} */
+            const moreAboveButton = document.querySelector("button#moreAbove");
+            moreAboveButton.disabled = true;
 
             const tilesE = document.querySelector("#tiles");
             // i would've used .children if HTMLCollection supported forEach()...
@@ -1486,6 +1500,22 @@
             const maxInputElem = document.querySelector("input#maxid");
             maxInputElem.addEventListener("change", (event) => {
                 window.location.hash = maxInputElem.value;
+            });
+
+            /** @type {HTMLButtonElement} */
+            const latestButton = document.querySelector("button#latest");
+            latestButton.addEventListener("click", () => {
+                window.location.hash = "";
+            });
+
+            /** @type {HTMLButtonElement} */
+            const moreAboveButton = document.querySelector("button#moreAbove");
+            moreAboveButton.addEventListener("click", () => {
+                const newfirst = Math.min(first + 10, max);
+                const newfirstHash = `#${newfirst}`;
+
+                extendAbove(newfirst);
+                window.history.replaceState(null, "", newfirstHash);
             });
 
             /** @type {HTMLButtonElement} */
