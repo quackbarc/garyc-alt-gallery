@@ -24,6 +24,7 @@
             --refreshing-text-color: var(--text-italic-color);
             --color-scheme: dark;
 
+            --jump-header-background-color: #444;
             --tile-section-background-color: #fff;
             --tile-section-text-color: #000;
             --tile-section-2-background-color: #444;
@@ -42,6 +43,7 @@
             --refreshing-text-color: var(--text-italic-color);
             --color-scheme: light;
 
+            --jump-header-background-color: #bbb;
             --tile-section-background-color: #000;
             --tile-section-text-color: #fff;
             --tile-section-2-background-color: #bbb;
@@ -51,6 +53,7 @@
         /* Styles */
 
         *:not(
+            #jump-header,
             .tile-section,
             .tile.not-found
         ) {
@@ -215,6 +218,34 @@
 
             background-color: var(--main-background-color);
             line-height: 1.3em;
+        }
+
+        #jump-header {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            gap: 4px;
+
+            clear: both;
+            padding: 12px;
+
+            background-color: var(--jump-header-background-color);
+        }
+
+        #jump-header:not(.show) {
+            display: none;
+        }
+
+        #jump-header .jump-header-text {
+            flex: 1 1 auto;
+        }
+
+        #jump-header .jump-header-actions {
+            display: flex;
+            align-items: end;
+            gap: 8px;
+
+            flex: 0 1 auto;
         }
 
         #tiles {
@@ -473,6 +504,11 @@
             }
 
             /* <main> styles */
+
+            #jump-header {
+                flex-direction: column;
+                align-items: start;
+            }
 
             .tile {
                 padding: 8px 0px;
@@ -1120,6 +1156,13 @@
             const moreButton = document.querySelector("button#more");
             moreButton.disabled = true;
 
+            const jumpheader = document.querySelector("#jump-header");
+            const showingJumpHeader = jumpheader.classList.contains("show");
+            if(showingJumpHeader) {
+                const textE = jumpheader.querySelector(".jump-header-text");
+                textE.innerHTML = `Showing from #${newfirst}`;
+            }
+
             const tilesE = document.querySelector("#tiles");
             const anchorSection = tilesE.querySelector(".tile-section.anchorable");
             let anchor = anchorSection;
@@ -1200,9 +1243,13 @@
                 return;
             }
 
+            /** @type {HTMLDivElement} */
+            const jumpHeader = document.querySelector("#jump-header");
+            jumpHeader.classList.toggle("show", !showingLatest);
+
             if(!showingLatest) {
-                const section = createTileHeaderSection(newfirst);
-                tilesE.append(section);
+                const textE = jumpHeader.querySelector(".jump-header-text");
+                textE.innerHTML = `Showing from #${newfirst}`;
             }
 
             if(showingLatest) {
@@ -1723,6 +1770,13 @@
                 <li>Pressing <kbd>←</kbd> or <kbd>→</kbd> would navigate across sketches (in grid view).</li>
                 <li>Leaving the ID field blank would show the latest sketches on the gallery.</li>
             </ul>
+        </section>
+        <section id="jump-header">
+            <span class="jump-header-text">Showing from...</span>
+            <div class="jump-header-actions">
+                <button id="latest">return to latest</button>
+                <button id="moreAbove">show more above</button>
+            </div>
         </section>
         <section id="tiles">
             <noscript>
