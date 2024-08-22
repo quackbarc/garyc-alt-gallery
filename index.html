@@ -1072,13 +1072,15 @@
             lastmaxDate = new Date();
             updateStorageState();
 
+            const symbol = document.querySelector("#title-symbol");
+            symbol.innerHTML = "!";
+
             document.querySelectorAll(".new-status").forEach((elem) => elem.remove());
             document.querySelectorAll(".tile.new").forEach((tile) => tile.classList.remove("new"));
             const unseenSection = document.querySelector("#unseen-section");
             if(unseenSection) {
                 unseenSection.remove();
             }
-
         }
 
         /* gallery extension methods */
@@ -1315,6 +1317,9 @@
                     }
                     extendAbove(newmax);
                 }
+
+                const symbol = document.querySelector("#title-symbol");
+                symbol.innerHTML = "*";
                 max = newmax;
             }
 
@@ -1546,6 +1551,11 @@
                 updateStorageState();
             }
 
+            if(max > lastmax) {
+                const symbol = document.querySelector("#title-symbol");
+                symbol.innerHTML = "*";
+            }
+
             updateStats(stats);
 
             maxInputElem.min = min.toString();  // ...why does this have to be a string?
@@ -1726,7 +1736,7 @@
 </head>
 <body>
     <header>
-        <h1>alt gallery!</h1>
+        <h1>alt gallery<span id="title-symbol" title="This symbol changes whenever there's new sketches.">!</span></h1>
         <ul id="stats">
             <li id="sketches"></li>
             <li id="artists"></li>
