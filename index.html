@@ -1750,7 +1750,8 @@
         <nav>
             <search>
                 <label for="maxid">Jump to ID:</label>
-                <input type="number" id="maxid">
+                <input type="number" id="maxid" min="1" max="9999999">
+                <!-- ^ placeholder min/max just to keep a consistent width before the real values come in -->
             </search>
             <div class="refresh-text">
                 refreshing...
