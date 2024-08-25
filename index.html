@@ -1412,7 +1412,9 @@
 
                     const filtering = value > 0;
                     const note = document.querySelector(".filter-note-text");
+                    const notePercentage = document.querySelector("#filter-note-percentage");
                     note.classList.toggle("show", filtering);
+                    notePercentage.innerHTML = value.toString();
                     break;
                 }
                 case "endlessScroll":
@@ -1852,7 +1854,10 @@
             </noscript>
         </section>
         <footer>
-            <i class="filter-note-text">note: an ink filter is currently active</i>
+            <i class="filter-note-text">
+                note: an ink filter is currently active
+                (<span id="filter-note-percentage">0</span>%)
+            </i>
             <button id="more">show more</button>
         </footer>
     </main>
