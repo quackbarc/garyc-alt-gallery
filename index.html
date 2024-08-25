@@ -64,6 +64,10 @@
             transition: 0.2s background-color ease;
         }
 
+        hr {
+            transition: 0.2s border-color ease;
+        }
+
         /* general styles */
 
         html {
@@ -235,6 +239,12 @@
 
             background-color: var(--main-background-color);
             line-height: 1.3em;
+        }
+
+        main > hr {
+            border-color: #8884;
+            border-style: solid;
+            clear: both;
         }
 
         #jump-header {
@@ -1931,6 +1941,9 @@
                 </li>
             </ul>
         </section>
+
+        <hr>
+
         <section id="jump-header">
             <span class="jump-header-text">Showing from...</span>
             <div class="jump-header-actions">
