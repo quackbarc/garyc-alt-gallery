@@ -1721,8 +1721,11 @@
 
                     if(expanded) {
                         const expandedCenterOffset = (window.innerHeight - expanded.offsetHeight) / 2;
-                        const expandedPos = expanded.offsetTop - Math.max(0, Math.floor(expandedCenterOffset));
-                        if(Math.floor(window.scrollY) != expandedPos) {
+                        const expandedPos = expanded.offsetTop - Math.max(0, expandedCenterOffset);
+
+                        const diff = Math.abs(window.scrollY - expandedPos);
+                        const threshold = 1 / window.devicePixelRatio;  // b/c .scrollY is a multiple of this
+                        if(diff >= threshold) {
                             scrollingBehavior = "smooth";
                         }
                     }
@@ -1735,8 +1738,10 @@
                     newExpanded.classList.add("expanded");
 
                     const scrollCenterOffset = (window.innerHeight - newExpanded.offsetHeight) / 2;
-                    const scrollPos = newExpanded.offsetTop - Math.max(0, Math.floor(scrollCenterOffset));
+                    const scrollPos = newExpanded.offsetTop - Math.max(0, scrollCenterOffset);
                     window.scroll({
+                        // Browsers would automatically snap this value to the nearest (floored)
+                        // multiple of `1 / window.devicePixelRatio`. I guess that's neat...
                         top: scrollPos,
                         // Known issue w/ Chrome:
                         // Scrolling with the wheel is known to interrupt programmatic smooth scrolling:
