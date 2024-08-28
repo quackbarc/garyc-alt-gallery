@@ -387,10 +387,13 @@
             text-align: center;
         }
 
+        #tiles.block .tile {
+            padding: 4px;
+        }
+
         #tiles.block .tile:not(.expanded) {
             display: inline-block;
             vertical-align: top;  /* https://stackoverflow.com/a/5804278 */ /* <-- outdated comment */
-            padding: 4px;
             width: auto;
         }
 
@@ -410,7 +413,7 @@
         }
 
         #tiles.block .tile.expanded {
-            padding: 4px;  /* same as :not(.expanded) */
+            padding: 4px 0px;
             margin: auto;
         }
 
