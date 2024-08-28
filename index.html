@@ -1058,6 +1058,17 @@
         /* element updating methods */
 
         /**
+         * @param {number} id
+         *      The ID to be shown on the header.
+         *      Ideally this should be `first`, or whatever's gonna be `first`.
+         */
+        function updateJumpHeader(id) {
+            const jumpheader = document.querySelector("#jump-header");
+            const textE = jumpheader.querySelector(".jump-header-text");
+            textE.innerHTML = `Showing from #${id}`;
+        }
+
+        /**
          * @param {Stats} stats
          */
         function updateStats(stats) {
@@ -1183,12 +1194,7 @@
             const moreAboveButton = document.querySelector("button#moreAbove");
             moreAboveButton.disabled = true;
 
-            const jumpheader = document.querySelector("#jump-header");
-            const showingJumpHeader = jumpheader.classList.contains("show");
-            if(showingJumpHeader) {
-                const textE = jumpheader.querySelector(".jump-header-text");
-                textE.innerHTML = `Showing from #${newfirst}`;
-            }
+            updateJumpHeader(newfirst);
 
             const tilesE = document.querySelector("#tiles");
             const anchorSection = tilesE.querySelector(".tile-section.anchorable");
@@ -1280,8 +1286,7 @@
             jumpHeader.classList.toggle("show", !showingLatest);
 
             if(!showingLatest) {
-                const textE = jumpHeader.querySelector(".jump-header-text");
-                textE.innerHTML = `Showing from #${newfirst}`;
+                updateJumpHeader(newfirst);
             }
 
             if(showingLatest) {
