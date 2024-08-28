@@ -907,6 +907,8 @@
             tileActions.append(tileGIFButton);
             tileCaption.append(tileActions);
 
+            tileStatus.classList.add("tile-status");
+
             tile.setAttribute("ink", (ink * 10).toString());  // int-casted b/c i'm scared of floats
             tile.classList.add("tile", "anchorable");
             tile.append(tileImageA);
@@ -917,7 +919,6 @@
                 const newStatus = document.createElement("span");
                 newStatus.innerHTML = "new!";
                 newStatus.classList.add("new-status");
-                tileStatus.classList.add("tile-status");
                 tileStatus.append(newStatus);
 
                 tile.classList.add("new");
