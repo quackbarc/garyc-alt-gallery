@@ -1088,6 +1088,27 @@
             statsE.classList.toggle("fade", stats.sketches == 0);
         }
 
+        /**
+         * @param {boolean} enabled
+         *      If this is true, the buttons will be enabled if gallery limits aren't reached.
+         *      If this is false, the buttons will be disabled no matter what.
+         */
+        function updateMoreButtons(enabled) {
+            /** @type {HTMLButtonElement} */
+            const moreButton = document.querySelector("button#more");
+            /** @type {HTMLButtonElement} */
+            const moreAboveButton = document.querySelector("button#moreAbove");
+
+            if(enabled) {
+                moreButton.disabled = last == min;
+                moreAboveButton.disabled = first == max;
+            }
+            else {
+                moreButton.disabled = true;
+                moreAboveButton.disabled = true;
+            }
+        }
+
         function markGalleryAsRead() {
             lastmax = max;
             lastmaxDate = new Date();
@@ -1118,13 +1139,7 @@
             fetchAbortController = new AbortController();
             const fetchAbortSignal = fetchAbortController.signal;
 
-            /** @type {HTMLButtonElement} */
-            const moreButton = document.querySelector("button#more");
-            moreButton.disabled = true;
-
-            /** @type {HTMLButtonElement} */
-            const moreAboveButton = document.querySelector("button#moreAbove");
-            moreAboveButton.disabled = true;
+            updateMoreButtons(false);
 
             const tilesE = document.querySelector("#tiles");
             for(let id = last - 1; id >= newlast; id--) {
@@ -1170,8 +1185,7 @@
             }
 
             sketchesLoading = false;
-            moreButton.disabled = newlast == min;
-            moreAboveButton.disabled = first == max;
+            updateMoreButtons(true);
         }
 
         /**
@@ -1186,14 +1200,7 @@
             fetchAbortController = new AbortController();
             const fetchAbortSignal = fetchAbortController.signal;
 
-            /** @type {HTMLButtonElement} */
-            const moreButton = document.querySelector("button#more");
-            moreButton.disabled = true;
-
-            /** @type {HTMLButtonElement} */
-            const moreAboveButton = document.querySelector("button#moreAbove");
-            moreAboveButton.disabled = true;
-
+            updateMoreButtons(false);
             updateJumpHeader(newfirst);
 
             const tilesE = document.querySelector("#tiles");
@@ -1241,8 +1248,7 @@
             }
 
             sketchesLoading = false;
-            moreButton.disabled = last == min;
-            moreAboveButton.disabled = newfirst == max;
+            updateMoreButtons(true);
         }
 
         /**
@@ -1255,15 +1261,9 @@
                 fetchAbortController.abort();
             }
 
-            // "show more" button becomes disabled, and if there's no reason
-            // down the road to re-enable it, it should stay disabled.
-            /** @type {HTMLButtonElement} */
-            const moreButton = document.querySelector("button#more");
-            moreButton.disabled = true;
-
-            /** @type {HTMLButtonElement} */
-            const moreAboveButton = document.querySelector("button#moreAbove");
-            moreAboveButton.disabled = true;
+            // "show more" buttons become disabled, and if there's no reason
+            // down the road to re-enable them, they should stay disabled.
+            updateMoreButtons(false);
 
             const tilesE = document.querySelector("#tiles");
             // i would've used .children if HTMLCollection supported forEach()...
