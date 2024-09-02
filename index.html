@@ -679,6 +679,30 @@
 
         /* canvas utilities */
 
+        /**
+         * Waits for the OffscreenCanvas's context to be restored if the browser
+         * recognizes it to be lost. If not, then returns immediately.
+         */
+        async function waitForCanvasRestore() {
+            if(!("isContextLost" in offctx)) {
+                return;
+            }
+
+            // @ts-ignore
+            if(offctx.isContextLost()) {
+                await new Promise((res) => offcanv.addEventListener("contextrestored", res, {once: true}));
+            }
+        }
+
+        /**
+         * Manually restarts the OffscreenCanvas.
+         * Used in case of a GPU crash that makes canvas content unreadable.
+         */
+        function refreshCanvasContext() {
+            offcanv.width = offcanv.width;
+            initializeCanvas();
+        }
+
         function initializeCanvas() {
             offctx.lineCap = "butt";
             offctx.lineJoin = "round";
@@ -733,7 +757,27 @@
                 }
             }
 
-            const blob = await offcanv.convertToBlob();
+            let blob;
+            try {
+                blob = await offcanv.convertToBlob();
+            }
+            catch(error) {
+                if(error.name == "NotReadableError") {
+                    // Canvas can't be read because either it was discarded
+                    // from memory, or the GPU crashed, prior to reading attempt.
+                    // Usually happens when the page is left in the background
+                    // for way too long on mobile Chrome. Replicable with
+                    // "chrome://gpucrash".
+                    //
+                    // Wait for the context to be restored if the browser
+                    // recognizes it to be lost, then re-start the render.
+                    console.warn(`#${id}: underlying canvas crashed! re-rendering.`);
+                    await waitForCanvasRestore();
+                    refreshCanvasContext();
+                    return render(data, id);
+                }
+            }
+
             const blobURL = URL.createObjectURL(blob);
             return blobURL;
         }
