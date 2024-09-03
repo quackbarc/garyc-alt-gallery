@@ -798,7 +798,8 @@
         /**
          * @param {number} id
          * @returns {Promise<SketchDetails?>}
-         *      A promise that returns the details of a sketch.
+         *      A promise that returns the details of a sketch, or
+         *      null if it isn't found.
          */
         async function getSketchDetails(id) {
             const resp = await fetch(
