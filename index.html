@@ -318,8 +318,8 @@
 
         .tile .tile-status {
             flex: 0 1 auto;
-            writing-mode: vertical-rl;
             grid-area: stat;
+            padding: 6px 0px;
         }
 
         .tile .tile-status span {
@@ -328,6 +328,7 @@
         }
 
         .tile .tile-status .new-status {
+            width: max-content;
             background-color: #484cbb;
             color: #fff;
         }
@@ -458,6 +459,11 @@
             padding: 6px 10px;
         }
 
+        .tile.expanded .tile-status {
+            align-self: start;
+            padding: 6px 0px;
+        }
+
         /* other media queries */
 
         @media not all and (hover: hover) {
@@ -532,6 +538,10 @@
             }
             .tile .tile-caption {
                 padding: 6px 10px;
+            }
+            .tile .tile-status {
+                align-self: start;
+                padding: 6px 0px;
             }
             .tile-section .section-text-right {
                 position: revert;
