@@ -1635,6 +1635,7 @@
                 const newfirstHash = `#${newfirst}`;
 
                 extendAbove(newfirst);
+                maxInputElem.value = newfirst.toString();
                 window.history.replaceState(null, "", newfirstHash);
             });
 
