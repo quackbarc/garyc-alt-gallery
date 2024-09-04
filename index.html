@@ -247,11 +247,20 @@
             background-color: #fff;
             box-shadow: 0px 0px 2px #0006;
             color: #000;
+
+            opacity: 100%;
+            transition: 0.1s opacity;
         }
 
         #stt-container button:hover {
             cursor: pointer;
             text-decoration: underline;
+        }
+
+        body:not(:has(#unseen-section)) #stt-container button,
+        #stt-container button:not(.scrolled) {
+            visibility: hidden;
+            opacity: 0%;
         }
 
         /* <main> styles */
@@ -1743,16 +1752,21 @@
         }
 
         function scrollHandler() {
-            // Mark sketches as read, only when we've seen the maximum ID
-            // that's currently on the gallery.
             /** @type {HTMLElement} */
             const tiles = document.querySelector("section#tiles");
             const tilesTop = tiles.offsetTop;
+
+            // Mark sketches as read, only when we've seen the maximum ID
+            // that's currently on the gallery.
             const withinTiles = window.scrollY - tilesTop >= 0;
             if(showingLatest && withinTiles != wasWithinTiles) {
                 updateStorageState();
                 wasWithinTiles = withinTiles;
             }
+
+            const stt = document.querySelector("#scroll-to-top");
+            const showSTT = window.scrollY - tilesTop >= 100;
+            stt.classList.toggle("scrolled", showSTT);
         }
 
         window.addEventListener("hashchange", () => {
