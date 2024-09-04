@@ -1724,9 +1724,10 @@
         // Page events
         document.addEventListener("DOMContentLoaded", main);
         document.addEventListener("scroll", scrollHandler);
-        document.addEventListener("wheel", scrollHandler);
+        document.addEventListener("scroll", endlessScrollHandler);
+        document.addEventListener("wheel", endlessScrollHandler);
 
-        function scrollHandler() {
+        function endlessScrollHandler() {
             if(sketchesLoading) {
                 return;
             }
@@ -1739,7 +1740,9 @@
                     extendTo(last - 10);
                 }
             }
+        }
 
+        function scrollHandler() {
             // Mark sketches as read, only when we've seen the maximum ID
             // that's currently on the gallery.
             /** @type {HTMLElement} */
