@@ -1258,7 +1258,13 @@
 
             const tilesE = document.querySelector("#tiles");
             for(let id = last - 1; id >= newlast; id--) {
-                const details = await getSketchDetails(id);
+                let details;
+                try {
+                    details = await getSketchDetails(id);
+                }
+                catch {
+                    break;
+                }
 
                 if(fetchAbortSignal.aborted) {
                     return;
@@ -1326,7 +1332,13 @@
             // is probably more satisfying than the other way around
 
             for(let id = first + 1; id <= newfirst; id++) {
-                const details = await getSketchDetails(id);
+                let details;
+                try {
+                    details = await getSketchDetails(id);
+                }
+                catch {
+                    break;
+                }
 
                 if(fetchAbortSignal.aborted) {
                     return;
