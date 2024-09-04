@@ -1381,9 +1381,7 @@
             updateMoreButtons(false);
 
             const tilesE = document.querySelector("#tiles");
-            // i would've used .children if HTMLCollection supported forEach()...
-            // i need that syntactic sugar W3C
-            tilesE.querySelectorAll("*").forEach(node => node.remove());
+            tilesE.replaceChildren();
 
             if(newfirst < min || newfirst > max) {
                 firstDate = null;
