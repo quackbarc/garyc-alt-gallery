@@ -257,8 +257,7 @@
             text-decoration: underline;
         }
 
-        body:not(:has(#unseen-section)) #stt-container button,
-        #stt-container button:not(.scrolled) {
+        #stt-container button:not(.scrolled.new) {
             visibility: hidden;
             opacity: 0%;
         }
@@ -1232,6 +1231,9 @@
             const symbol = document.querySelector("#title-symbol");
             symbol.innerHTML = "!";
 
+            const stt = document.querySelector("#scroll-to-top");
+            stt.classList.remove("new");
+
             document.querySelectorAll(".new-status").forEach((elem) => elem.remove());
             document.querySelectorAll(".tile.new").forEach((tile) => tile.classList.remove("new"));
             const unseenSection = document.querySelector("#unseen-section");
@@ -1395,6 +1397,9 @@
             const tilesE = document.querySelector("#tiles");
             tilesE.replaceChildren();
 
+            const stt = document.querySelector("#scroll-to-top");
+            stt.classList.remove("new");
+
             if(newfirst < min || newfirst > max) {
                 firstDate = null;
                 lastDate = null;
@@ -1460,6 +1465,10 @@
 
                 const symbol = document.querySelector("#title-symbol");
                 symbol.innerHTML = "*";
+
+                const stt = document.querySelector("#scroll-to-top");
+                stt.classList.add("new");
+
                 max = newmax;
             }
 
@@ -1764,17 +1773,18 @@
         function scrollHandler() {
             /** @type {HTMLElement} */
             const tiles = document.querySelector("section#tiles");
+            const stt = document.querySelector("#scroll-to-top");
             const tilesTop = tiles.offsetTop;
 
-            // Mark sketches as read, only when we've seen the maximum ID
-            // that's currently on the gallery.
+            // Implicitly mark sketches as read, only when we've seen the
+            // maximum ID that's currently on the gallery.
             const withinTiles = window.scrollY - tilesTop >= 0;
             if(showingLatest && withinTiles != wasWithinTiles) {
+                stt.classList.remove("new");
                 updateStorageState();
                 wasWithinTiles = withinTiles;
             }
 
-            const stt = document.querySelector("#scroll-to-top");
             const showSTT = window.scrollY - tilesTop >= 100;
             stt.classList.toggle("scrolled", showSTT);
         }
