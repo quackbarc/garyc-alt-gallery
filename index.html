@@ -21,9 +21,11 @@
             --background-color: #111;
             --main-background-color: #222;
             --settings-background-color: #444;
+            --toast-background-color: #fff;
             --text-color: #fff;
             --text-italic-color: #fff9;
             --text-anchor-color: #808fff;
+            --toast-text-color: #000;
             --refreshing-text-color: var(--text-italic-color);
             --color-scheme: dark;
 
@@ -40,9 +42,11 @@
             --background-color: #fff;
             --main-background-color: #eee;
             --settings-background-color: #ccc;
+            --toast-background-color: #000;
             --text-color: #000;
             --text-italic-color: #0009;
             --text-anchor-color: #484cbb;
+            --toast-text-color: #fff;
             --refreshing-text-color: var(--text-italic-color);
             --color-scheme: light;
 
@@ -244,9 +248,9 @@
             display: block;
             padding: 6px 10px;
             border-radius: 8px;
-            background-color: #fff;
+            background-color: var(--toast-background-color);
             box-shadow: 0px 0px 2px #0006;
-            color: #000;
+            color: var(--toast-text-color);
 
             opacity: 100%;
             transition: 0.1s opacity;
