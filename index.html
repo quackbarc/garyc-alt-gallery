@@ -1606,27 +1606,22 @@
 
             const settingsE = document.querySelector("#settings");
             const settingsInputs = settingsE.querySelectorAll("input");
+            const settingsSelects = settingsE.querySelectorAll("select");
             settingsInputs.forEach((elem) => {
                 switch(elem.type) {
                     case "checkbox": {
-                        // CHRIST this is the laziest implementation of a settings menu ever
-                        // PLEASE fix this quabar
-                        if(settings[elem.id]) {
-                            setSetting(elem.id, settings[elem.id]);
-                        }
-
                         elem.checked = settings[elem.id];
                         elem.addEventListener(
                             "change",
                             (event) => setSetting(elem.id, elem.checked)
                         );
+
+                        // These final setSetting's are only supposed to apply
+                        // the setting.
+                        setSetting(elem.id, settings[elem.id]);
                         break;
                     }
                     case "number": {
-                        if(settings.hasOwnProperty(elem.id)) {
-                            setSetting(elem.id, settings[elem.id]);
-                        }
-
                         // Save hard-coded HTML value as default
                         const defaultValue = elem.value;
 
@@ -1646,16 +1641,12 @@
                             }
                         );
 
+                        setSetting(elem.id, settings[elem.id]);
                         break;
                     }
                 }
             });
-            const settingsSelects = settingsE.querySelectorAll("select");
             settingsSelects.forEach((select) => {
-                if(settings[select.id]) {
-                    setSetting(select.id, settings[select.id]);
-                }
-
                 const options = Array.from(select.options);
                 const selValue = settings[select.id];
                 const [selElem] = options.filter((option) => option.value == selValue);
@@ -1671,6 +1662,8 @@
                         setSetting(select.id, selected.value);
                     }
                 );
+
+                setSetting(select.id, settings[select.id]);
             });
 
             /** @type {HTMLInputElement} */
