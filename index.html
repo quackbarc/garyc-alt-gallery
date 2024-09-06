@@ -1234,12 +1234,13 @@
             const stt = document.querySelector("#scroll-to-top");
             stt.classList.remove("new");
 
-            document.querySelectorAll(".new-status").forEach((elem) => elem.remove());
-            document.querySelectorAll(".tile.new").forEach((tile) => tile.classList.remove("new"));
             const unseenSection = document.querySelector("#unseen-section");
             if(unseenSection) {
                 unseenSection.remove();
             }
+
+            document.querySelectorAll(".new-status").forEach((elem) => elem.remove());
+            document.querySelectorAll(".tile.new").forEach((tile) => tile.classList.remove("new"));
         }
 
         /* gallery extension methods */
