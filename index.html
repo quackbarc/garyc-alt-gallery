@@ -16,6 +16,13 @@
     <style>
         /* Variables */
 
+        :root {
+            --unseen-color: #484cbb;
+            --unseen-color-light: #808fff;
+
+            --grid-image-size: 200px;
+        }
+
         :root,
         :root[theme="dark"] {
             --background-color: #111;
@@ -24,7 +31,7 @@
             --toast-background-color: #fff;
             --text-color: #fff;
             --text-italic-color: #fff9;
-            --text-anchor-color: #808fff;
+            --text-anchor-color: var(--unseen-color-light);
             --toast-text-color: #000;
             --refreshing-text-color: var(--text-italic-color);
             --color-scheme: dark;
@@ -34,8 +41,6 @@
             --tile-section-text-color: #000;
             --tile-section-2-background-color: #444;
             --tile-section-2-text-color: var(--text-color);
-
-            --grid-image-size: 200px;
         }
 
         :root[theme="light"] {
@@ -45,7 +50,7 @@
             --toast-background-color: #000;
             --text-color: #000;
             --text-italic-color: #0009;
-            --text-anchor-color: #484cbb;
+            --text-anchor-color: var(--unseen-color);
             --toast-text-color: #fff;
             --refreshing-text-color: var(--text-italic-color);
             --color-scheme: light;
@@ -342,7 +347,7 @@
             display: block;  /* https://stackoverflow.com/a/5804278 */
             width: 400px;
 
-            border-bottom: 0px solid #484cbb;
+            border-bottom: 0px solid var(--unseen-color);
             transition: 0.1s opacity ease;
         }
 
@@ -384,7 +389,7 @@
 
         .tile .tile-status .new-status {
             width: max-content;
-            background-color: #484cbb;
+            background-color: var(--unseen-color);
             color: #fff;
         }
 
@@ -407,7 +412,7 @@
         }
 
         .tile-section.type-3 {
-            background-color: #484cbb;
+            background-color: var(--unseen-color);
             color: #fff;
         }
 
