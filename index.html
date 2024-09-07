@@ -1771,20 +1771,24 @@
         function scrollHandler() {
             /** @type {HTMLElement} */
             const tiles = document.querySelector("section#tiles");
-            const stt = document.querySelector("#scroll-to-top");
             const tilesTop = tiles.offsetTop;
 
             // Implicitly mark sketches as read, only when we've seen the
             // maximum ID that's currently on the gallery.
             const withinTiles = window.scrollY - tilesTop >= 0;
             if(showingLatest && withinTiles != wasWithinTiles) {
-                stt.classList.remove("new");
                 updateStorageState();
                 wasWithinTiles = withinTiles;
             }
 
+            const stt = document.querySelector("#scroll-to-top");
             const showSTT = window.scrollY - tilesTop >= 100;
-            stt.classList.toggle("scrolled", showSTT);
+            if(showSTT) {
+                stt.classList.add("scrolled");
+            }
+            else {
+                stt.classList.remove("scrolled", "new");
+            }
         }
 
         window.addEventListener("hashchange", () => {
