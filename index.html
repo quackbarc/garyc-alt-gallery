@@ -403,7 +403,11 @@
             color: var(--tile-section-text-color);
             text-align: center;
             padding: 12px;
-            margin: 8px 0px;
+            margin: 10px 0px 8px;
+        }
+
+        .tile-section:first-child {
+            margin-top: 8px;
         }
 
         .tile-section.type-2 {
@@ -414,11 +418,6 @@
         .tile-section.type-3 {
             background-color: var(--unseen-color);
             color: #fff;
-        }
-
-        .tile-section + .tile-section,
-        #jump-header.show + * .tile-section {
-            margin-top: 10px;
         }
 
         .tile-section a {
