@@ -1401,6 +1401,9 @@
             // down the road to re-enable them, they should stay disabled.
             updateMoreButtons(false);
 
+            const jumpHeader = document.querySelector("#jump-header");
+            jumpHeader.classList.toggle("show", !showingLatest);
+
             const tilesE = document.querySelector("#tiles");
             tilesE.replaceChildren();
 
@@ -1415,12 +1418,9 @@
 
                 const section = createNotFoundSection(newfirst);
                 tilesE.append(section);
+                jumpHeader.classList.remove("show");
                 return;
             }
-
-            /** @type {HTMLDivElement} */
-            const jumpHeader = document.querySelector("#jump-header");
-            jumpHeader.classList.toggle("show", !showingLatest);
 
             if(!showingLatest) {
                 updateJumpHeader(newfirst);
