@@ -291,6 +291,7 @@
 
             clear: both;
             padding: 12px;
+            margin-top: calc(0.5em + 8px);  /* 0.5em to escape margin-collapse w/ <hr> */
 
             background-color: var(--jump-header-background-color);
         }
@@ -410,7 +411,8 @@
             color: #fff;
         }
 
-        .tile-section + .tile-section {
+        .tile-section + .tile-section,
+        #jump-header.show + * .tile-section {
             margin-top: 10px;
         }
 
