@@ -743,6 +743,8 @@
         let lastmax = null;
         /** @type {Date?} */
         let lastmaxDate = null;
+        /** @type {number?} */
+        let lastSeenMax = null;
 
         /* utilities */
 
@@ -1280,6 +1282,7 @@
         function markGalleryAsRead() {
             lastmax = max;
             lastmaxDate = new Date();
+            lastSeenMax = max;
             updateStorageState();
 
             const symbol = document.querySelector("#title-symbol");
@@ -1522,7 +1525,9 @@
                 symbol.innerHTML = "*";
 
                 const stt = document.querySelector("#scroll-to-top");
+                const sttCount = document.querySelector("#scroll-to-top #stt-count");
                 stt.classList.add("new");
+                sttCount.innerHTML = (newmax - lastSeenMax).toString();
 
                 max = newmax;
             }
@@ -1781,8 +1786,9 @@
                 symbol.innerHTML = "*";
             }
 
-            updateStats(stats);
+            lastSeenMax = lastmax;
 
+            updateStats(stats);
             maxInputElem.min = min.toString();  // ...why does this have to be a string?
             maxInputElem.max = max.toString();
 
@@ -1845,6 +1851,7 @@
                 stt.classList.add("scrolled");
             }
             else {
+                lastSeenMax = max;
                 stt.classList.remove("scrolled", "new");
             }
         }
@@ -2096,7 +2103,7 @@
     </main>
 
     <aside id="stt-container">
-        <button id="scroll-to-top">&ShortUpArrow; new</button>
+        <button id="scroll-to-top">&ShortUpArrow; new (<span id="stt-count">∞</span>)</button>
     </aside>
 </body>
 </html>
