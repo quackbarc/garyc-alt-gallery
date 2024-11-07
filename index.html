@@ -107,6 +107,12 @@
             color: var(--text-italic-color);
         }
 
+        kbd {
+            padding: 0px 4px;
+            border-radius: 4px;
+            border: 1px solid #fff4;
+        }
+
         #version {
             /**
              * Podkova tends to add kerning to decimal numbers like on "6.7"
@@ -2070,14 +2076,25 @@
             <ul>
                 <li>Clicking/tapping on the sketches expands the sketch into full size.</li>
                 <li>Middle-clicking on the sketches saves the sketch.</li>
-                <li>Pressing <kbd>Esc</kbd> would collapse any expanded sketches.</li>
-                <li>Pressing <kbd>/</kbd> would jump to the ID field.</li>
-                <li>Pressing <kbd>←</kbd> or <kbd>→</kbd> would navigate across sketches (in grid view).</li>
-                <li>Leaving the ID field blank would show the latest sketches on the gallery.</li>
-                <li>Clicking on the "Show replay GIF" buttons opens up
-                    <a href="https://garyc2gif.neocities.org/">garyc2gif.neocities.org</a>.
+                <li>
+                    Use the "Jump to ID" field on the top-right to show sketches around a given ID.
+                    <br>Leave it blank to get back to the live gallery again.
+                </li>
+                <li>
+                    Check out the "Gallery preferences" menu to see what other things the gallery
+                    could do.
                 </li>
             </ul>
+
+            <details>
+                <summary>Additional controls</summary>
+                <ul>
+                    <li><kbd>Esc</kbd> shrinks back all expanded sketches.</li>
+                    <li><kbd>Esc</kbd> again marks the gallery as read.</li>
+                    <li><kbd>/</kbd> jumps to the "Jump to ID" field.</li>
+                    <li><kbd>←</kbd> and <kbd>→</kbd> navigate sketches (in grid view).</li>
+                </ul>
+            </details>
         </section>
 
         <hr>
