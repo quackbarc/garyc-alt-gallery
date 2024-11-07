@@ -1891,12 +1891,15 @@
                     const tilesE = document.querySelector("#tiles");
                     const expandeds = tilesE.querySelectorAll(".expanded");
 
-                    if(expandeds.length == 0) {
-                        break;
+                    if(expandeds.length > 0) {
+                        event.preventDefault();
+                        expandeds.forEach((tile) => tile.classList.remove("expanded"));
+                    }
+                    else {
+                        event.preventDefault();
+                        markGalleryAsRead();
                     }
 
-                    event.preventDefault();
-                    expandeds.forEach((tile) => tile.classList.remove("expanded"));
                     break;
                 }
                 case "/":
