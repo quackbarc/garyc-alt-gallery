@@ -113,6 +113,16 @@
             border: 1px solid #fff4;
         }
 
+        details > summary {
+            width: fit-content;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        details > summary:hover {
+            text-decoration: underline;
+        }
+
         #version {
             /**
              * Podkova tends to add kerning to decimal numbers like on "6.7"
@@ -183,8 +193,9 @@
         #settings {
             /* styles specifically for its position in <main> */
             float: right;
-            padding: 10px;
-            margin: 0px 10px 10px;
+            padding: 10px 12px;
+            margin-left: 16px;
+            margin-bottom: 10px;
 
             user-select: none;
             text-align: right;
@@ -193,11 +204,7 @@
         }
 
         #settings > summary {
-            cursor: pointer;
-        }
-
-        #settings > summary:hover {
-            text-decoration: underline;
+            width: auto;
         }
 
         #settings[open] > summary {
@@ -303,6 +310,14 @@
             border-color: #8884;
             border-style: solid;
             clear: both;
+        }
+
+        #prelude {
+            margin: 1em 0.5em 1em;
+        }
+
+        #prelude details > ul {
+            margin-top: 0.5em;
         }
 
         #jump-header {
@@ -571,6 +586,12 @@
             #settings .setting label {
                 flex-grow: 1;
             }
+
+            /* main styles */
+
+            #prelude {
+                margin: 0.5em 0.5em 1em;
+            }
         }
 
         /* column-based format */
@@ -588,6 +609,7 @@
 
             header > h1 {
                 grid-area: h1;
+                margin-block-end: 0.2em;
             }
 
             header > ul {
