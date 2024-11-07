@@ -1847,10 +1847,10 @@
 
             const stt = document.querySelector("#scroll-to-top");
             const showSTT = window.scrollY - tilesTop >= 100;
-            if(showSTT) {
+            if(showingLatest && showSTT) {
                 stt.classList.add("scrolled");
             }
-            else {
+            if(!showSTT) {
                 lastSeenMax = max;
                 stt.classList.remove("scrolled", "new");
             }
