@@ -268,8 +268,18 @@
         }
 
         #stt-container button:not(.scrolled.new) {
+            animation: 0.1s visibility-hidden;
             visibility: hidden;
             opacity: 0%;
+        }
+
+        @keyframes visibility-hidden {
+            from {
+                visibility: visible;
+            }
+            to {
+                visibility: hidden;
+            }
         }
 
         /* <main> styles */
