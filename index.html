@@ -1875,12 +1875,14 @@
 
             const stt = document.querySelector("#scroll-to-top");
             const showSTT = window.scrollY - tilesTop >= 100;
-            if(showingLatest && showSTT) {
-                stt.classList.add("scrolled");
-            }
-            if(!showSTT) {
-                lastSeenMax = max;
-                stt.classList.remove("scrolled", "new");
+            if(showingLatest) {
+                if(showSTT) {
+                    stt.classList.add("scrolled");
+                }
+                else {
+                    lastSeenMax = max;
+                    stt.classList.remove("scrolled", "new");
+                }
             }
         }
 
