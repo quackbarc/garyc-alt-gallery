@@ -774,6 +774,9 @@
         /** @type {number?} */
         let lastSeenMax = null;
 
+        /** @type {number?} */
+        let randomLockInterval = null;
+
         /* utilities */
 
         /**
@@ -1773,6 +1776,16 @@
                 const randomID = min + Math.floor(Math.random() * (max - min + 1));
                 const randomIDHash = randomID.toString();
                 window.location.hash = randomIDHash;
+
+                if(randomLockInterval !== null) {
+                    clearInterval(randomLockInterval);
+                }
+
+                function unlock() {
+                    randomButton.disabled = false;
+                }
+                randomButton.disabled = true;
+                randomLockInterval = setInterval(unlock, 750);
             });
 
             /** @type {HTMLButtonElement} */
