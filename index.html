@@ -1766,6 +1766,10 @@
             /** @type {HTMLButtonElement} */
             const randomButton = document.querySelector("button#random");
             randomButton.addEventListener("click", () => {
+                if(max == null || min == null) {
+                    return;
+                }
+
                 const randomID = min + Math.floor(Math.random() * (max - min + 1));
                 const randomIDHash = randomID.toString();
                 window.location.hash = randomIDHash;
@@ -1944,6 +1948,12 @@
                     /** @type {HTMLInputElement} */
                     const maxInputElem = document.querySelector("input#maxid");
                     maxInputElem.focus();
+                    break;
+                case "R":
+                case "r":
+                    /** @type {HTMLButtonElement} */
+                    const randomButton = document.querySelector("button#random");
+                    randomButton.click();
                     break;
                 case "ArrowLeft":
                 case "ArrowRight": {
@@ -2124,6 +2134,7 @@
                     <li><kbd>Esc</kbd> shrinks back all expanded sketches.</li>
                     <li><kbd>Esc</kbd> again marks the gallery as read.</li>
                     <li><kbd>/</kbd> jumps to the "Jump to ID" field.</li>
+                    <li><kbd>R</kbd> jumps to a random ID in the gallery.</li>
                     <li><kbd>←</kbd> and <kbd>→</kbd> navigate sketches (in grid view).</li>
                 </ul>
             </details>
