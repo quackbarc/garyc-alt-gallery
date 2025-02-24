@@ -965,6 +965,13 @@
             }
 
             const details = JSON.parse(respText);
+
+            // Something to note: `get.php` used to return primitive numbers
+            // for these values, but it eventually started returning strings
+            // for some reason.
+            details.id = parseInt(details.id);
+            details.timestamp = parseInt(details.timestamp);
+
             return details;
         }
 
