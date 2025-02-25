@@ -768,11 +768,22 @@
         let showingLatest = false;
         let wasWithinTiles = false;
 
-        /** @type {number?} */
+        /**
+         * The last `max` before the gallery was marked as read.
+         *
+         * @type {number?}
+         */
         let lastmax = null;
-        /** @type {Date?} */
+        /**
+         * The date when the gallery was marked as read.
+         *
+         * @type {Date?}
+         */
         let lastmaxDate = null;
-        /** @type {number?} */
+        /**
+         * The last `max` seen by the "scroll-to-top" marker.
+         *
+         * @type {number?} */
         let lastSeenMax = null;
 
         /** @type {number?} */
