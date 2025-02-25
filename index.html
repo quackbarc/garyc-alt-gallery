@@ -1945,12 +1945,12 @@
                 showingLatest = true;
                 refreshFrom(max);
                 maxInputElem.value = "";
-                return;
             }
-
-            showingLatest = false;
-            refreshFrom(hash);
-            maxInputElem.value = hash.toString();
+            else {
+                showingLatest = false;
+                refreshFrom(hash);
+                maxInputElem.value = hash.toString();
+            }
         });
 
         // Keyboard events
