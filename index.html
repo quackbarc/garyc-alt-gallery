@@ -526,15 +526,15 @@
 
         /* wide block-based format */
 
-        body.widened header,
-        body.widened #prelude {
+        body.widened:has(#tiles.block) {
+            max-width: none;
+        }
+
+        body.widened:has(#tiles.block) header,
+        body.widened:has(#tiles.block) #prelude {
             max-width: 976px;  /* <body>'s max-width - (<main>'s margins + paddings) */
             margin-left: auto;
             margin-right: auto;
-        }
-
-        body.widened:has(#tiles.block) {
-            max-width: none;
         }
 
         /* column-based format */
