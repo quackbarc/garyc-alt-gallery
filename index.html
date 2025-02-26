@@ -537,6 +537,10 @@
             margin-right: auto;
         }
 
+        body.widened:has(#tiles.block) #prelude {
+            max-width: calc(976px - 1em);  /* - (#prelude's margins) */
+        }
+
         /* column-based format */
 
         .tile.expanded {
