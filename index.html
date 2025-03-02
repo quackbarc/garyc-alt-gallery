@@ -2007,15 +2007,8 @@
                     const expanded = tilesE.querySelector(".expanded");
                     /** @type {HTMLElement} */
                     let newExpanded = null;
-                    /** @type {ScrollBehavior} */
-                    let scrollingBehavior = "instant";
 
-                    if(!expanded) {
-                        const firstTile = tilesE.querySelector(".tile:not(.filtered)");
-                        // @ts-ignore
-                        newExpanded = firstTile;
-                    }
-                    else {
+                    if(expanded) {
                         const siblingDirection = event.key == "ArrowLeft"
                             ? "previousElementSibling"
                             : "nextElementSibling";
@@ -2033,10 +2026,17 @@
                             }
                         }
                     }
+                    else {
+                        const firstTile = tilesE.querySelector(".tile:not(.filtered)");
+                        // @ts-ignore
+                        newExpanded = firstTile;
+                    }
                     if(!newExpanded) {
                         break;
                     }
 
+                    /** @type {ScrollBehavior} */
+                    let scrollingBehavior = "instant";
                     if(expanded) {
                         const expandedCenterOffset = (window.innerHeight - expanded.offsetHeight) / 2;
                         const expandedPos = expanded.offsetTop - Math.max(0, expandedCenterOffset);
