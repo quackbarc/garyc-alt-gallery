@@ -2053,7 +2053,11 @@
 
                     const expandedAll = document.querySelectorAll(".expanded");
                     expandedAll.forEach((elem) => elem.classList.remove("expanded"));
+
+                    const newExpandedA = newExpanded.querySelector("a");
                     newExpanded.classList.add("expanded");
+                    newExpandedA.focus();
+                    newExpandedA.blur();
 
                     const scrollCenterOffset = (window.innerHeight - newExpanded.offsetHeight) / 2;
                     const scrollPos = newExpanded.offsetTop - Math.max(0, scrollCenterOffset);
