@@ -3034,7 +3034,7 @@
                     const newExpandedA = newExpanded.querySelector("a");
                     newExpanded.classList.add("expanded");
                     newExpandedA.focus();
-                    newExpandedA.blur();
+                    newExpandedA.blur();  // makes the focus "borderless" on the browser UI
 
                     const scrollCenterOffset = (window.innerHeight - newExpanded.offsetHeight) / 2;
                     const scrollPos = newExpanded.offsetTop - Math.max(0, scrollCenterOffset);
