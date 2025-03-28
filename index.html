@@ -1341,14 +1341,12 @@
         function markGalleryAsRead() {
             lastmax = max;
             lastmaxDate = new Date();
-            lastSeenMax = max;
             updateStorageState();
+
+            markSTTAsRead();
 
             const symbol = document.querySelector("#title-symbol");
             symbol.innerHTML = "!";
-
-            const stt = document.querySelector("#scroll-to-top");
-            stt.classList.remove("new");
 
             const unseenSection = document.querySelector("#unseen-section");
             if(unseenSection) {
@@ -1357,6 +1355,15 @@
 
             document.querySelectorAll(".new-status").forEach((elem) => elem.remove());
             document.querySelectorAll(".tile.new").forEach((tile) => tile.classList.remove("new"));
+        }
+
+        /**
+         * Marks the #scroll-to-top button as seen and read.
+         */
+        function markSTTAsRead() {
+            const stt = document.querySelector("#scroll-to-top");
+            stt.classList.remove("new");
+            lastSeenMax = max;
         }
 
         /* gallery extension methods */
@@ -1507,6 +1514,8 @@
                 fetchAbortController.abort();
             }
 
+            markSTTAsRead();
+
             // "show more" buttons become disabled, and if there's no reason
             // down the road to re-enable them, they should stay disabled.
             updateMoreButtons(false);
@@ -1516,9 +1525,6 @@
 
             const tilesE = document.querySelector("#tiles");
             tilesE.replaceChildren();
-
-            const stt = document.querySelector("#scroll-to-top");
-            stt.classList.remove("new");
 
             if(newfirst < min || newfirst > max) {
                 firstDate = null;
@@ -1933,8 +1939,8 @@
                     stt.classList.add("scrolled");
                 }
                 else {
-                    lastSeenMax = max;
-                    stt.classList.remove("scrolled", "new");
+                    stt.classList.remove("scrolled");
+                    markSTTAsRead();
                 }
             }
         }
