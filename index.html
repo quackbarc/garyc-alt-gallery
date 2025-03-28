@@ -2084,13 +2084,14 @@
 
                     const nl = tilesE.querySelectorAll(".tile:not(.filtered)");
                     const firstTile = nl[0];
+                    const lastTile = nl[nl.length - 1];
 
                     if(newExpanded === firstTile) {
                         markSTTAsRead();
                     }
 
                     const canExtend = settings.endlessScroll && !sketchesLoading;
-                    if(canExtend && newExpanded.matches(":last-of-type")) {
+                    if(canExtend && newExpanded === lastTile) {
                         extendTo(last - 10);
                     }
 
