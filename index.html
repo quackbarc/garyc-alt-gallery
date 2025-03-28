@@ -1048,7 +1048,7 @@
                 }
 
                 if(tile.classList.contains("expanded")) {
-                    tile.classList.toggle("expanded");
+                    tile.classList.remove("expanded");
 
                     // Scroll back to the tile in case it crosses the viewport's top.
                     const newOffset = tile.offsetTop;
@@ -1057,7 +1057,7 @@
 
                 else {
                     const oldScrollY = window.scrollY;
-                    tile.classList.toggle("expanded");
+                    tile.classList.add("expanded");
 
                     // Prevent scrolls to the bottom of the tile by keeping how the page
                     // was scrolled before.
