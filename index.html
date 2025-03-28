@@ -821,24 +821,32 @@
          * by the function will be what's closest to, but not over,
          * `max`.
          * 
-         * If the given shorthand ID is _literally_ above `max`, the ID
-         * will be returned as-is. This goes the same for negative
-         * numbers.
+         * For example, if `max` is 7123456, passing in "234" would return
+         * 7123234. Likewise, passing in "789" would return 7122789.
          * 
-         * @param {number} shortID
+         * The given shorthand ID must be a string representing a positive
+         * integer. Having it as a string instead of a number might sound odd,
+         * but it's there to support inputs with leading zeroes on them.
+         * 
+         * If the given shorthand ID is numerically above `max`, the ID
+         * will be returned as-is.
+         * 
+         * @param {string} shortID
          * @returns {number}
          */
         function getIDFromShorthand(shortID) {
-            if(shortID > max || shortID < 0) {
-                return shortID;
+            if(!/^\d+$/.test(shortID)) {
+                throw TypeError(`expected a positive integer, got ${shortID || '(blank string)'}`);
             }
 
-            const length = shortID.toString().length;
+            if(parseInt(shortID) > max) {
+                return parseInt(shortID);
+            }
 
-            const maxIDMod = max % 10**length;
-            const maxIDDiv = Math.floor(max / 10**length);
-            let resolvedID = maxIDDiv * 10**length + shortID;
-            if(shortID > maxIDMod) {
+            const length = shortID.length;
+            const stitchedID = max.toString().slice(0, -length) + shortID;
+            let resolvedID = parseInt(stitchedID);
+            if(resolvedID > max) {
                 resolvedID -= 10**length;
             }
 
@@ -1794,14 +1802,19 @@
             /** @type {HTMLInputElement} */
             const maxInputElem = document.querySelector("input#maxid");
             maxInputElem.addEventListener("change", (event) => {
-                const rawValue = maxInputElem.value;
-                const value = parseInt(rawValue);
-                if(value < min) {
+                const value = maxInputElem.value;
+                const parsedValue = parseInt(value);
+
+                if(parsedValue < 0) {
+                    maxInputElem.value = "";
+                    window.location.hash = "";
+                }
+                else if(parsedValue < min) {
                     const fullID = getIDFromShorthand(value);
                     window.location.hash = fullID.toString();
                 }
                 else {
-                    window.location.hash = rawValue;
+                    window.location.hash = value;
                 }
             });
 
