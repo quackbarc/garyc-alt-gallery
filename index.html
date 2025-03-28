@@ -2022,10 +2022,6 @@
                     break;
                 case "ArrowLeft":
                 case "ArrowRight": {
-                    if(!settings.gridView) {
-                        break;
-                    }
-
                     const tilesE = document.querySelector("#tiles");
                     /** @type {HTMLElement} */
                     const expanded = tilesE.querySelector(".expanded");
@@ -2212,11 +2208,11 @@
             <details>
                 <summary>Additional controls</summary>
                 <ul>
+                    <li><kbd>←</kbd> and <kbd>→</kbd> navigate sketches.</li>
                     <li><kbd>Esc</kbd> shrinks back all expanded sketches.</li>
                     <li><kbd>Esc</kbd> again marks the gallery as read.</li>
                     <li><kbd>/</kbd> jumps to the "Jump to ID" field.</li>
                     <li><kbd>R</kbd> jumps to a random ID in the gallery.</li>
-                    <li><kbd>←</kbd> and <kbd>→</kbd> navigate sketches (in grid view).</li>
                 </ul>
             </details>
         </section>
