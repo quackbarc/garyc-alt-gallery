@@ -1062,6 +1062,11 @@
                     // Prevent scrolls to the bottom of the tile by keeping how the page
                     // was scrolled before.
                     window.scrollTo(window.scrollX, oldScrollY);
+
+                    const firstTile = document.querySelector("#tiles .tile:not(.filtered)");
+                    if(firstTile === tile) {
+                        markSTTAsRead();
+                    }
                 }
 
                 tile.focus();
@@ -2076,6 +2081,13 @@
                         // https://issues.chromium.org/issues/40715316
                         behavior: scrollingBehavior,
                     });
+
+                    const nl = tilesE.querySelectorAll(".tile:not(.filtered)");
+                    const firstTile = nl[0];
+
+                    if(newExpanded === firstTile) {
+                        markSTTAsRead();
+                    }
 
                     const canExtend = settings.endlessScroll && !sketchesLoading;
                     if(canExtend && newExpanded.matches(":last-of-type")) {
