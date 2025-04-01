@@ -1540,7 +1540,7 @@
             const tilesE = document.querySelector("#tiles");
             tilesE.replaceChildren();
 
-            if(newfirst < min || newfirst > max) {
+            if(newfirst < min || (newfirst > max && !showingLatest)) {
                 firstDate = null;
                 lastDate = null;
                 first = null;
@@ -1597,7 +1597,13 @@
                         const tilesE = document.querySelector("#tiles");
                         tilesE.prepend(newSection);
                     }
-                    extendAbove(newmax);
+
+                    if(newmax - max <= 50) {
+                        extendAbove(newmax);
+                    }
+                    else {
+                        refreshFrom(newmax);
+                    }
                 }
 
                 const symbol = document.querySelector("#title-symbol");
