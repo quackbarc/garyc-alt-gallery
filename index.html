@@ -1204,6 +1204,7 @@
 
             tileStatus.classList.add("tile-status");
 
+            tile.setAttribute("sketch-id", details.id.toString());
             tile.setAttribute("ink", (ink * 10).toString());  // int-casted b/c i'm scared of floats
             tile.classList.add("tile", "anchorable");
             tile.append(tileImageA);
@@ -1786,9 +1787,37 @@
                     }
                     break;
                 }
-                case "endlessScroll":
-                case "clickSaving":
                 case "clientSideRendering": {
+                    document.querySelectorAll(".tile").forEach((tile) => {
+                        /** @type {HTMLAnchorElement} */
+                        const imageA = tile.querySelector("a.tile-image-holder");
+                        const image = imageA.querySelector("img");
+                        const id = parseInt(tile.getAttribute("sketch-id"));
+
+                        const toggled = value;
+                        if(toggled) {
+                            image.src = missingSketch;
+                            image.classList.add("rendering");
+
+                            // Since getSketchDetails requests are cached, we should be
+                            // able to re-fetch these without too much delay.
+                            // That said, if we do start caching details onto a JavaScript
+                            // object somewhere, we should probably be using that instead.
+                            getSketchDetails(id)
+                                .then((details) => render(details.data))
+                                .then((url) => {
+                                    imageA.href = image.src = url;
+                                    image.classList.remove("rendering");
+                                });
+                        }
+                        else {
+                            imageA.href = image.src = getImageURL(id);
+                        }
+                    });
+                    break;
+                }
+                case "endlessScroll":
+                case "clickSaving": {
                     // These are expected values! We don't really have to do anything with these.
                     // That being said, I might have to deal with unknown keys in a different way.
                     // This sounds like painful typing.
