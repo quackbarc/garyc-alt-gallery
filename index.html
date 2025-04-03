@@ -384,6 +384,7 @@
         }
 
         .tile .tile-image-holder {
+            position: relative;
             grid-area: img;
             flex: 0 1 auto;
         }
@@ -401,6 +402,20 @@
         .tile img.loading {
             /* TODO: wait, shouldn't we just use a background instead? */
             opacity: 30%;
+        }
+
+        .tile .tile-dot {
+            display: inline-block;
+            padding: 0.5em;
+            border-radius: 50%;
+            background-color: oklch(55% 60% 20deg);
+            border: 2px solid #fff;
+
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+
+            visibility: hidden;
         }
 
         .tile .tile-caption {
@@ -580,6 +595,12 @@
             padding: 6px 0px;
         }
 
+        /* other #tiles formats */
+
+        #tiles.dot-markers .tile .tile-dot {
+            visibility: visible;
+        }
+
         /* other media queries */
 
         @media not all and (hover: hover) {
@@ -730,6 +751,7 @@
          * @property {number} inkFilterThreshold
          * @property {boolean} showMiscSettings
          * @property {boolean} fallbackToBunker
+         * @property {boolean} showClientMarkers
          */
 
         /* constants */
@@ -1059,6 +1081,7 @@
          */
         function createTile(details) {
             const tile = document.createElement("div");
+            const tileDot = document.createElement("span");
             const tileImageA = document.createElement("a");
             const tileImage = document.createElement("img");
             const tileCaption = document.createElement("p");
@@ -1068,6 +1091,32 @@
             const tileStatus = document.createElement("div");
 
             const bunker = settings.fallbackToBunker && details.id < galleryMin;
+
+            tileDot.classList.add("tile-dot");
+            tileDot.title = details.origin || "no one knows...";
+
+            switch(details.origin) {
+                case "garyc.me": {
+                    tileDot.style.backgroundColor = "oklch(0% 0% 0deg)";
+                    break;
+                }
+                case "noz.rip": {
+                    tileDot.style.backgroundColor = "oklch(70% 90% 90deg)";
+                    break;
+                }
+                case "sketchy-bot.github.io": {
+                    tileDot.style.backgroundColor = "oklch(55% 60% 20deg)";
+                    break;
+                }
+                case "quackbarc.github.io": {
+                    tileDot.style.backgroundColor = "oklch(70% 80% 10deg)";
+                    break;
+                }
+                default: {
+                    tileDot.style.backgroundColor = "oklch(50% 0% 0deg)";
+                    break;
+                }
+            }
 
             if(settings.clientSideRendering) {
                 tileImage.src = missingSketch;
@@ -1091,6 +1140,7 @@
             tileImageA.classList.add("tile-image-holder");
             tileImageA.download = `${details.id}`;
             tileImageA.append(tileImage);
+            tileImageA.append(tileDot);
             tileImageA.addEventListener("click", (event) => {
                 if(settings.clickSaving) {
                     return;
@@ -1718,6 +1768,7 @@
                 inkFilterThreshold: 0,
                 showMiscSettings: false,
                 fallbackToBunker: false,
+                showClientMarkers: false,
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
@@ -1819,6 +1870,11 @@
                             imageA.href = image.src = getImageURL(id);
                         }
                     });
+                    break;
+                }
+                case "showClientMarkers": {
+                    const toggled = value;
+                    document.querySelector("#tiles").classList.toggle("dot-markers", toggled);
                     break;
                 }
                 case "endlessScroll":
@@ -2310,6 +2366,10 @@
                 <div class="setting misc-setting">
                     <label for="clickSaving">Save sketch on thumbnail click/tap:</label>
                     <input type="checkbox" id="clickSaving">
+                </div>
+                <div class="setting misc-setting">
+                    <label for="showClientMarkers">Show client markers:</label>
+                    <input type="checkbox" id="showClientMarkers">
                 </div>
 
                 <hr class="grid-view-setting">
