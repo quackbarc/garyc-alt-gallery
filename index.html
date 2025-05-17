@@ -1472,6 +1472,8 @@
 
             markSTTAsRead();
 
+            document.title = "alt gallery for garyc.me";
+
             const symbol = document.querySelector("#title-symbol");
             symbol.innerHTML = "!";
 
@@ -1701,6 +1703,8 @@
             const newmax = stats.maxID;
             if(newmax > max) {
                 if(showingLatest) {
+                    document.title = "alt gallery* for garyc.me";
+
                     const unseenSection = document.querySelector("#unseen-section");
                     const newSection = createUnseenCountSection(lastmax, lastmaxDate, newmax);
                     if(unseenSection) {
