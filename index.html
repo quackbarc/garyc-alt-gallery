@@ -717,6 +717,7 @@
          * @property {boolean} wideGridView
          * @property {number} inkFilterThreshold
          * @property {boolean} showMiscSettings
+         * @property {boolean} fallbackToBunker
          */
 
         /* constants */
@@ -730,6 +731,13 @@
         const missingSketchPromise = render("").then((url) => {
             missingSketch = url;
         });
+
+        /**
+         * The earliest sketch ID on the complete part of the noz.rip archive.
+         * There are even earlier sketches, but they're sparsely scattered from
+         * each other.
+         */
+        const bunkerMin = 6762001;
 
         /**
          * The controller to immediately halt the extend___() methods.
@@ -772,6 +780,14 @@
          */
         let showingLatest = false;
         let wasWithinTiles = false;
+
+        /**
+         * The latest sketch ID on the main gallery.
+         * This must be updated when we're falling back to the Noz bunker,
+         * but not necessarily when we aren't.
+         *
+         * @type {number?} */
+        let galleryMin = null;
 
         /**
          * The last `max` before the gallery was marked as read.
@@ -972,15 +988,22 @@
         }
 
         /**
+         * Gets the sketch details of a sketch. May fallback to using the noz.rip
+         * archive when `settings.fallbackToBunker` is enabled.
+         *
          * @param {number} id
          * @returns {Promise<SketchDetails?>}
          *      A promise that returns the details of a sketch, or
          *      null if it isn't found.
          */
         async function getSketchDetails(id) {
+            const sketchDetailsURL = settings.fallbackToBunker && id < galleryMin
+                ? `https://noz.rip/sketch_bunker/get.php?details&id=${id}`
+                : `https://garyc.me/sketch/get.php?details&id=${id}`;
+
             const resp = await fetch(
-                `https://garyc.me/sketch/get.php?details&id=${id}`,
-                {cache: "force-cache"}
+                sketchDetailsURL,
+                {cache: "force-cache"},
             );
 
             const respText = await resp.text();
@@ -991,9 +1014,13 @@
 
             const details = JSON.parse(respText);
 
-            // Something to note: `get.php` used to return primitive numbers
-            // for these values, but it eventually started returning strings
-            // for some reason.
+            if(!details.timestamp) {
+                details.timestamp = 0;
+            }
+
+            // Something to note: garyc,me's `get.php` used to return primitive
+            // numbers for these values, but it eventually started returning
+            // strings for some reason.
             details.id = parseInt(details.id);
             details.timestamp = parseInt(details.timestamp);
 
@@ -1003,9 +1030,13 @@
         /**
          * @param {number} id
          * @returns {string}
-         *      The URL for a sketch with the ID.
+         *      The URL for a sketch with the ID. May fallback to a noz.rip URL
+         *      if `settings.fallbackToBunker` is on.
          */
         function getImageURL(id) {
+            if(settings.fallbackToBunker && id < galleryMin) {
+                return `https://noz.rip/sketch_bunker/getIMG.php?id=${id}&save`;
+            }
             return `https://garyc.me/sketch/getIMG.php?id=${id}&save`;
         }
 
@@ -1023,6 +1054,8 @@
             const tileGIFButton = document.createElement("button");
             const tileActions = document.createElement("div");
             const tileStatus = document.createElement("div");
+
+            const bunker = settings.fallbackToBunker && details.id < galleryMin;
 
             if(settings.clientSideRendering) {
                 tileImage.src = missingSketch;
@@ -1080,14 +1113,28 @@
             const inkRaw = details.data.length / 65535;
             const ink = Math.round(inkRaw * 1000) / 10;
 
-            const linkParts = [
-                "https://garyc.me",
-                "/sketch",
-                "/gallery.php",
-                `#${details.id}`,
-            ];
+            let linkParts = [];
+            if(bunker) {
+                linkParts = [
+                    "https://noz.rip",
+                    "/sketch_bunker",
+                    "/gallery.php",
+                    `?maxid=${details.id}`,
+                    `#${details.id}`,
+                ];
+            }
+            else {
+                linkParts = [
+                    "https://garyc.me",
+                    "/sketch",
+                    "/gallery.php",
+                    `#${details.id}`,
+                ];
+            }
             const link = linkParts.join("");
             const linkWBR = linkParts.join("<wbr>");
+
+            const origin = details.origin || "(who knows?)";
 
             let timestamp = new Date(details.timestamp * 1000)
                 .toLocaleString("default", {
@@ -1114,7 +1161,7 @@
             const captionL = [
                 `<i><a href=${link}>${linkWBR}</a></i>`,
                 `${ink}% ink used`,
-                `<i>from ${details.origin}</i>`,
+                `<i>from ${origin}</i>`,
                 `<i>${timestamp}</i>`,
             ];
             const caption = captionL.join("<br>");
@@ -1138,6 +1185,10 @@
                 saveA.click();
             });
             tileGIFButton.addEventListener("click", () => window.open(tileGIFLink));
+            if(bunker) {
+                tileGIFButton.disabled = true;
+                tileGIFButton.title = "not supported for archived sketches";
+            }
 
             tileActions.classList.add("tile-actions");
             tileActions.append(tileSaveButton);
@@ -1410,7 +1461,7 @@
 
                     const detailsDate = new Date(details.timestamp * 1000);
                     const detailsDay = getComparableDay(detailsDate);
-                    const lastDay = lastDate ? getComparableDay(lastDate) : 0;
+                    const lastDay = lastDate ? getComparableDay(lastDate) : null;
 
                     if(lastDay != detailsDay) {
                         const section = createSection(detailsDate);
@@ -1484,7 +1535,7 @@
 
                     const detailsDate = new Date(details.timestamp * 1000);
                     const detailsDay = getComparableDay(detailsDate);
-                    const firstDay = firstDate ? getComparableDay(firstDate) : 0;
+                    const firstDay = firstDate ? getComparableDay(firstDate) : null;
 
                     if(firstDay != detailsDay) {
                         const section = createSection(detailsDate);
@@ -1612,7 +1663,12 @@
                 max = newmax;
             }
 
-            min = newmin;
+            if(settings.fallbackToBunker) {
+                galleryMin = newmin;
+            }
+            else {
+                min = newmin;
+            }
 
             updateStats(stats);
             refreshText.classList.remove("show");
@@ -1648,6 +1704,7 @@
                 wideGridView: false,
                 inkFilterThreshold: 0,
                 showMiscSettings: false,
+                fallbackToBunker: false,
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
@@ -1710,6 +1767,16 @@
                     document.querySelectorAll(".misc-setting").forEach((elem) => {
                         elem.classList.toggle("show", toggled);
                     });
+                    break;
+                }
+                case "fallbackToBunker": {
+                    if(value) {
+                        galleryMin = min;
+                        min = bunkerMin;
+                    }
+                    else {
+                        min = galleryMin;
+                    }
                     break;
                 }
                 case "endlessScroll":
@@ -1886,8 +1953,15 @@
             refreshText.classList.add("show");
 
             const stats = await getStats();
-            min = stats.minID;
-            max = stats.maxID;
+            if(settings.fallbackToBunker) {
+                galleryMin = stats.minID;
+                min = bunkerMin;
+                max = stats.maxID;
+            }
+            else {
+                min = stats.minID;
+                max = stats.maxID;
+            }
 
             const state = localStorage.getItem("tilegallery-state");
             if(!state) {
@@ -2166,6 +2240,10 @@
                 <div class="setting">
                     <label for="gridView">Grid view:</label>
                     <input type="checkbox" id="gridView">
+                </div>
+                <div class="setting">
+                    <label for="fallbackToBunker">Use noz.rip for older sketches:</label>
+                    <input type="checkbox" id="fallbackToBunker">
                 </div>
 
                 <hr>
