@@ -238,6 +238,7 @@
             margin: 0px 3px;
         }
 
+        #settings .misc-setting:not(.show),
         #settings .grid-view-setting:not(.show) {
             display: none;
         }
@@ -715,6 +716,7 @@
          * @property {number} gridImageSize
          * @property {boolean} wideGridView
          * @property {number} inkFilterThreshold
+         * @property {boolean} showMiscSettings
          */
 
         /* constants */
@@ -1645,6 +1647,7 @@
                 gridImageSize: 200,
                 wideGridView: false,
                 inkFilterThreshold: 0,
+                showMiscSettings: false,
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
@@ -1700,6 +1703,13 @@
                     const notePercentage = document.querySelector("#filter-note-percentage");
                     note.classList.toggle("show", filtering);
                     notePercentage.innerHTML = value.toString();
+                    break;
+                }
+                case "showMiscSettings": {
+                    const toggled = value;
+                    document.querySelectorAll(".misc-setting").forEach((elem) => {
+                        elem.classList.toggle("show", toggled);
+                    });
                     break;
                 }
                 case "endlessScroll":
@@ -2157,11 +2167,17 @@
                     <label for="gridView">Grid view:</label>
                     <input type="checkbox" id="gridView">
                 </div>
+
+                <hr>
                 <div class="setting">
+                    <label for="showMiscSettings">Show more settings:</label>
+                    <input type="checkbox" id="showMiscSettings">
+                </div>
+                <div class="setting misc-setting">
                     <label for="clientSideRendering">Client-rendered thumbnails:</label>
                     <input type="checkbox" id="clientSideRendering">
                 </div>
-                <div class="setting">
+                <div class="setting misc-setting">
                     <label for="clickSaving">Save sketch on thumbnail click/tap:</label>
                     <input type="checkbox" id="clickSaving">
                 </div>
