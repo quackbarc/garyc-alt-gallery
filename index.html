@@ -2111,6 +2111,8 @@
                     /** @type {HTMLInputElement} */
                     const maxInputElem = document.querySelector("input#maxid");
                     const headerElem = document.querySelector("header");
+
+                    event.preventDefault();
                     headerElem.classList.add("sticky");
                     maxInputElem.focus();
                     break;
