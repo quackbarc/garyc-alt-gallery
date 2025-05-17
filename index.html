@@ -541,13 +541,18 @@
 
         body.widened:has(#tiles.block) header,
         body.widened:has(#tiles.block) #prelude {
-            max-width: 976px;  /* <body>'s max-width - (<main>'s margins + paddings) */
-            margin-left: auto;
-            margin-right: auto;
+            --header-max-width: 976px;  /* <body>'s max-width - (<main>'s margins + paddings) */
+            --header-auto-padding: calc((100% - var(--header-max-width)) / 2);
+
+            box-sizing: content-box;
+            max-width: var(--header-max-width);
+            padding-left: var(--header-auto-padding);
+            padding-right: var(--header-auto-padding);
         }
 
-        body.widened:has(#tiles.block) #prelude {
-            max-width: calc(976px - 1em);  /* - (#prelude's margins) */
+        body.widened:has(#tiles.block) header {
+            padding-left: max(var(--header-auto-padding), 12px);
+            padding-right: max(var(--header-auto-padding), 12px);
         }
 
         /* column-based format */
