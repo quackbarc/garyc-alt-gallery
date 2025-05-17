@@ -141,6 +141,13 @@
             border-bottom: 2px #8884 dashed;
         }
 
+        header.sticky {
+            position: sticky;
+            top: 0px;
+            z-index: 10;
+            background-color: var(--background-color);
+        }
+
         h1 {
             text-align: left;
             flex: 0 0 auto;
@@ -1878,6 +1885,13 @@
 
             /** @type {HTMLInputElement} */
             const maxInputElem = document.querySelector("input#maxid");
+            const headerElem = document.querySelector("header");
+            maxInputElem.addEventListener("focus", (event) => {
+                headerElem.classList.add("sticky");
+            });
+            maxInputElem.addEventListener("blur", (event) => {
+                headerElem.classList.remove("sticky");
+            });
             maxInputElem.addEventListener("change", (event) => {
                 const value = maxInputElem.value;
                 const parsedValue = parseInt(value);
@@ -2096,6 +2110,8 @@
                 case "/":
                     /** @type {HTMLInputElement} */
                     const maxInputElem = document.querySelector("input#maxid");
+                    const headerElem = document.querySelector("header");
+                    headerElem.classList.add("sticky");
                     maxInputElem.focus();
                     break;
                 case "R":
