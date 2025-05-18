@@ -1315,9 +1315,31 @@
             lineLookup = linesLookup;
             position = 0;
             speed = settings.animationSpeed;
-            lineSeekLast = null;
+            lineSeekLast = 0;
             lastFrame = null;
 
+            aRAF = window.requestAnimationFrame(animator);
+        }
+
+        function pause() {
+            if(aRAF) {
+                window.cancelAnimationFrame(aRAF);
+            }
+        }
+
+        /**
+         * Resumes the animation at a given position.
+         * 
+         * @param {number} seek
+         **/
+        function resume(seek) {
+            initializeAnimationCanvas();
+            auxctx.drawImage(acanv, 0, 0, 800, 600);
+
+            position = seek;
+            speed = settings.animationSpeed;
+            lineSeekLast = 0;
+            lastFrame = null;
             aRAF = window.requestAnimationFrame(animator);
         }
 
@@ -1398,6 +1420,38 @@
             else {
                 lastFrame = frame;
                 aRAF = window.requestAnimationFrame(animator);
+            }
+        }
+
+        /**
+         * Draws a given frame onto the animator canvas.
+         * This would halt animation if there is one ongoing.
+         * 
+         * @param {number} frame
+         **/
+        function drawFrameAt(frame) {
+            if(aRAF) {
+                window.cancelAnimationFrame(aRAF);
+            }
+
+            initializeAnimationCanvas();
+
+            const total = lineLookup.length;
+            let frameLines = [];
+            if(frame >= total) {
+                frameLines = animationLines;
+            }
+            else {
+                const [lineSeek, pointSeek] = lineLookup[frame];
+                const lines = animationLines;
+                const currentLine = lines[lineSeek];
+
+                frameLines = lines.slice(0, lineSeek);
+                frameLines.push(currentLine.slice(0, pointSeek));
+            }
+
+            for(const line of frameLines) {
+                drawLine(line);
             }
         }
 
@@ -2431,6 +2485,18 @@
                 radio.addEventListener("change", () => {
                     setSetting("animationSpeed", parseInt(radio.value));
                 });
+            });
+
+            /** @type {HTMLInputElement} */
+            const aniSlider = aniDialog.querySelector("#animator-slider");
+            aniSlider.addEventListener("input", () => {
+                const newPosition = aniSlider.valueAsNumber;
+
+                position = newPosition;
+                drawFrameAt(newPosition);
+            });
+            aniSlider.addEventListener("change", () => {
+                resume(position);
             });
 
             // Stats fetching, and updating anything that relies on it
