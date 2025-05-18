@@ -601,6 +601,10 @@
             visibility: visible;
         }
 
+        #tiles.dot-markers .tile:has(.loading, .rendering) .tile-dot {
+            visibility: hidden;
+        }
+
         /* other media queries */
 
         @media not all and (hover: hover) {
