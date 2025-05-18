@@ -867,6 +867,7 @@
          * @property {boolean} showMiscSettings
          * @property {boolean} fallbackToBunker
          * @property {boolean} showClientMarkers
+         * @property {number} animationSpeed
          */
 
         /**
@@ -2055,6 +2056,7 @@
                 showMiscSettings: false,
                 fallbackToBunker: false,
                 showClientMarkers: false,
+                animationSpeed: 4,
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
@@ -2163,6 +2165,7 @@
                     document.querySelector("#tiles").classList.toggle("dot-markers", toggled);
                     break;
                 }
+                case "animationSpeed":
                 case "endlessScroll":
                 case "clickSaving": {
                     // These are expected values! We don't really have to do anything with these.
@@ -2343,6 +2346,19 @@
             acanv = aniCanvas;
             actx = aniCanvas.getContext("2d", {alpha: false});
             initializeAnimationCanvas();
+
+            /** @type {NodeListOf<HTMLInputElement>} */
+            const speedRadios = aniDialog.querySelectorAll(".speed-settings input[type=radio]");
+            speedRadios.forEach((radio) => {
+                const parsedValue = parseInt(radio.value);
+                if(parsedValue == settings.animationSpeed) {
+                    radio.checked = true;
+                }
+
+                radio.addEventListener("change", () => {
+                    setSetting("animationSpeed", parseInt(radio.value));
+                });
+            });
 
             // Stats fetching, and updating anything that relies on it
 
