@@ -1297,7 +1297,7 @@
             animatorText.textContent = "...";
 
             window.cancelAnimationFrame(aRAF);
-            initializeAnimationCanvas();
+            actx.fillRect(0, 0, 800, 600);
             auxctx.drawImage(acanv, 0, 0, 800, 600);
 
             const details = await getSketchDetails(id);
@@ -1334,7 +1334,7 @@
          * @param {number} seek
          **/
         function resume(seek) {
-            initializeAnimationCanvas();
+            actx.fillRect(0, 0, 800, 600);
             auxctx.drawImage(acanv, 0, 0, 800, 600);
 
             position = seek;
@@ -1435,7 +1435,7 @@
                 window.cancelAnimationFrame(aRAF);
             }
 
-            initializeAnimationCanvas();
+            actx.fillRect(0, 0, 800, 600);
 
             const total = lineLookup.length;
             let frameLines = [];
