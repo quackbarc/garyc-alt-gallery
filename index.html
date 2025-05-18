@@ -1295,7 +1295,9 @@
             slider.valueAsNumber = 0;
             animatorText.textContent = "...";
 
+            window.cancelAnimationFrame(aRAF);
             initializeAnimationCanvas();
+            auxctx.drawImage(acanv, 0, 0, 800, 600);
 
             const details = await getSketchDetails(id);
             const data = details.data;
@@ -1312,7 +1314,7 @@
             animationLines = lines;
             lineLookup = linesLookup;
             position = 0;
-            speed = 4;
+            speed = settings.animationSpeed;
             lineSeekLast = null;
             lastFrame = null;
 
@@ -1325,7 +1327,78 @@
          * @param {DOMHighResTimeStamp} timestamp
          **/
         function animator(timestamp) {
-            aRAF = window.requestAnimationFrame(animator);
+            if(!animatorDialog.open) {
+                return;
+            }
+
+            // Frame rate handling
+
+            const frame = Math.floor(timestamp * 60 / 1000);
+            let missedFrames = 0;
+            if(lastFrame !== null) {
+                if(lastFrame == frame) {
+                    aRAF = window.requestAnimationFrame(animator);
+                    return;
+                }
+                if(lastFrame < frame) {
+                    missedFrames = frame - lastFrame - 1;
+                }
+            }
+
+            // Animation
+
+            const lines = animationLines;
+            const total = lineLookup.length;
+            const finished = position >= total;
+            const [lineSeek, pointSeek] = position >= total
+                ? [lines.length, 0]
+                : lineLookup[position];
+
+            actx.drawImage(auxcanv, 0, 0, 800, 600);
+
+            if(lineSeek > lineSeekLast) {
+                for(let l = lineSeekLast; l < lineSeek; l++) {
+                    const oldLine = lines[l];
+                    drawLine(oldLine);
+                }
+                auxctx.drawImage(acanv, 0, 0, 800, 600);
+            }
+
+            if(!finished) {
+                const line = lines[lineSeek];
+                const segment = line.slice(0, pointSeek);
+                drawLine(segment);
+            }
+
+            // Other DOM updates
+
+            animatorSlider.valueAsNumber = position;
+
+            // Preparation for next frame
+
+            if(finished) {
+                return;
+            }
+
+            if(settings.animationSpeed != speed) {
+                const deltaUnit = Math.sign(settings.animationSpeed - speed);
+                speed += deltaUnit;
+            }
+
+            position += speed;
+            position = Math.min(position, total);
+            lineSeekLast = lineSeek;
+
+            if(missedFrames) {
+                // Fire the callback again on (ideally) the same frame until
+                // all missed frames are compensated
+                lastFrame += 1;
+                animator(timestamp);
+            }
+            else {
+                lastFrame = frame;
+                aRAF = window.requestAnimationFrame(animator);
+            }
         }
 
         /**
