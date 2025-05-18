@@ -1293,7 +1293,7 @@
             });
 
             const inkRaw = details.data.length / 65535;
-            const ink = Math.round(inkRaw * 1000) / 10;
+            const ink = Math.floor(inkRaw * 1000) / 10;
 
             let linkParts = [];
             if(bunker) {
