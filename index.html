@@ -869,6 +869,13 @@
          * @property {boolean} showClientMarkers
          */
 
+        /**
+         * The parsed form of a sketch's data. This should be an array of lines
+         * consisting of coordinate pairs on each.
+         * 
+         * @typedef {[number, number][][]} ParsedSketch
+         **/
+
         /* constants */
 
         const offcanv = new OffscreenCanvas(800, 600);
@@ -959,6 +966,29 @@
         /** @type {number?} */
         let randomLockInterval = null;
 
+        // animation state
+
+        /**
+         * Auxiliary canvas, mainly used for quickly re-drawing lines on the
+         * main animator canvas.
+         * 
+         * This tactic was also used on the alt client! I like it a lot.
+         **/
+        const auxcanv = new OffscreenCanvas(800, 600);
+        const auxctx = auxcanv.getContext("2d", {alpha: false});
+
+        /** @type {HTMLCanvasElement?} */           let acanv = null;
+        /** @type {CanvasRenderingContext2D?} */    let actx = null;
+        /** @type {number?} */                      let aRAF = null;
+        /** @type {HTMLDialogElement?} */           let animatorDialog = null;
+        /** @type {HTMLInputElement?} */            let animatorSlider = null;
+        /** @type {ParsedSketch?} */                let animationLines = null;
+        /** @type {[number, number][]?} */          let lineLookup = null;
+        /** @type {number} */                       let position = 0;
+        /** @type {number} */                       let speed = 4;
+        /** @type {number?} */                      let lineSeekLast = null;
+        /** @type {number?} */                      let lastFrame = null;
+
         /* utilities */
 
         /**
@@ -1014,6 +1044,54 @@
             return resolvedID;
         }
 
+        /**
+         * Parses sketch data and returns an array of lines that contain
+         * coordinate-pairs.
+         * 
+         * @param {string} data
+         * @returns {ParsedSketch}
+         * */
+        function parseData(data) {
+            const lines = [];
+            for(const dataline of data.split(" ")) {
+                const line = [];
+                for(let pos = 0; pos < dataline.length; pos += 4) {
+                    if(dataline.slice(pos, pos+4).length < 4) {
+                        continue;
+                    }
+
+                    const x = parseInt(dataline.slice(pos, pos+2), 36);
+                    const y = parseInt(dataline.slice(pos+2, pos+4), 36);
+                    /** @type {[number, number]} */  // i love typing javascript!
+                    const coord = [x, y];
+                    line.push(coord);
+                }
+                lines.push(line);
+            }
+
+            return lines;
+        }
+
+        /**
+         * Returns an array containing [line-#, point-#] pairs for every single
+         * point on a given sketch.
+         * 
+         * @param {ParsedSketch} lines
+         * @returns {[number, number][]}
+         **/
+        function getSeparatedPositions(lines) {
+            const exploded = [];
+            for(let pos1 = 0; pos1 < lines.length; pos1++) {
+                const line = lines[pos1];
+                for(let pos2 = 0; pos2 < line.length; pos2++) {
+                    /** @type {[number, number]} */  // aaaaaaaaaaaaaaaaaa
+                    const explosion = [pos1, pos2];
+                    exploded.push(explosion);
+                }
+            }
+            return exploded;
+        }
+
         /* canvas utilities */
 
         /**
@@ -1047,6 +1125,15 @@
             offctx.fillStyle = "#fff";
             offctx.strokeStyle = "#000";
             offctx.fillRect(0, 0, offcanv.width, offcanv.height);
+        }
+
+        function initializeAnimationCanvas() {
+            actx.lineCap = "butt";
+            actx.lineJoin = "round";
+            actx.lineWidth = 3;
+            actx.fillStyle = "#fff";
+            actx.strokeStyle = "#000";
+            actx.fillRect(0, 0, acanv.width, acanv.height);
         }
 
         /**
@@ -1187,6 +1274,78 @@
                 return `https://noz.rip/sketch_bunker/getIMG.php?id=${id}&save`;
             }
             return `https://garyc.me/sketch/getIMG.php?id=${id}&save`;
+        }
+
+        /* animation methods */
+
+        /**
+         * Sets up animation for a given ID.
+         * 
+         * @param {number} id
+         **/
+        async function animate(id) {
+            /** @type {HTMLDialogElement} */
+            const dialog = document.querySelector("#animator");
+            /** @type {HTMLInputElement} */
+            const slider = dialog.querySelector("#animator-slider");
+            const animatorText = dialog.querySelector(".animator-info");
+
+            dialog.showModal();
+            slider.valueAsNumber = 0;
+            animatorText.textContent = "...";
+
+            initializeAnimationCanvas();
+
+            const details = await getSketchDetails(id);
+            const data = details.data;
+            const lines = parseData(data);
+            const linesLookup = getSeparatedPositions(lines);
+            const ink = Math.floor(data.length * 100 / 65_535);
+            const points = linesLookup.length;
+
+            slider.max = points.toString();
+            animatorText.textContent = `#${details.id}, ${ink}% ink`;
+
+            animatorDialog = dialog;
+            animatorSlider = slider;
+            animationLines = lines;
+            lineLookup = linesLookup;
+            position = 0;
+            speed = 4;
+            lineSeekLast = null;
+            lastFrame = null;
+
+            aRAF = window.requestAnimationFrame(animator);
+        }
+
+        /**
+         * The main callback that drives the animation.
+         * 
+         * @param {DOMHighResTimeStamp} timestamp
+         **/
+        function animator(timestamp) {
+            aRAF = window.requestAnimationFrame(animator);
+        }
+
+        /**
+         * @param {[number, number][]} line
+         **/
+        function drawLine(line) {
+            let started = false;
+            for(const [x, y] of line) {
+                if(!started) {
+                    actx.beginPath();
+                    actx.moveTo(x, y);
+                    started = true;
+                }
+                else {
+                    actx.lineTo(x, y);
+                }
+            }
+
+            if(line.length >= 2) {
+                actx.stroke();
+            }
         }
 
         /* element factory methods */
@@ -1811,19 +1970,6 @@
             extendTo(newfirst - 9);
         }
 
-        /* animation methods */
-
-        /**
-         * Sets up animation for a given ID.
-         * 
-         * @param {number} id
-         **/
-        function animate(id) {
-            /** @type {HTMLDialogElement} */
-            const dialog = document.querySelector("#animator");
-            dialog.showModal();
-        }
-
         /* background runners */
 
         async function maxLoop() {
@@ -2190,6 +2336,13 @@
             sttButton.addEventListener("click", () => {
                 tiles.scrollIntoView();  // maybe the main's <hr> can work too
             });
+
+            /** @type {HTMLDialogElement} */
+            const aniDialog = document.querySelector("#animator");
+            const aniCanvas = aniDialog.querySelector("canvas");
+            acanv = aniCanvas;
+            actx = aniCanvas.getContext("2d", {alpha: false});
+            initializeAnimationCanvas();
 
             // Stats fetching, and updating anything that relies on it
 
