@@ -1189,22 +1189,7 @@
          *      The Blob URL of the rendered sketch.
          */
         async function render(data, id=null) {
-            /** @type {number[][][]} */
-            const lines = [];
-            for(const dataline of data.split(" ")) {
-                const line = [];
-                for(let pos = 0; pos < dataline.length; pos += 4) {
-                    if(dataline.slice(pos, pos+4).length < 4) {
-                        continue;
-                    }
-
-                    const x = parseInt(dataline.slice(pos, pos+2), 36);
-                    const y = parseInt(dataline.slice(pos+2, pos+4), 36);
-                    console.assert(!(isNaN(x) || isNaN(y)), id, dataline.slice(pos, pos+4));
-                    line.push([x, y]);
-                }
-                lines.push(line);
-            }
+            const lines = parseData(data);
 
             offctx.fillRect(0, 0, offcanv.width, offcanv.height);
             for(const line of lines) {
