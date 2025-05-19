@@ -1686,7 +1686,7 @@
             tileImage.title = `#${details.id}, ${timestamp}`;
 
             const tileGIFLink = `https://garyc2gif.neocities.org/?id=${details.id}`;
-            tileAnimateButton.innerHTML = "▶";
+            tileAnimateButton.innerHTML = "play";
             tileSaveButton.innerHTML = "save";
             tileGIFButton.innerHTML = "show replay GIF &UpperRightArrow;";
             tileAnimateButton.addEventListener("click", () => animate(details.id));
