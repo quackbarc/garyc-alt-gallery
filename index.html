@@ -2268,6 +2268,10 @@
                     break;
                 }
                 case "fallbackToBunker": {
+                    if(min === null) {
+                        break;
+                    }
+
                     if(value) {
                         galleryMin = min;
                         min = bunkerMin;
@@ -2275,6 +2279,10 @@
                     else {
                         min = galleryMin;
                     }
+
+                    /** @type {HTMLInputElement} */
+                    const maxInputElem = document.querySelector("input#maxid");
+                    maxInputElem.min = min.toString();
                     break;
                 }
                 case "clientSideRendering": {
