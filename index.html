@@ -679,6 +679,16 @@
             float: inline-start;
         }
 
+        dialog .pause-text {
+            user-select: none;
+            font-size: 0.8em;
+            line-height: 1em;
+        }
+
+        dialog .pause-text:not(.show) {
+            display: none;
+        }
+
         /* other media queries */
 
         @media not all and (hover: hover) {
@@ -722,7 +732,7 @@
                 display: grid;
                 grid-template-columns: 1fr auto;
                 grid-template-areas:
-                    "c c"
+                    "c p"
                     "d d"
                     "b b"
                     "a x";
@@ -742,6 +752,10 @@
             }
 
             dialog .speed-settings {
+                grid-area: c-start / c-start / c-end / p-end;
+            }
+
+            dialog .speed-settings:has(~ .pause-text.show) {
                 grid-area: c;
             }
 
@@ -750,7 +764,14 @@
                 grid-area: d;
             }
 
-            dialog form[method="dialog"] button {
+            dialog .pause-text {
+                line-height: 1em;
+                justify-self: end;
+                grid-area: p;
+            }
+
+            dialog form[method="dialog"] {
+                justify-self: end;
                 grid-area: x;
             }
         }
@@ -986,6 +1007,7 @@
         /** @type {HTMLInputElement?} */            let animatorSlider = null;
         /** @type {ParsedSketch?} */                let animationLines = null;
         /** @type {[number, number][]?} */          let lineLookup = null;
+        /** @type {boolean} */                      let paused = true;
         /** @type {number} */                       let position = 0;
         /** @type {number} */                       let speed = 4;
         /** @type {number?} */                      let lineSeekLast = null;
@@ -1291,10 +1313,12 @@
             /** @type {HTMLInputElement} */
             const slider = dialog.querySelector("#animator-slider");
             const animatorText = dialog.querySelector(".animator-info");
+            const pauseText = dialog.querySelector(".pause-text");
 
             dialog.showModal();
             slider.valueAsNumber = 0;
             animatorText.textContent = "...";
+            pauseText.classList.remove("show");
 
             window.cancelAnimationFrame(aRAF);
             actx.fillRect(0, 0, 800, 600);
@@ -1314,6 +1338,7 @@
             animatorSlider = slider;
             animationLines = lines;
             lineLookup = linesLookup;
+            paused = false;
             position = 0;
             speed = settings.animationSpeed;
             lineSeekLast = 0;
@@ -1326,6 +1351,13 @@
             if(aRAF) {
                 window.cancelAnimationFrame(aRAF);
             }
+
+            /** @type {HTMLDialogElement} */
+            const dialog = document.querySelector("#animator");
+            const pauseText = dialog.querySelector(".pause-text");
+
+            paused = true;
+            pauseText.classList.add("show");
         }
 
         /**
@@ -1334,9 +1366,16 @@
          * @param {number} seek
          **/
         function resume(seek) {
+            /** @type {HTMLDialogElement} */
+            const dialog = document.querySelector("#animator");
+            const pauseText = dialog.querySelector(".pause-text");
+
+            pauseText.classList.remove("show");
+
             actx.fillRect(0, 0, 800, 600);
             auxctx.drawImage(acanv, 0, 0, 800, 600);
 
+            paused = false;
             position = seek;
             speed = settings.animationSpeed;
             lineSeekLast = 0;
@@ -1351,6 +1390,9 @@
          **/
         function animator(timestamp) {
             if(!animatorDialog.open) {
+                // Canonical way to close the animator.
+                // Maybe do some cleanup afterwards if we can.
+                paused = true;
                 return;
             }
 
@@ -2471,6 +2513,17 @@
             /** @type {HTMLDialogElement} */
             const aniDialog = document.querySelector("#animator");
             const aniCanvas = aniDialog.querySelector("canvas");
+            aniCanvas.addEventListener("click", () => {
+                if(aniDialog.open) {
+                    if(paused) {
+                        resume(position);
+                    }
+                    else {
+                        pause();
+                    }
+                }
+            });
+
             acanv = aniCanvas;
             actx = aniCanvas.getContext("2d", {alpha: false});
             initializeAnimationCanvas();
@@ -2497,7 +2550,9 @@
                 drawFrameAt(newPosition);
             });
             aniSlider.addEventListener("change", () => {
-                resume(position);
+                if(!paused) {
+                    resume(position);
+                }
             });
 
             // Stats fetching, and updating anything that relies on it
@@ -2930,6 +2985,8 @@
                     <label for="speed-16">16</label>
                 </div>
             </fieldset>
+            <!-- Using canonical pause (&#x23E9;) would've rendered a pause emoji on mobile -->
+            <span class="pause-text">&#10074;&#10074;</span>
             <input type="range" id="animator-slider" min="0" max="1000">
             <form action="" method="dialog">
                 <button>close</button>
