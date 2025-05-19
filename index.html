@@ -1069,6 +1069,24 @@
         }
 
         /**
+         * Returns a dedicated CSS color for a given origin.
+         * For unknown origins, this defaults to a gray.
+         * 
+         * @param {string?} origin  The origin. Can be `null`.
+         */
+        function getOriginDotColor(origin=null) {
+            const index = {
+                "garyc.me": "oklch(0% 0% 0deg)",
+                "noz.rip": "oklch(70% 90% 90deg)",
+                "sketchy-bot.github.io": "oklch(55% 60% 20deg)",
+                "quackbarc.github.io": "oklch(70% 80% 10deg)",
+                "catckbarc.github.io": "oklch(40% 50% 250deg)",
+            }
+            const defaultColor = "oklch(50% 0% 0deg)";
+            return index[origin] || defaultColor;
+        }
+
+        /**
          * Parses sketch data and returns an array of lines that contain
          * coordinate-pairs.
          * 
@@ -1540,33 +1558,7 @@
 
             tileDot.classList.add("tile-dot");
             tileDot.title = details.origin || "no one knows...";
-
-            switch(details.origin) {
-                case "garyc.me": {
-                    tileDot.style.backgroundColor = "oklch(0% 0% 0deg)";
-                    break;
-                }
-                case "noz.rip": {
-                    tileDot.style.backgroundColor = "oklch(70% 90% 90deg)";
-                    break;
-                }
-                case "sketchy-bot.github.io": {
-                    tileDot.style.backgroundColor = "oklch(55% 60% 20deg)";
-                    break;
-                }
-                case "quackbarc.github.io": {
-                    tileDot.style.backgroundColor = "oklch(70% 80% 10deg)";
-                    break;
-                }
-                case "catckbarc.github.io": {
-                    tileDot.style.backgroundColor = "oklch(40% 50% 250deg)";
-                    break;
-                }
-                default: {
-                    tileDot.style.backgroundColor = "oklch(50% 0% 0deg)";
-                    break;
-                }
-            }
+            tileDot.style.backgroundColor = getOriginDotColor(details.origin);
 
             if(settings.clientSideRendering) {
                 tileImage.src = missingSketch;
