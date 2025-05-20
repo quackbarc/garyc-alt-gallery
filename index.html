@@ -1392,9 +1392,9 @@
          **/
         function animator(timestamp) {
             if(!animatorDialog.open) {
-                // Canonical way to close the animator.
+                // Canonical way to end the animator.
                 // Maybe do some cleanup afterwards if we can.
-                paused = true;
+                pause();
                 return;
             }
 
@@ -1444,6 +1444,7 @@
             // Preparation for next frame
 
             if(finished) {
+                pause();
                 return;
             }
 
