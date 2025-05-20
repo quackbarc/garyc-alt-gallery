@@ -1326,6 +1326,10 @@
             actx.fillRect(0, 0, 800, 600);
             auxctx.drawImage(acanv, 0, 0, 800, 600);
 
+            // Add a short cooldown cuz the delay looks nice
+            const cooldownTime = settings.animationSpeed >= 16 ? 50 : 100;
+            const cooldown = new Promise(res => setTimeout(res, cooldownTime));
+
             const details = await getSketchDetails(id);
             const data = details.data;
             const lines = parseData(data);
@@ -1346,6 +1350,7 @@
             lineSeekLast = 0;
             lastFrame = null;
 
+            await cooldown;
             aRAF = window.requestAnimationFrame(animator);
         }
 
@@ -1444,7 +1449,8 @@
             // Preparation for next frame
 
             if(finished) {
-                pause();
+                // Give a slight delay here too because it looks nice
+                new Promise(res => setTimeout(pause, 50));
                 return;
             }
 
