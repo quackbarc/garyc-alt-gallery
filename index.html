@@ -1002,18 +1002,30 @@
         const auxcanv = new OffscreenCanvas(800, 600);
         const auxctx = auxcanv.getContext("2d", {alpha: false});
 
-        /** @type {HTMLCanvasElement?} */           let acanv = null;
-        /** @type {CanvasRenderingContext2D?} */    let actx = null;
-        /** @type {number?} */                      let aRAF = null;
-        /** @type {HTMLDialogElement?} */           let animatorDialog = null;
-        /** @type {HTMLInputElement?} */            let animatorSlider = null;
-        /** @type {ParsedSketch?} */                let animationLines = null;
-        /** @type {[number, number][]?} */          let lineLookup = null;
-        /** @type {boolean} */                      let paused = true;
-        /** @type {number} */                       let position = 0;
-        /** @type {number} */                       let speed = 4;
-        /** @type {number?} */                      let lineSeekLast = null;
-        /** @type {number?} */                      let lastFrame = null;
+        /** @type {HTMLCanvasElement?} */
+        let acanv = null;
+        /** @type {CanvasRenderingContext2D?} */
+        let actx = null;
+        /** @type {number?} */
+        let aRAF = null;
+        /** @type {HTMLDialogElement?} */
+        let animatorDialog = null;
+        /** @type {HTMLInputElement?} */
+        let animatorSlider = null;
+        /** @type {ParsedSketch?} */
+        let animationLines = null;
+        /** @type {[number, number][]?} */
+        let lineLookup = null;
+        /** @type {boolean} */
+        let paused = true;
+        /** @type {number} */
+        let position = 0;
+        /** @type {number} */
+        let speed = 4;
+        /** @type {number?} */
+        let lineSeekLast = null;
+        /** @type {number?} */
+        let lastFrame = null;
 
         /* utilities */
 
