@@ -2535,6 +2535,9 @@
                     }
                 }
             });
+            // Re-initialize animator canvas context after GPU crashes;
+            // the canvas would've just been fully black otherwise.
+            aniCanvas.addEventListener("contextrestored", initializeAnimationCanvas);
 
             acanv = aniCanvas;
             actx = aniCanvas.getContext("2d", {alpha: false});
