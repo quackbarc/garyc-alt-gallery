@@ -2153,6 +2153,20 @@
                         document.title = "alt gallery* for garyc.me";
                     }
 
+                    // Refresh the tile list to `newmax` in case we ever get an
+                    // overwhelming amount of new sketches. This usually happens
+                    // whenever the browser uses a cached version of getStats()
+                    // for `max`, where it'd be pointing to a pretty old ID
+                    // in that case.
+                    //
+                    // This should be a temporary solution to that while I go
+                    // figure out what's causing getStats() to be cached by
+                    // browsers (especially Chrome), despite me telling it not
+                    // to.
+                    if(newmax - max > 50) {
+                        refreshFrom(newmax);
+                    }
+
                     const unseenSection = document.querySelector("#unseen-section");
                     const newSection = createUnseenCountSection(lastmax, lastmaxDate, newmax);
                     if(unseenSection) {
@@ -2165,9 +2179,6 @@
 
                     if(newmax - max <= 50) {
                         extendAbove(newmax);
-                    }
-                    else {
-                        refreshFrom(newmax);
                     }
                 }
 
