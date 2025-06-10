@@ -2722,8 +2722,14 @@
                 case "Escape": {
                     const tilesE = document.querySelector("#tiles");
                     const expandeds = tilesE.querySelectorAll(".expanded");
+                    /** @type {HTMLDialogElement} */
+                    const aniDialog = document.querySelector("#animator");
 
-                    if(expandeds.length > 0) {
+                    if(aniDialog.open) {
+                        // Dummy case; this is only here to prevent the other cases from being fired.
+                        // Hitting Escape on an open <dialog> should close it by default anyway.
+                    }
+                    else if(expandeds.length > 0) {
                         event.preventDefault();
                         expandeds.forEach((tile) => tile.classList.remove("expanded"));
                     }
