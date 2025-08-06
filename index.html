@@ -623,7 +623,11 @@
             border-radius: 4px;
         }
 
-        dialog:open {
+        dialog::backdrop {
+            background-color: var(--dialog-backdrop-background-color);
+        }
+
+        #animator:open {
             /**
              * Using gridbox for this mainly because it's got established
              * containing blocks for its sections -- flexbox would've been
@@ -636,11 +640,7 @@
             gap: 8px;
         }
 
-        dialog::backdrop {
-            background-color: var(--dialog-backdrop-background-color);
-        }
-
-        dialog canvas {
+        #animator canvas {
             /**
              * Dynamically shrink width to whatever fits the screen better.
              * I'd use `height: min(..., 100%)` for the height, but changing
@@ -654,11 +654,11 @@
             justify-self: center;
         }
 
-        dialog fieldset {
+        #animator fieldset {
             all: unset;
         }
 
-        dialog .dialog-bottom {
+        #animator .dialog-bottom {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -667,13 +667,13 @@
             grid-area: bottom;
         }
 
-        dialog .dialog-bottom .separator {
+        #animator .dialog-bottom .separator {
             border: 0px solid #9999;
             border-right-width: 2px;
             height: 100%;
         }
 
-        dialog .speed-settings {
+        #animator .speed-settings {
             flex: 1;
 
             display: flex;
@@ -681,17 +681,17 @@
             gap: 4px;
         }
 
-        dialog .speed-settings legend {
+        #animator .speed-settings legend {
             float: inline-start;
         }
 
-        dialog .pause-text {
+        #animator .pause-text {
             user-select: none;
             font-size: 0.8em;
             line-height: 1em;
         }
 
-        dialog .pause-text:not(.show) {
+        #animator .pause-text:not(.show) {
             display: none;
         }
 
@@ -734,7 +734,7 @@
 
             /* <dialog> styles */
 
-            dialog .dialog-bottom {
+            #animator .dialog-bottom {
                 display: grid;
                 grid-template-columns: 1fr auto;
                 grid-template-areas:
@@ -745,11 +745,11 @@
                 gap: 8px;
             }
 
-            dialog .animator-info {
+            #animator .animator-info {
                 grid-area: a;
             }
 
-            dialog .dialog-bottom .separator {
+            #animator .dialog-bottom .separator {
                 border-right-width: 0px;
                 border-top-width: 2px;
                 height: 6px;
@@ -757,26 +757,26 @@
                 grid-area: b;
             }
 
-            dialog .speed-settings {
+            #animator .speed-settings {
                 grid-area: c-start / c-start / c-end / p-end;
             }
 
-            dialog .speed-settings:has(~ .pause-text.show) {
+            #animator .speed-settings:has(~ .pause-text.show) {
                 grid-area: c;
             }
 
-            dialog input[type="range"] {
+            #animator input[type="range"] {
                 width: 100%;
                 grid-area: d;
             }
 
-            dialog .pause-text {
+            #animator .pause-text {
                 line-height: 1em;
                 justify-self: end;
                 grid-area: p;
             }
 
-            dialog form[method="dialog"] {
+            #animator form[method="dialog"] {
                 justify-self: end;
                 grid-area: x;
             }
