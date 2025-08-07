@@ -2441,13 +2441,11 @@
                         break;
                     }
                     case "number": {
-                        // Save hard-coded HTML value as default
-                        const defaultValue = elem.value;
-
                         elem.value = settings[elem.id].toString();
                         elem.addEventListener(
                             "change",
                             (event) => {
+                                const defaultValue = elem.defaultValue;
                                 const numvalue = parseInt(elem.value);
 
                                 if(isNaN(numvalue)) {
