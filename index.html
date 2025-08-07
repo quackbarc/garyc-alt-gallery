@@ -2786,7 +2786,7 @@
 
                     break;
                 }
-                case "/":
+                case "/": {
                     /** @type {HTMLInputElement} */
                     const maxInputElem = document.querySelector("input#maxid");
                     const headerElem = document.querySelector("header");
@@ -2795,12 +2795,14 @@
                     headerElem.classList.add("sticky");
                     maxInputElem.focus();
                     break;
+                }
                 case "R":
-                case "r":
+                case "r": {
                     /** @type {HTMLButtonElement} */
                     const randomButton = document.querySelector("button#random");
                     randomButton.click();
                     break;
+                }
                 case "ArrowLeft":
                 case "ArrowRight": {
                     const tilesE = document.querySelector("#tiles");
