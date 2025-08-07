@@ -2794,6 +2794,17 @@
                     maxInputElem.focus();
                     break;
                 }
+                case "G":
+                case "g": {
+                    // It feels a bit dirty to have the checkbox manually toggled here;
+                    // I think a dedicated method would be far better for that.
+
+                    /** @type {HTMLInputElement} */
+                    const gridviewCheckbox = document.querySelector("#settings #gridView");
+                    gridviewCheckbox.checked = !settings.gridView;
+                    setSetting("gridView", !settings.gridView);
+                    break;
+                }
                 case "R":
                 case "r": {
                     /** @type {HTMLButtonElement} */
@@ -3091,6 +3102,10 @@
             <tr>
                 <td><kbd>/</kbd></td>
                 <td>Focuses on "Jump to ID" field</td>
+            </tr>
+            <tr>
+                <td><kbd>G</kbd></td>
+                <td>Toggles grid view</td>
             </tr>
             <tr>
                 <td><kbd>R</kbd></td>
