@@ -929,7 +929,6 @@
          *
          * @typedef {object} Settings
          * @property {boolean} clickSaving
-         * @property {boolean} clientSideRendering
          * @property {boolean} endlessScroll
          * @property {boolean} fallbackToBunker
          * @property {boolean} gridView
@@ -937,6 +936,7 @@
          * @property {boolean} showDateSections
          * @property {boolean} showMiscSettings
          * @property {boolean} showUnreads
+         * @property {boolean} useImageURLs
          * @property {boolean} wideGridView
          * @property {number} animationSpeed
          * @property {number} gridImageSize
@@ -1617,7 +1617,15 @@
             tileDot.title = details.origin || "no one knows...";
             tileDot.style.backgroundColor = getOriginDotColor(details.origin);
 
-            if(settings.clientSideRendering) {
+            if(settings.useImageURLs) {
+                tileImage.classList.add("loading");
+                tileImage.src = getImageURL(details.id);
+                tileImage.addEventListener("load", () => {
+                    tileImage.classList.remove("loading");
+                });
+                tileImageA.href = tileImage.src;
+            }
+            else {
                 tileImage.src = missingSketch;
                 tileImage.classList.add("rendering");
                 render(details.data, details.id).then((url) => {
@@ -1625,14 +1633,6 @@
                     tileImageA.href = tileImage.src;
                     tileImage.classList.remove("rendering");
                 });
-            }
-            else {
-                tileImage.classList.add("loading");
-                tileImage.src = getImageURL(details.id);
-                tileImage.addEventListener("load", () => {
-                    tileImage.classList.remove("loading");
-                });
-                tileImageA.href = tileImage.src;
             }
 
             tileImage.classList.add("tile-image");
@@ -2180,7 +2180,8 @@
             first = null;
             last = newfirst + 1;
 
-            if(settings.clientSideRendering) {
+            const usingClientRenderer = !settings.useImageURLs;
+            if(usingClientRenderer) {
                 // Wait for the placeholder to be set up first before creating tiles.
                 // This can also be seen as "wait for the off-canvas to be ready".
                 // TODO: when createTile() becomes async, please put this over there instead.
@@ -2279,7 +2280,6 @@
             /** @type {Settings} */
             const defaultSettings = {
                 clickSaving: false,
-                clientSideRendering: true,
                 endlessScroll: true,
                 fallbackToBunker: false,
                 gridView: false,
@@ -2287,6 +2287,7 @@
                 showDateSections: true,
                 showMiscSettings: false,
                 showUnreads: true,
+                useImageURLs: false,
                 wideGridView: false,
                 animationSpeed: 4,
                 gridImageSize: 200,
@@ -2295,6 +2296,14 @@
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
+
+            // This was the inverse alias for `useImageURLs` on v0.8.1 and prior.
+            // Remove this by v0.10.0.
+            if("clientSideRendering" in settings) {
+                settings.useImageURLs = !settings.clientSideRendering;
+                delete settings.clientSideRendering;
+            }
+
             return {...defaultSettings, ...settings};
         }
 
@@ -2371,7 +2380,7 @@
                     maxInputElem.min = min.toString();
                     break;
                 }
-                case "clientSideRendering": {
+                case "useImageURLs": {
                     document.querySelectorAll(".tile").forEach((tile) => {
                         /** @type {HTMLAnchorElement} */
                         const imageA = tile.querySelector("a.tile-image-holder");
@@ -2380,6 +2389,9 @@
 
                         const toggled = value;
                         if(toggled) {
+                            imageA.href = image.src = getImageURL(id);
+                        }
+                        else {
                             image.src = missingSketch;
                             image.classList.add("rendering");
 
@@ -2393,9 +2405,6 @@
                                     imageA.href = image.src = url;
                                     image.classList.remove("rendering");
                                 });
-                        }
-                        else {
-                            imageA.href = image.src = getImageURL(id);
                         }
                     });
                     break;
@@ -2996,8 +3005,8 @@
                     <input type="checkbox" id="showMiscSettings">
                 </div>
                 <div class="setting misc-setting">
-                    <label for="clientSideRendering">Client-rendered thumbnails:</label>
-                    <input type="checkbox" id="clientSideRendering">
+                    <label for="useImageURLs">Use thumbnails from garyc.me:</label>
+                    <input type="checkbox" id="useImageURLs">
                 </div>
                 <div class="setting misc-setting">
                     <label for="clickSaving">Save sketch on thumbnail click/tap:</label>
