@@ -1964,6 +1964,41 @@
             }
         }
 
+        /**
+         * @param {boolean} useURL
+         *      If this is true, all thumbnails will use images from getImageURL().
+         *      If this is false, all thumbnails will be generated, or regenerated,
+         *      by the page.
+         */
+        function updateAllThumbnails(useURL) {
+            const tilesE = document.querySelector("#tiles");
+            for(const tile of tilesE.querySelectorAll(".tile")) {
+                /** @type {HTMLAnchorElement} */
+                const imageA = tile.querySelector("a.tile-image-holder");
+                const image = imageA.querySelector("img");
+                const id = parseInt(tile.getAttribute("sketch-id"));
+
+                if(useURL) {
+                    imageA.href = image.src = getImageURL(id);
+                }
+                else {
+                    image.src = missingSketch;
+                    image.classList.add("rendering");
+
+                    // Since getSketchDetails requests are cached, we should be
+                    // able to re-fetch these without too much delay.
+                    // That said, if we do start caching details onto a JavaScript
+                    // object somewhere, we should probably be using that instead.
+                    getSketchDetails(id)
+                        .then((details) => render(details.data))
+                        .then((url) => {
+                            imageA.href = image.src = url;
+                            image.classList.remove("rendering");
+                        });
+                }
+            }
+        }
+
         function markGalleryAsRead() {
             lastmax = max;
             lastmaxDate = new Date();
@@ -2381,32 +2416,8 @@
                     break;
                 }
                 case "useImageURLs": {
-                    document.querySelectorAll(".tile").forEach((tile) => {
-                        /** @type {HTMLAnchorElement} */
-                        const imageA = tile.querySelector("a.tile-image-holder");
-                        const image = imageA.querySelector("img");
-                        const id = parseInt(tile.getAttribute("sketch-id"));
-
-                        const toggled = value;
-                        if(toggled) {
-                            imageA.href = image.src = getImageURL(id);
-                        }
-                        else {
-                            image.src = missingSketch;
-                            image.classList.add("rendering");
-
-                            // Since getSketchDetails requests are cached, we should be
-                            // able to re-fetch these without too much delay.
-                            // That said, if we do start caching details onto a JavaScript
-                            // object somewhere, we should probably be using that instead.
-                            getSketchDetails(id)
-                                .then((details) => render(details.data))
-                                .then((url) => {
-                                    imageA.href = image.src = url;
-                                    image.classList.remove("rendering");
-                                });
-                        }
-                    });
+                    const toggled = value;
+                    updateAllThumbnails(toggled);
                     break;
                 }
                 case "showClientMarkers": {
