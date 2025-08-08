@@ -919,7 +919,9 @@
          * @property {boolean} fallbackToBunker
          * @property {boolean} gridView
          * @property {boolean} showClientMarkers
+         * @property {boolean} showDateSections
          * @property {boolean} showMiscSettings
+         * @property {boolean} showUnreads
          * @property {boolean} wideGridView
          * @property {number} animationSpeed
          * @property {number} gridImageSize
@@ -2265,7 +2267,9 @@
                 fallbackToBunker: false,
                 gridView: false,
                 showClientMarkers: false,
+                showDateSections: true,
                 showMiscSettings: false,
+                showUnreads: true,
                 wideGridView: false,
                 animationSpeed: 4,
                 gridImageSize: 200,
@@ -2389,8 +2393,10 @@
                     break;
                 }
                 case "animationSpeed":
+                case "clickSaving":
                 case "endlessScroll":
-                case "clickSaving": {
+                case "showDateSections":
+                case "showUnreads": {
                     // These are expected values! We don't really have to do anything with these.
                     // That being said, I might have to deal with unknown keys in a different way.
                     // This sounds like painful typing.
@@ -2966,6 +2972,14 @@
                 <div class="setting misc-setting">
                     <label for="clickSaving">Save sketch on thumbnail click/tap:</label>
                     <input type="checkbox" id="clickSaving">
+                </div>
+                <div class="setting misc-setting">
+                    <label for="showUnreads">Show unread statuses:</label>
+                    <input type="checkbox" id="showUnreads">
+                </div>
+                <div class="setting misc-setting">
+                    <label for="showDateSections">Show date sections:</label>
+                    <input type="checkbox" id="showDateSections">
                 </div>
                 <div class="setting misc-setting">
                     <label for="showClientMarkers">Show client markers:</label>
