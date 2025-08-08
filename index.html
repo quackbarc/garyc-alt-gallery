@@ -255,8 +255,8 @@
             margin: 0px 3px;
         }
 
-        #settings .misc-setting:not(.show),
-        #settings .grid-view-setting:not(.show) {
+        #settings:not(.show-misc) .misc-setting,
+        #settings:not(.show-grid-view) .grid-view-setting {
             display: none;
         }
 
@@ -2307,9 +2307,7 @@
                 case "gridView": {
                     const toggled = value;
                     document.querySelector("#tiles").classList.toggle("block", toggled);
-                    document.querySelectorAll(".grid-view-setting").forEach((elem) => {
-                        elem.classList.toggle("show", toggled);
-                    });
+                    document.querySelector("#settings").classList.toggle("show-grid-view", toggled);
                     break;
                 }
                 case "pageTheme": {
@@ -2351,9 +2349,7 @@
                 }
                 case "showMiscSettings": {
                     const toggled = value;
-                    document.querySelectorAll(".misc-setting").forEach((elem) => {
-                        elem.classList.toggle("show", toggled);
-                    });
+                    document.querySelector("#settings").classList.toggle("show-misc", toggled);
                     break;
                 }
                 case "fallbackToBunker": {
