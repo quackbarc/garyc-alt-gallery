@@ -612,6 +612,17 @@
             display: none;
         }
 
+        #tiles.hide-unreads #stt-container,
+        #tiles.hide-unreads #unseen-section,
+        #tiles.hide-unreads .new-status {
+            display: none;
+        }
+
+        #tiles.hide-unreads.block .tile.new .tile-image-holder:not(:has(img)),
+        #tiles.hide-unreads.block .tile.new img.tile-image {
+            border-bottom-width: 0px;
+        }
+
         #tiles.dot-markers .tile .tile-dot {
             visibility: visible;
         }
@@ -2189,10 +2200,6 @@
             const newmax = stats.maxID;
             if(newmax > max) {
                 if(showingLatest) {
-                    if(document.visibilityState == "hidden") {
-                        document.title = "alt gallery* for garyc.me";
-                    }
-
                     // Refresh the tile list to `newmax` in case we ever get an
                     // overwhelming amount of new sketches. This usually happens
                     // whenever the browser uses a cached version of getStats()
@@ -2222,8 +2229,14 @@
                     }
                 }
 
-                const symbol = document.querySelector("#title-symbol");
-                symbol.innerHTML = "*";
+                if(settings.showUnreads) {
+                    if(showingLatest && document.visibilityState == "hidden") {
+                        document.title = "alt gallery* for garyc.me";
+                    }
+
+                    const symbol = document.querySelector("#title-symbol");
+                    symbol.innerHTML = "*";
+                }
 
                 const stt = document.querySelector("#scroll-to-top");
                 const sttCount = document.querySelector("#scroll-to-top #stt-count");
@@ -2401,10 +2414,19 @@
                     document.querySelector("#tiles").classList.toggle("hide-dates", !toggled);
                     break;
                 }
+                case "showUnreads": {
+                    const toggled = value;
+                    const unread = max > lastmax;
+                    const tilesE = document.querySelector("#tiles")
+                    const titleSymbol = document.querySelector("#title-symbol");
+
+                    tilesE.classList.toggle("hide-unreads", !toggled);
+                    titleSymbol.textContent = (toggled && unread) ? "*" : "!";
+                    break;
+                }
                 case "animationSpeed":
                 case "clickSaving":
-                case "endlessScroll":
-                case "showUnreads": {
+                case "endlessScroll": {
                     // These are expected values! We don't really have to do anything with these.
                     // That being said, I might have to deal with unknown keys in a different way.
                     // This sounds like painful typing.
@@ -2656,6 +2678,10 @@
                 symbol.innerHTML = "*";
             }
 
+            if(!settings.showUnreads) {
+                markGalleryAsRead();
+            }
+
             lastSeenMax = lastmax;
 
             updateStats(stats);
@@ -2779,7 +2805,7 @@
                         event.preventDefault();
                         expandeds.forEach((tile) => tile.classList.remove("expanded"));
                     }
-                    else {
+                    else if(settings.showUnreads) {
                         event.preventDefault();
                         markGalleryAsRead();
                     }
