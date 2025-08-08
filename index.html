@@ -913,18 +913,18 @@
          * The user configuration of the gallery. Settings, if you insist.
          *
          * @typedef {object} Settings
-         * @property {boolean} endlessScroll
-         * @property {boolean} gridView
          * @property {boolean} clickSaving
          * @property {boolean} clientSideRendering
-         * @property {string} pageTheme
-         * @property {number} gridImageSize
-         * @property {boolean} wideGridView
-         * @property {number} inkFilterThreshold
-         * @property {boolean} showMiscSettings
+         * @property {boolean} endlessScroll
          * @property {boolean} fallbackToBunker
+         * @property {boolean} gridView
          * @property {boolean} showClientMarkers
+         * @property {boolean} showMiscSettings
+         * @property {boolean} wideGridView
          * @property {number} animationSpeed
+         * @property {number} gridImageSize
+         * @property {number} inkFilterThreshold
+         * @property {string} pageTheme
          */
 
         /**
@@ -2259,18 +2259,18 @@
         function getSettings() {
             /** @type {Settings} */
             const defaultSettings = {
-                endlessScroll: true,
-                gridView: false,
                 clickSaving: false,
                 clientSideRendering: true,
-                pageTheme: "auto",
-                gridImageSize: 200,
-                wideGridView: false,
-                inkFilterThreshold: 0,
-                showMiscSettings: false,
+                endlessScroll: true,
                 fallbackToBunker: false,
+                gridView: false,
                 showClientMarkers: false,
+                showMiscSettings: false,
+                wideGridView: false,
                 animationSpeed: 4,
+                gridImageSize: 200,
+                inkFilterThreshold: 0,
+                pageTheme: "auto",
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
