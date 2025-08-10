@@ -1869,17 +1869,6 @@
         }
 
         /**
-         * @param {number} id The first ID of the displayed set of sketches.
-         */
-        function createTileHeaderSection(id) {
-            const section = document.createElement("div");
-            section.innerHTML = `Showing from #${id}`;
-            section.classList.add("tile-section", "type-2");
-            section.id = "showing-header-section";
-            return section;
-        }
-
-        /**
          * @param {number} oldmax   The previous max ID the page was last left at.
          * @param {Date} olddate    The date the page was last updated.
          * @param {number} newmax   The current max ID.
