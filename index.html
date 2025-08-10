@@ -2123,8 +2123,7 @@
             updateJumpHeader(newfirst);
 
             const tilesE = document.querySelector("#tiles");
-            const anchorSection = tilesE.querySelector(".tile-section.anchorable");
-            let anchor = anchorSection;
+            let firstTile = tilesE.querySelector(".tile");
 
             // going from oldest -> latest, because seeing new sketches that way
             // is probably more satisfying than the other way around
@@ -2150,19 +2149,26 @@
                     const firstDay = firstDate ? getComparableDay(firstDate) : null;
 
                     if(firstDay != detailsDay) {
+                        const firstSection = tilesE.querySelector(".date-section");
                         const section = createDateSection(detailsDate);
-                        anchor.before(section);
-                        anchor = section;
+                        const anchor = firstSection || firstTile;
+                        anchor.before(section, tile);
+
                         firstDate = detailsDate;
+                        firstTile = tile;
+                    }
+                    else {
+                        firstTile.before(tile);
+                        firstTile = tile;
                     }
 
                     lastDate = lastDate || detailsDate;
-                    anchor.after(tile);
                 }
 
                 else {
                     const notFoundTile = createNotFoundTile(id);
-                    anchor.after(notFoundTile);
+                    firstTile.before(notFoundTile);
+                    firstTile = notFoundTile;
                 }
 
                 first = id;
