@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://garyc.me/">
-    <link href="https://fonts.googleapis.com/css2?family=Podkova&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&family=Podkova&display=swap" rel="stylesheet">
     <link href="favicon.png" rel="icon">
 
     <meta charset="utf-8">
@@ -476,6 +476,13 @@
             margin: 8px 0px;
             padding: 12px;
             box-sizing: border-box;
+        }
+
+        .tile.not-found .tile-cross {
+            /**
+             * While Podkova doesn't look necessary here, it does keep
+             * font line heights balanced with the caption */
+            font-family: "Podkova", "Noto Sans Symbols 2", sans-serif;
         }
 
         .tile-section {
@@ -1817,7 +1824,7 @@
         function createNotFoundTile(id) {
             const cross = document.createElement("span");
             cross.classList.add("tile-cross");
-            cross.textContent = "🞬";
+            cross.textContent = "✖";
             cross.title = `#${id} was not available.`;
 
             const caption = document.createElement("p");
