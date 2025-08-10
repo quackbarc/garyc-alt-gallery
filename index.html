@@ -471,6 +471,13 @@
             display: none !important;
         }
 
+        .tile.not-found {
+            background-color: var(--background-color);
+            margin: 8px 0px;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
         .tile-section {
             position: relative;
             background-color: var(--tile-section-background-color);
@@ -556,8 +563,20 @@
         }
 
         #tiles.block .tile.not-found {
-            background-color: var(--background-color);
+            width: var(--grid-image-size);
+            aspect-ratio: 4/3;
             margin: 4px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #tiles.block .tile.not-found .tile-cross {
+            display: block;
+            font-size: 2em;
+
+            user-select: none;
         }
 
         /* wide block-based format */
@@ -874,6 +893,9 @@
             .tile .tile-status {
                 align-self: start;
                 padding: 6px 0px;
+            }
+            .tile.not-found {
+                display: flex;
             }
             .tile-section .section-text-right {
                 position: revert;
@@ -1790,17 +1812,19 @@
          * @param {number} id The ID of the sketch that wasn't found.
          */
         function createNotFoundTile(id) {
-            const dummy = document.createElement("div");
-            const tileCaption = document.createElement("p");
+            const cross = document.createElement("span");
+            cross.classList.add("tile-cross");
+            cross.textContent = "🞬";
+            cross.title = `#${id} was not available.`;
 
-            dummy.classList.add("tile-image-holder");
-            tileCaption.innerHTML = `Can't get #${id}.`;
-            tileCaption.classList.add("tile-caption");
+            const caption = document.createElement("p");
+            caption.classList.add("tile-caption");
+            caption.textContent = `#${id} wasn't available.`;
 
             const tile = document.createElement("div");
             tile.classList.add("tile", "anchorable", "not-found");
-            tile.append(dummy);
-            tile.append(tileCaption);
+            tile.setAttribute("sketch-id", id.toString());
+            tile.append(cross, caption);
             return tile;
         }
 
