@@ -2081,10 +2081,11 @@
                     if(lastDay != detailsDay) {
                         const section = createDateSection(detailsDate);
                         tilesE.append(section);
-                        lastDate = detailsDate;
                     }
 
                     firstDate = firstDate || detailsDate;
+                    lastDate = detailsDate;
+
                     tilesE.append(tile);
                 }
 
@@ -2154,7 +2155,6 @@
                         const anchor = firstSection || firstTile;
                         anchor.before(section, tile);
 
-                        firstDate = detailsDate;
                         firstTile = tile;
                     }
                     else {
@@ -2162,6 +2162,7 @@
                         firstTile = tile;
                     }
 
+                    firstDate = detailsDate;
                     lastDate = lastDate || detailsDate;
                 }
 
