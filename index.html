@@ -401,7 +401,6 @@
             flex: 0 1 auto;
         }
 
-        .tile .tile-image-holder:not(:has(img)),
         .tile img.tile-image {
             display: block;  /* https://stackoverflow.com/a/5804278 */
             width: 400px;
@@ -553,13 +552,11 @@
             display: none;
         }
 
-        #tiles.block .tile:not(.expanded) .tile-image-holder:not(:has(img)),
         #tiles.block .tile:not(.expanded) img.tile-image {
             width: var(--grid-image-size);
             box-shadow: 0px 0px 2px #0004;
         }
 
-        #tiles.block .tile.new:not(.expanded) .tile-image-holder:not(:has(img)),
         #tiles.block .tile.new:not(.expanded) img.tile-image {
             border-bottom-width: 6px;
         }
@@ -618,7 +615,6 @@
             box-sizing: border-box;
         }
 
-        .tile.expanded .tile-image-holder:not(:has(img)),
         .tile.expanded img.tile-image {
             width: 100%;
             border-bottom-width: 0;
@@ -645,7 +641,6 @@
             display: none;
         }
 
-        #tiles.hide-unreads.block .tile.new .tile-image-holder:not(:has(img)),
         #tiles.hide-unreads.block .tile.new img.tile-image {
             border-bottom-width: 0px;
         }
@@ -775,7 +770,6 @@
         }
 
         @media (max-width: 800px) {
-            .tile .tile-image-holder:not(:has(img)),
             .tile img.tile-image {
                 width: 250px;
             }
@@ -890,7 +884,6 @@
                 padding: 8px 0px;
                 display: grid;
             }
-            .tile .tile-image-holder:not(:has(img)),
             .tile img.tile-image {
                 width: 100%;
             }
