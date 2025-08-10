@@ -1787,7 +1787,7 @@
 
             tile.setAttribute("sketch-id", details.id.toString());
             tile.setAttribute("ink", (ink * 10).toString());  // int-casted b/c i'm scared of floats
-            tile.classList.add("tile", "anchorable");
+            tile.classList.add("tile");
             tile.append(tileImageA);
             tile.append(tileCaption);
             tile.append(tileStatus);
@@ -1822,7 +1822,7 @@
             caption.textContent = `#${id} wasn't available.`;
 
             const tile = document.createElement("div");
-            tile.classList.add("tile", "anchorable", "not-found");
+            tile.classList.add("tile", "not-found");
             tile.setAttribute("sketch-id", id.toString());
             tile.append(cross, caption);
             return tile;
@@ -1842,7 +1842,7 @@
 
             const section = document.createElement("div");
             section.innerHTML = timestamp;
-            section.classList.add("tile-section", "date-section", "anchorable");
+            section.classList.add("tile-section", "date-section");
             return section;
         }
 
