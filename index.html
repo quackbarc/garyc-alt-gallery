@@ -1966,12 +1966,12 @@
         }
 
         /**
-         * @param {boolean} useURL
+         * @param {boolean} useServerURL
          *      If this is true, all thumbnails will use images from getImageURL().
          *      If this is false, all thumbnails will be generated, or regenerated,
          *      by the page.
          */
-        function updateAllThumbnails(useURL) {
+        function updateThumbnails(useServerURL) {
             const tilesE = document.querySelector("#tiles");
             for(const tile of tilesE.querySelectorAll(".tile")) {
                 /** @type {HTMLAnchorElement} */
@@ -1979,7 +1979,7 @@
                 const image = imageA.querySelector("img");
                 const id = parseInt(tile.getAttribute("sketch-id"));
 
-                if(useURL) {
+                if(useServerURL) {
                     imageA.href = image.src = getImageURL(id);
                 }
                 else {
@@ -2418,7 +2418,7 @@
                 }
                 case "useImageURLs": {
                     const toggled = value;
-                    updateAllThumbnails(toggled);
+                    updateThumbnails(toggled);
                     break;
                 }
                 case "showClientMarkers": {
