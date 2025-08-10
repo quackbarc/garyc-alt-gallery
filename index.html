@@ -2095,11 +2095,7 @@
                         lastDate = detailsDate;
                     }
 
-                    if(!firstDate || !first) {
-                        firstDate = detailsDate;
-                        first = id;
-                    }
-
+                    firstDate = firstDate || detailsDate;
                     tilesE.append(tile);
                 }
 
@@ -2114,6 +2110,7 @@
                     tilesE.append(section);
                 }
 
+                first = first || id;
                 last = id;
             }
 
@@ -2170,11 +2167,7 @@
                         firstDate = detailsDate;
                     }
 
-                    if(!lastDate || !last) {
-                        lastDate = detailsDate;
-                        last = id;
-                    }
-
+                    lastDate = lastDate || detailsDate;
                     anchor.after(tile);
                 }
 
@@ -2184,6 +2177,7 @@
                 }
 
                 first = id;
+                last = last || id;
             }
 
             sketchesLoading = false;
