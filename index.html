@@ -2060,6 +2060,24 @@
             lastSeenMax = max;
         }
 
+        /** other DOM updating methods */
+
+        /**
+         * @param {boolean} unread  Whether the gallery has any new sketches or not.
+         * @param {number?} id
+         *      The top ID of the gallery. Can be null if we're not jumping.
+         */
+        function updateTabTitle(unread, id=null) {
+            let title = "alt gallery for garyc.me";
+            if(unread) {
+                title = `*${title}`;
+            }
+            if(id !== null) {
+                title = `${title} — #${id}`;
+            }
+            document.title = title;
+        }
+
         /* gallery extension methods */
 
         /**
@@ -2235,6 +2253,10 @@
 
             if(!showingLatest) {
                 updateJumpHeader(newfirst);
+                updateTabTitle(false, newfirst);
+            }
+            else {
+                updateTabTitle(false);
             }
 
             if(showingLatest) {
@@ -2301,7 +2323,7 @@
 
                 if(settings.showUnreads) {
                     if(showingLatest && document.visibilityState == "hidden") {
-                        document.title = "*alt gallery for garyc.me";
+                        updateTabTitle(true);
                     }
 
                     const symbol = document.querySelector("#title-symbol");
@@ -2806,7 +2828,7 @@
 
         document.addEventListener("visibilitychange", () => {
             if(document.visibilityState == "visible") {
-                document.title = "alt gallery for garyc.me";
+                updateTabTitle(false);
             }
         })
 
