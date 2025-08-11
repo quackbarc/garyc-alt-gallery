@@ -1350,7 +1350,7 @@
         async function getStats() {
             const resp = await fetch(
                 "https://garyc.me/sketch/getStats.php?details",
-                {cache: "no-store"},  // Firefox likes to serve this cached on pageshow.
+                {cache: "reload"},  // Firefox likes to serve this cached on pageshow.
             );
 
             const stats = await resp.json();
