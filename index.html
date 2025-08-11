@@ -1178,6 +1178,22 @@
         }
 
         /**
+         * Returns the modifiers of a given key combo as a string, which,
+         * when combined with the combo's `key`, can be used as a prefix
+         * for the key combo -- e.g. "Ctrl+", "Alt+Shift+", "", etc.
+         * 
+         * @param {KeyboardEvent} event
+         **/
+        function getModifierPrefix(event) {
+            let modifiers = "";
+            if(event.ctrlKey)   modifiers += "Ctrl+";
+            if(event.altKey)    modifiers += "Alt+";
+            if(event.shiftKey)  modifiers += "Shift+";
+            if(event.metaKey)   modifiers += "Meta+";
+            return modifiers;
+        }
+
+        /**
          * Parses sketch data and returns an array of lines that contain
          * coordinate-pairs.
          * 
@@ -2814,16 +2830,43 @@
 
         // Keyboard events
         document.addEventListener("keydown", (event) => {
+            /** @type {HTMLDialogElement} */
+            const animatorDialog = document.querySelector("#animator");
+            const animating = animatorDialog.open;
+            if(animating) {
+                animatorKeybinds(event);
+            }
+            else {
+                mainKeybinds(event);
+            }
+        });
+
+        /** @param {KeyboardEvent} event */
+        function animatorKeybinds(event) {
+            if(document.activeElement.nodeName == "BUTTON") {
+                // Don't do keybinds on the close button, especially with Space
+                return;
+            }
+
+            const modifiers = getModifierPrefix(event);
+            switch(modifiers + event.key) {
+                case " ": {
+                    /** @type {HTMLCanvasElement} */
+                    const canvas = document.querySelector("#animator-canvas");
+                    canvas.click();
+                    event.preventDefault();
+                    break;
+                }
+            }
+        }
+
+        /** @param {KeyboardEvent} event */
+        function mainKeybinds(event) {
             if(document.activeElement.nodeName == "INPUT") {
                 return;
             }
 
-            let modifiers = "";
-            if(event.ctrlKey)   modifiers += "Ctrl+";
-            if(event.altKey)    modifiers += "Alt+";
-            if(event.shiftKey)  modifiers += "Shift+";
-            if(event.metaKey)   modifiers += "Meta+";
-
+            const modifiers = getModifierPrefix(event);
             switch(modifiers + event.key) {
                 case "Escape": {
                     const tilesE = document.querySelector("#tiles");
@@ -2974,7 +3017,7 @@
                     break;
                 }
             }
-        });
+        }
     </script>
 </head>
 <body>
@@ -3192,6 +3235,10 @@
             <tr>
                 <td><kbd>R</kbd></td>
                 <td>Jumps to a random sketch</td>
+            </tr>
+            <tr>
+                <td><kbd>Space</kbd></td>
+                <td>Pauses/resumes animation</td>
             </tr>
         </table>
 
