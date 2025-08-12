@@ -1064,9 +1064,6 @@
          * @type {number?} */
         let lastSeenMax = null;
 
-        /** @type {number?} */
-        let randomLockInterval = null;
-
         // animation state
 
         /**
@@ -2628,15 +2625,8 @@
                 const randomIDHash = randomID.toString();
                 window.location.hash = randomIDHash;
 
-                if(randomLockInterval !== null) {
-                    clearInterval(randomLockInterval);
-                }
-
-                function unlock() {
-                    randomButton.disabled = false;
-                }
                 randomButton.disabled = true;
-                randomLockInterval = setInterval(unlock, 750);
+                setTimeout(() => randomButton.disabled = false, 750);
             });
 
             /** @type {HTMLButtonElement} */
