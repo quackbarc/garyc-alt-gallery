@@ -154,7 +154,7 @@
             border-bottom: 2px #8884 dashed;
         }
 
-        header.sticky {
+        header:has(input:focus) {
             position: sticky;
             top: 0px;
             z-index: 10;
@@ -2586,13 +2586,6 @@
 
             /** @type {HTMLInputElement} */
             const maxInputElem = document.querySelector("input#maxid");
-            const headerElem = document.querySelector("header");
-            maxInputElem.addEventListener("focus", (event) => {
-                headerElem.classList.add("sticky");
-            });
-            maxInputElem.addEventListener("blur", (event) => {
-                headerElem.classList.remove("sticky");
-            });
             maxInputElem.addEventListener("change", (event) => {
                 const value = maxInputElem.value;
                 const parsedValue = parseInt(value);
@@ -2919,10 +2912,7 @@
                 case "/": {
                     /** @type {HTMLInputElement} */
                     const maxInputElem = document.querySelector("input#maxid");
-                    const headerElem = document.querySelector("header");
-
                     event.preventDefault();
-                    headerElem.classList.add("sticky");
                     maxInputElem.focus();
                     break;
                 }
