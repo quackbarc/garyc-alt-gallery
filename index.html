@@ -2843,8 +2843,15 @@
         // Keyboard events
         document.addEventListener("keydown", (event) => {
             /** @type {HTMLDialogElement} */
+            const controlsDialog = document.querySelector("#controls");
+            if(controlsDialog.open) {
+                return;
+            }
+
+            /** @type {HTMLDialogElement} */
             const animatorDialog = document.querySelector("#animator");
             const animating = animatorDialog.open;
+
             if(animating) {
                 animatorKeybinds(event);
             }
