@@ -953,7 +953,6 @@
          * The user configuration of the gallery. Settings, if you insist.
          *
          * @typedef {object} Settings
-         * @property {boolean} clickSaving
          * @property {boolean} endlessScroll
          * @property {boolean} fallbackToBunker
          * @property {boolean} gridView
@@ -967,6 +966,7 @@
          * @property {number} gridImageSize
          * @property {number} inkFilterThreshold
          * @property {string} pageTheme
+         * @property {string} thumbClickAction
          */
 
         /**
@@ -1679,7 +1679,7 @@
             tileImageA.append(tileImage);
             tileImageA.append(tileDot);
             tileImageA.addEventListener("click", (event) => {
-                if(settings.clickSaving) {
+                if(settings.thumbClickAction == "save") {
                     return;
                 }
 
@@ -2366,7 +2366,6 @@
         function getSettings() {
             /** @type {Settings} */
             const defaultSettings = {
-                clickSaving: false,
                 endlessScroll: true,
                 fallbackToBunker: false,
                 gridView: false,
@@ -2380,6 +2379,7 @@
                 gridImageSize: 200,
                 inkFilterThreshold: 0,
                 pageTheme: "auto",
+                thumbClickAction: "expand",
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
@@ -2389,6 +2389,13 @@
             if("clientSideRendering" in settings) {
                 settings.useImageURLs = !settings.clientSideRendering;
                 delete settings.clientSideRendering;
+            }
+
+            // This was a toggle for thumbnail saving/expanding on v0.8.4 and prior.
+            // Remove this by v0.10.0, or perhaps a few months from writing time.
+            if("clickSaving" in settings) {
+                settings.thumbClickAction = settings.clickSaving ? "save" : "expand";
+                delete settings.clickSaving;
             }
 
             return {...defaultSettings, ...settings};
@@ -2493,7 +2500,7 @@
                     break;
                 }
                 case "animationSpeed":
-                case "clickSaving":
+                case "thumbClickAction":
                 case "endlessScroll": {
                     // These are expected values! We don't really have to do anything with these.
                     // That being said, I might have to deal with unknown keys in a different way.
@@ -3085,12 +3092,15 @@
 
                 <hr class="misc-setting">
                 <div class="setting misc-setting">
-                    <label for="useImageURLs">Use thumbnails from garyc.me:</label>
-                    <input type="checkbox" id="useImageURLs">
+                    <label for="thumbClickAction">Thumbnail click/tap action:</label>
+                    <select id="thumbClickAction">
+                        <option value="expand">Expand</option>
+                        <option value="save">Save</option>
+                    </select>
                 </div>
                 <div class="setting misc-setting">
-                    <label for="clickSaving">Save sketch on thumbnail click/tap:</label>
-                    <input type="checkbox" id="clickSaving">
+                    <label for="useImageURLs">Use thumbnails from garyc.me:</label>
+                    <input type="checkbox" id="useImageURLs">
                 </div>
                 <div class="setting misc-setting">
                     <label for="showDateSections">Show date sections:</label>
