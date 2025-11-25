@@ -1680,6 +1680,13 @@
             tileImageA.append(tileDot);
             tileImageA.addEventListener("click", (event) => {
                 if(settings.thumbClickAction == "save") {
+                    // Do the default behavior of clicking a downloadable <a>.
+                    return;
+                }
+
+                if(settings.thumbClickAction == "animate") {
+                    animate(details.id);
+                    event.preventDefault();
                     return;
                 }
 
@@ -3094,6 +3101,7 @@
                 <div class="setting misc-setting">
                     <label for="thumbClickAction">Thumbnail click/tap action:</label>
                     <select id="thumbClickAction">
+                        <option value="animate">Animate</option>
                         <option value="expand">Expand</option>
                         <option value="save">Save</option>
                     </select>
