@@ -2506,8 +2506,20 @@
                     titleSymbol.textContent = (toggled && unread) ? "*" : "!";
                     break;
                 }
+                case "thumbClickAction": {
+                    let text = "expands the sketch into full size.";
+                    if(value == "animate") {
+                        text = "animates the sketch."
+                    }
+                    if(value == "save") {
+                        text = "saves the sketch."
+                    }
+
+                    const clickTextE = document.querySelector("#thumb-click-text");
+                    clickTextE.textContent = text;
+                    break;
+                }
                 case "animationSpeed":
-                case "thumbClickAction":
                 case "endlessScroll": {
                     // These are expected values! We don't really have to do anything with these.
                     // That being said, I might have to deal with unknown keys in a different way.
@@ -3152,7 +3164,10 @@
             </p>
 
             <ul>
-                <li>Clicking/tapping on the sketches expands the sketch into full size.</li>
+                <li>
+                    Clicking/tapping on the sketches
+                    <span id="thumb-click-text">expands the sketch into full size.</span>
+                </li>
                 <li>Clicking/tapping on animation replays pause or resume them.</li>
                 <li>
                     Use the "Jump to ID" field on the top-right to show sketches around a given ID.
