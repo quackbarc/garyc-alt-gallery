@@ -20,6 +20,7 @@
     <meta name="og:description" content="the only gallery with a tortoise on the embed thumbnail. that's right babey">
     <meta name="og:image" content="https://upload.wikimedia.org/wikipedia/commons/a/aa/A._gigantea_Aldabra_Giant_Tortoise.jpg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111">
     <title>alt gallery for garyc.me</title>
 
     <style>
@@ -2426,14 +2427,17 @@
                     break;
                 }
                 case "pageTheme": {
+                    let theme = value;
                     if(value == "auto") {
                         const query = window.matchMedia("(prefers-color-scheme: dark)");
-                        const theme = query.matches ? "dark" : "light";
-                        document.documentElement.setAttribute("theme", theme);
-                        break;
+                        theme = query.matches ? "dark" : "light";
                     }
 
-                    document.documentElement.setAttribute("theme", value);
+                    /** @type {HTMLMetaElement} */
+                    const meta = document.querySelector("meta[name='theme-color']");
+                    meta.content = theme == "dark" ? "#111" : "#eee";
+
+                    document.documentElement.setAttribute("theme", theme);
                     break;
                 }
                 case "gridImageSize": {
