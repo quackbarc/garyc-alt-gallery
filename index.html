@@ -2799,7 +2799,12 @@
         document.addEventListener("wheel", endlessScrollHandler);
 
         function endlessScrollHandler() {
+            const outOfBounds = last == null;
+
             if(sketchesLoading) {
+                return;
+            }
+            if(outOfBounds) {
                 return;
             }
 
