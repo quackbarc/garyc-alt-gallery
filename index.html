@@ -2344,6 +2344,12 @@
                 stt.classList.add("new");
                 sttCount.innerHTML = (newmax - lastSeenMax).toString();
 
+                /** @type {HTMLButtonElement} */
+                const moreAboveButton = document.querySelector("button#moreAbove");
+                if(!showingLatest && !sketchesLoading && newmax >= first) {
+                    moreAboveButton.disabled = false;
+                }
+
                 max = newmax;
             }
 
