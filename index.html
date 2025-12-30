@@ -973,6 +973,7 @@
          * @property {number} inkFilterThreshold
          * @property {"auto" | "dark" | "light"} pageTheme
          * @property {"animate" | "expand" | "save"} thumbClickAction
+         * @property {"garyc.me" | "noz.rip"} gallery
          */
 
         /**
@@ -1350,9 +1351,32 @@
          *      gallery.
          */
         async function getStats() {
+            // Firefox likes to serve this endpoint cached on pageshow.
+            // Pass this param to `fetch()` so it'd try not to do that.
+            /** @type {{cache: RequestCache}} */
+            const options = {cache: "reload"};
+
+            if(settings.gallery == "noz.rip") {
+                const sapResp = await fetch("https://noz.rip/sketch/getStats.php", options);
+                const maxResp = await fetch("https://noz.rip/sketch/getMaxID.php", options);
+
+                const sap = await sapResp.text()
+                    .then((nums) => nums
+                        .split(",")
+                        .map((num) => parseInt(num))
+                    );
+                const [sketches, artists, peekers] = sap;
+                const maxID = await maxResp.text().then((num) => parseInt(num));
+
+                return {
+                    sketches, artists, peekers, maxID,
+                    minID: 1,  // just a guess -- I'm not sure what noz.rip's gallery actually limits to
+                };
+            }
+
             const resp = await fetch(
                 "https://garyc.me/sketch/getStats.php?details",
-                {cache: "reload"},  // Firefox likes to serve this cached on pageshow.
+                options,
             );
 
             const stats = await resp.json();
@@ -1369,12 +1393,16 @@
          *      null if it isn't found.
          */
         async function getSketchDetails(id) {
-            const sketchDetailsURL = settings.fallbackToBunker && id < galleryMin
-                ? `https://noz.rip/sketch_bunker/get.php?details&id=${id}`
-                : `https://garyc.me/sketch/get.php?details&id=${id}`;
+            let fetchURL = `https://garyc.me/sketch/get.php?details&id=${id}`;
+            if(settings.gallery == "noz.rip") {
+                fetchURL = `https://noz.rip/sketch/get.php?details&id=${id}`;
+            }
+            else if(settings.fallbackToBunker && id < galleryMin) {
+                fetchURL = `https://noz.rip/sketch_bunker/get.php?details&id=${id}`;
+            }
 
             const resp = await fetch(
-                sketchDetailsURL,
+                fetchURL,
                 {cache: "force-cache"},
             );
 
@@ -1406,6 +1434,9 @@
          *      if `settings.fallbackToBunker` is on.
          */
         function getImageURL(id) {
+            if(settings.gallery == "noz.rip") {
+                return `https://noz.rip/sketch/getIMG.php?id=${id}&save`;
+            }
             if(settings.fallbackToBunker && id < galleryMin) {
                 return `https://noz.rip/sketch_bunker/getIMG.php?id=${id}&save`;
             }
@@ -1726,7 +1757,15 @@
             const ink = Math.floor(inkRaw * 1000) / 10;
 
             let linkParts = [];
-            if(bunker) {
+            if(settings.gallery == "noz.rip") {
+                linkParts = [
+                    "https://noz.rip",
+                    "/sketch",
+                    "/gallery.php",
+                    `#${details.id}`,
+                ];
+            }
+            else if(bunker) {
                 linkParts = [
                     "https://noz.rip",
                     "/sketch_bunker",
@@ -2399,6 +2438,7 @@
                 inkFilterThreshold: 0,
                 pageTheme: "auto",
                 thumbClickAction: "expand",
+                gallery: "noz.rip",  // change to "garyc.me" once it comes back online
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
