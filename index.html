@@ -2645,16 +2645,19 @@
             let states = {};
 
             const storedState = JSON.parse(localStorage.getItem("tilegallery-state"));
-            const isMultiState = "garyc.me" in storedState;
-            if(!isMultiState) {
-                // This type of state was made from v0.8.5 or earlier, when
-                // multiple gallery sources weren't supported yet.
-                // This was the state for the main garyc.me gallery.
-                states["garyc.me"] = storedState;
-                localStorage.setItem("tilegallery-state", JSON.stringify(states));
-            }
-            else {
-                states = storedState;
+            if(storedState) {
+                const isMultiState = "garyc.me" in storedState;
+                if(!isMultiState) {
+                    // This type of state was made from v0.8.5 or earlier, when
+                    // multiple gallery sources weren't supported yet.
+                    // This used to just be the state for the garyc.me gallery.
+                    // We're upgrading this while we're still here.
+                    states["garyc.me"] = storedState;
+                    localStorage.setItem("tilegallery-state", JSON.stringify(states));
+                }
+                else {
+                    states = storedState;
+                }
             }
 
             const state = states[settings.gallery];
@@ -2864,7 +2867,8 @@
                 max = stats.maxID;
             }
 
-            const state = localStorage.getItem("tilegallery-state");
+            const states = JSON.parse(localStorage.getItem("tilegallery-state")) || {};
+            const state = states[settings.gallery];
             if(!state) {
                 lastmax = max;
                 lastmaxDate = new Date();
