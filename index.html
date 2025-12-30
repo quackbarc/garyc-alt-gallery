@@ -950,6 +950,12 @@
          */
 
         /**
+         * A mapping of gallery states identified by gallery source.
+         * 
+         * @typedef {Object.<string, GalleryState>} MultiGalleryState
+         */
+
+        /**
          * The current loading state of the gallery's tiles.
          * 
          * @typedef {"idle" | "loading" | "gallery-end"} LoadingState
@@ -2423,13 +2429,15 @@
          * Updates the localStorage state with the current state of the gallery.
          */
         function updateStorageState() {
-            /** @type {GalleryState} */
+            /** @type {MultiGalleryState} */
+            const states = JSON.parse(localStorage.getItem("tilegallery-state")) || {};
             const state = {
                 "last_max": max,
                 "last_updated": Date.now(),
             };
 
-            localStorage.setItem("tilegallery-state", JSON.stringify(state));
+            states[settings.gallery] = state;
+            localStorage.setItem("tilegallery-state", JSON.stringify(states));
         }
 
         /**
@@ -2607,8 +2615,23 @@
         /* main */
 
         function JSmain() {
-            /** @type {GalleryState?} */
-            const state = JSON.parse(localStorage.getItem("tilegallery-state"));
+            /** @type {MultiGalleryState} */
+            let states = {};
+
+            const storedState = JSON.parse(localStorage.getItem("tilegallery-state"));
+            const isMultiState = "garyc.me" in storedState;
+            if(!isMultiState) {
+                // This type of state was made from v0.8.5 or earlier, when
+                // multiple gallery sources weren't supported yet.
+                // This was the state for the main garyc.me gallery.
+                states["garyc.me"] = storedState;
+                localStorage.setItem("tilegallery-state", JSON.stringify(states));
+            }
+            else {
+                states = storedState;
+            }
+
+            const state = states[settings.gallery];
             if(state) {
                 lastmax = state["last_max"];
                 lastmaxDate = new Date(state["last_updated"]);
