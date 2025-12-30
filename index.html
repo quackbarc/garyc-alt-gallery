@@ -996,6 +996,15 @@
         });
 
         /**
+         * The maximum possible length of a sketch's data, or in other words,
+         * the gallery's ink limit.
+         * 
+         * On garyc.me, this is (64kB - 1).
+         * On noz.rip, this is exactly 128kB.
+         */
+        const inkLimit = 128*1024;
+
+        /**
          * The earliest sketch ID on the complete part of the noz.rip archive.
          * There are even earlier sketches, but they're sparsely scattered from
          * each other.
@@ -1475,7 +1484,7 @@
             const data = details.data;
             const lines = parseData(data);
             const linesLookup = getSeparatedPositions(lines);
-            const ink = Math.floor(data.length * 100 / 65_535);
+            const ink = Math.floor(data.length * 100 / inkLimit);
             const points = linesLookup.length;
 
             slider.max = points.toString();
@@ -1753,7 +1762,7 @@
                 event.preventDefault();
             });
 
-            const inkRaw = details.data.length / 65535;
+            const inkRaw = details.data.length / inkLimit;
             const ink = Math.floor(inkRaw * 1000) / 10;
 
             let linkParts = [];
