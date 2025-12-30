@@ -2399,6 +2399,11 @@
                 min = newmin;
             }
 
+            /** @type {HTMLInputElement} */
+            const maxInputElem = document.querySelector("input#maxid");
+            maxInputElem.min = min.toString();
+            maxInputElem.max = max.toString();
+
             updateStats(stats);
             refreshText.classList.remove("show");
         }
