@@ -1469,10 +1469,10 @@
          */
         function getImageURL(id) {
             if(settings.gallery == "noz.rip") {
-                return `https://noz.rip/sketch/getIMG.php?id=${id}&save`;
+                return `https://noz.rip/sketch/getIMG.php?id=${id}&full`;
             }
             if(settings.fallbackToBunker && id < galleryMin) {
-                return `https://noz.rip/sketch_bunker/getIMG.php?id=${id}&save`;
+                return `https://noz.rip/sketch_bunker/getIMG.php?id=${id}`;
             }
             return `https://garyc.me/sketch/getIMG.php?id=${id}&save`;
         }
