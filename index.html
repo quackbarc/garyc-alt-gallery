@@ -1720,7 +1720,9 @@
             const tileActions = document.createElement("div");
             const tileStatus = document.createElement("div");
 
-            const bunker = settings.fallbackToBunker && details.id < galleryMin;
+            const bunker = settings.gallery == "garyc.me"
+                && settings.fallbackToBunker
+                && details.id < galleryMin;
 
             tileDot.classList.add("tile-dot");
             tileDot.title = details.origin || "no one knows...";
@@ -2426,7 +2428,8 @@
                 max = newmax;
             }
 
-            if(settings.fallbackToBunker) {
+            const usingBunker = settings.gallery == "garyc.me" && settings.fallbackToBunker;
+            if(usingBunker) {
                 galleryMin = newmin;
             }
             else {
@@ -2559,6 +2562,9 @@
                     break;
                 }
                 case "fallbackToBunker": {
+                    if(settings.gallery != "garyc.me") {
+                        break;
+                    }
                     if(min === null) {
                         break;
                     }
@@ -2848,7 +2854,7 @@
             refreshText.classList.add("show");
 
             const stats = await getStats();
-            if(settings.fallbackToBunker) {
+            if(settings.gallery == "garyc.me" && settings.fallbackToBunker) {
                 galleryMin = stats.minID;
                 min = bunkerMin;
                 max = stats.maxID;
@@ -3217,9 +3223,9 @@
                     <label for="gridView">Grid view:</label>
                     <input type="checkbox" id="gridView">
                 </div>
-                <div class="setting">
-                    <label for="fallbackToBunker">Use noz.rip for older sketches:</label>
-                    <input type="checkbox" id="fallbackToBunker">
+                <div class="setting" title="This option is currently out of order.">
+                    <label for="fallbackToBunker"><i>Use noz.rip for older sketches:</i></label>
+                    <input type="checkbox" id="fallbackToBunker" disabled>
                 </div>
                 <div class="setting">
                     <label for="showMiscSettings">Show more settings:</label>
