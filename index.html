@@ -2615,6 +2615,7 @@
                     clickTextE.textContent = text;
                     break;
                 }
+                case "gallery":
                 case "animationSpeed":
                 case "endlessScroll": {
                     // These are expected values! We don't really have to do anything with these.
@@ -3226,6 +3227,13 @@
                 </div>
 
                 <hr class="misc-setting">
+                <div class="setting misc-setting">
+                    <label for="gallery">Gallery:</label>
+                    <select id="gallery">
+                        <option value="garyc.me" title="Currently unavailable." disabled>garyc.me</option>
+                        <option value="noz.rip">noz.rip</option>
+                    </select>
+                </div>
                 <div class="setting misc-setting">
                     <label for="thumbClickAction">Thumbnail click/tap action:</label>
                     <select id="thumbClickAction">
