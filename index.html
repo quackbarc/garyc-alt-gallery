@@ -1025,9 +1025,9 @@
          * the gallery's ink limit.
          * 
          * On garyc.me, this is (64kB - 1).
-         * On noz.rip, this is exactly 128kB.
+         * On noz.rip, this is (128kB - 1).
          */
-        const inkLimit = 128*1024;
+        const inkLimit = 128*1024 - 1;
 
         /**
          * The earliest sketch ID on the complete part of the noz.rip archive.
