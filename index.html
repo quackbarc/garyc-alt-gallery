@@ -1385,32 +1385,14 @@
          *      gallery.
          */
         async function getStats() {
-            // Firefox likes to serve this endpoint cached on pageshow.
-            // Pass this param to `fetch()` so it'd try not to do that.
-            /** @type {{cache: RequestCache}} */
-            const options = {cache: "reload"};
-
+            let fetchURL = "https://garyc.me/sketch/getStats.php?details";
             if(settings.gallery == "noz.rip") {
-                const sapResp = await fetch("https://noz.rip/sketch/getStats.php", options);
-                const maxResp = await fetch("https://noz.rip/sketch/getMaxID.php", options);
-
-                const sap = await sapResp.text()
-                    .then((nums) => nums
-                        .split(",")
-                        .map((num) => parseInt(num))
-                    );
-                const [sketches, artists, peekers] = sap;
-                const maxID = await maxResp.text().then((num) => parseInt(num));
-
-                return {
-                    sketches, artists, peekers, maxID,
-                    minID: 1,  // just a guess -- I'm not sure what noz.rip's gallery actually limits to
-                };
+                fetchURL = "https://noz.rip/sketch/getStats.php?details";
             }
 
             const resp = await fetch(
-                "https://garyc.me/sketch/getStats.php?details",
-                options,
+                fetchURL,
+                {cache: "reload"},  // Firefox likes to serve this endpoint cached on pageshow
             );
 
             const stats = await resp.json();
