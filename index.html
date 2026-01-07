@@ -42,6 +42,8 @@
             --dialog-background-color: var(--background-color);
             --dialog-backdrop-background-color: #0006;
 
+            --note-border-color: #fff3;
+
             --text-color: #fff;
             --text-italic-color: #fff9;
             --text-anchor-color: var(--unseen-color-light);
@@ -63,6 +65,8 @@
             --toast-background-color: #000;
             --dialog-background-color: var(--background-color);
             --dialog-backdrop-background-color: #fff6;
+
+            --note-border-color: #0003;
 
             --text-color: #000;
             --text-italic-color: #0009;
@@ -89,7 +93,8 @@
             transition: 0.2s background-color ease;
         }
 
-        hr {
+        hr,
+        .note {
             transition: 0.2s border-color ease;
         }
 
@@ -347,8 +352,9 @@
         }
 
         .note {
-            border: 2px solid #f2aa24;
-            border-radius: 0px 8px 8px 0px;
+            border: 2px solid var(--note-border-color);
+            border-top-color: #f2aa24;
+            border-radius: 0px 0px 8px 8px;
         }
 
         .note legend {
@@ -814,10 +820,6 @@
 
             #prelude {
                 margin: 0.5em 0.5em 1em;
-            }
-
-            .note {
-                border-radius: 0px 0px 8px 8px;
             }
 
             /* <dialog> styles */
