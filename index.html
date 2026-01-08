@@ -279,13 +279,12 @@
         }
 
         footer .filter-note-text {
-            display: none;
             margin: 1em;
             font-size: 0.9em;
         }
 
-        footer .filter-note-text.show {
-            display: unset;
+        footer .filter-note-text:not(.show) {
+            display: none;
         }
 
         /* floating element styles */
