@@ -2604,7 +2604,12 @@
                     clickTextE.textContent = text;
                     break;
                 }
-                case "gallery":
+                case "gallery": {
+                    /** @type {HTMLInputElement} */
+                    const inkFilterInput = document.querySelector("input#inkFilterThreshold");
+                    inkFilterInput.step = value == "noz.rip" ? "2" : "5";
+                    break;
+                }
                 case "animationSpeed":
                 case "endlessScroll": {
                     // These are expected values! We don't really have to do anything with these.
