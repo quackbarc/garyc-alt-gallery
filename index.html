@@ -982,6 +982,12 @@
          */
 
         /**
+         * The source of the gallery's sketches.
+         * 
+         * @typedef {"garyc.me" | "noz.rip" | "noz.rip-bunker"} GallerySource
+         */
+
+        /**
          * The user configuration of the gallery. Settings, if you insist.
          *
          * @typedef {object} Settings
@@ -999,7 +1005,7 @@
          * @property {number} inkFilterThreshold
          * @property {"auto" | "dark" | "light"} pageTheme
          * @property {"animate" | "expand" | "save"} thumbClickAction
-         * @property {"garyc.me" | "noz.rip"} gallery
+         * @property {GallerySource} gallery
          */
 
         /**
@@ -1383,9 +1389,27 @@
         /**
          * @returns {Promise<Stats>}
          *      A promise that returns the current statistics of the
-         *      gallery.
+         *      gallery. If the current gallery is the bunker gallery,
+         *      the returned statistics would just be random numbers.
          */
         async function getStats() {
+            if(settings.gallery == "noz.rip-bunker") {
+                const maxResp = await fetch(
+                    "https://noz.rip/sketch_bunker/getMaxID.php",
+                    {cache: "reload"},
+                );
+                const maxIDRaw = await maxResp.text();
+                const maxID = parseInt(maxIDRaw);
+
+                const sketches = Math.floor(Math.random() * 21);  // (0 tp 20)
+                const artists = Math.floor(Math.random() * (sketches + 1));
+                const peekers = Math.floor(Math.random() * 26);  // (0 to 25)
+                return {
+                    sketches, artists, peekers, maxID,
+                    minID: bunkerMin,
+                };
+            }
+
             let fetchURL = "https://garyc.me/sketch/getStats.php?details";
             if(settings.gallery == "noz.rip") {
                 fetchURL = "https://noz.rip/sketch/getStats.php?details";
@@ -1410,12 +1434,21 @@
          *      null if it isn't found.
          */
         async function getSketchDetails(id) {
-            let fetchURL = `https://garyc.me/sketch/get.php?details&id=${id}`;
-            if(settings.gallery == "noz.rip") {
+            const useBunker = (
+                settings.gallery == "garyc.me"
+                && settings.fallbackToBunker
+                && id < galleryMin
+            );
+
+            let fetchURL;
+            if(settings.gallery == "noz.rip-bunker" || useBunker) {
+                fetchURL = `https://noz.rip/sketch_bunker/get.php?details&id=${id}`;
+            }
+            else if(settings.gallery == "noz.rip") {
                 fetchURL = `https://noz.rip/sketch/get.php?details&id=${id}`;
             }
-            else if(settings.fallbackToBunker && id < galleryMin) {
-                fetchURL = `https://noz.rip/sketch_bunker/get.php?details&id=${id}`;
+            else {
+                fetchURL = `https://garyc.me/sketch/get.php?details&id=${id}`;
             }
 
             const resp = await fetch(
@@ -1451,11 +1484,16 @@
          *      if `settings.fallbackToBunker` is on.
          */
         function getImageURL(id) {
+            const useBunker = (
+                settings.gallery == "garyc.me"
+                && settings.fallbackToBunker
+                && id < galleryMin
+            );
+            if(settings.gallery == "noz.rip-bunker" || useBunker) {
+                return `https://noz.rip/sketch_bunker/getIMG.php?id=${id}&full`;
+            }
             if(settings.gallery == "noz.rip") {
                 return `https://noz.rip/sketch/getIMG.php?id=${id}&full`;
-            }
-            if(settings.fallbackToBunker && id < galleryMin) {
-                return `https://noz.rip/sketch_bunker/getIMG.php?id=${id}`;
             }
             return `https://garyc.me/sketch/getIMG.php?id=${id}&save`;
         }
@@ -3230,6 +3268,7 @@
                     <select id="gallery">
                         <option value="garyc.me" title="Currently unavailable." disabled>garyc.me</option>
                         <option value="noz.rip">noz.rip</option>
+                        <option value="noz.rip-bunker">Archive</option>
                     </select>
                 </div>
                 <div class="setting misc-setting">
