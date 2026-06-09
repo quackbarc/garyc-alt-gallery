@@ -658,6 +658,10 @@
 
         /* other #tiles formats */
 
+        #tiles.block.gapless .tile {
+            padding: 0px;
+        }
+
         #tiles.hide-dates .date-section {
             display: none;
         }
@@ -1000,6 +1004,7 @@
          * @property {boolean} showUnreads
          * @property {boolean} useImageURLs
          * @property {boolean} wideGridView
+         * @property {boolean} gaplessGrid
          * @property {number} animationSpeed
          * @property {number} gridImageSize
          * @property {number} inkFilterThreshold
@@ -2498,6 +2503,7 @@
                 showUnreads: true,
                 useImageURLs: false,
                 wideGridView: false,
+                gaplessGrid: false,
                 animationSpeed: 4,
                 gridImageSize: 200,
                 inkFilterThreshold: 0,
@@ -2559,6 +2565,11 @@
                 case "wideGridView": {
                     const toggled = value;
                     document.body.classList.toggle("widened", toggled);
+                    break;
+                }
+                case "gaplessGrid": {
+                    const toggled = value;
+                    document.querySelector("#tiles").classList.toggle("gapless", toggled);
                     break;
                 }
                 case "inkFilterThreshold": {
@@ -3312,6 +3323,10 @@
                 <div class="setting grid-view-setting">
                     <label for="wideGridView">Expanded grid view:</label>
                     <input type="checkbox" id="wideGridView">
+                </div>
+                <div class="setting grid-view-setting">
+                    <label for="gaplessGrid">Gapless grid:</label>
+                    <input type="checkbox" id="gaplessGrid">
                 </div>
 
                 <hr>
