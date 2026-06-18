@@ -2683,8 +2683,8 @@
 
             const storedState = JSON.parse(localStorage.getItem("tilegallery-state"));
             if(storedState) {
-                const isMultiState = "garyc.me" in storedState;
-                if(!isMultiState) {
+                const isSingleState = "last_max" in storedState;
+                if(isSingleState) {
                     // This type of state was made from v0.8.5 or earlier, when
                     // multiple gallery sources weren't supported yet.
                     // This used to just be the state for the garyc.me gallery.
