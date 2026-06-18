@@ -2661,8 +2661,10 @@
         /**
          * @param {string} key
          * @param {any} value
+         * @param {boolean} init
+         *      Whether the setting is being set on page init or not.
          */
-        function setSetting(key, value) {
+        function setSetting(key, value, init=false) {
             switch(key) {
                 case "gridView": {
                     const toggled = value;
@@ -2724,7 +2726,7 @@
                     if(settings.gallery != "garyc.me") {
                         break;
                     }
-                    if(min === null) {
+                    if(init || min === null) {
                         break;
                     }
 
@@ -2785,7 +2787,9 @@
                     const inkFilterInput = document.querySelector("input#inkFilterThreshold");
                     inkFilterInput.step = value == "noz.rip" ? "2" : "5";
 
-                    switchGallerySource(value);
+                    if(!init) {
+                        switchGallerySource(value);
+                    }
                     break;
                 }
                 case "animationSpeed":
@@ -2811,7 +2815,7 @@
 
             // Apply settings that need to be applied before the DOM is ready,
             // e.g. changing the theme on <html>.
-            setSetting("pageTheme", settings.pageTheme);
+            setSetting("pageTheme", settings.pageTheme, true);
         }
 
         async function main() {
@@ -2831,7 +2835,7 @@
 
                         // These final setSetting's are only supposed to apply
                         // the setting.
-                        setSetting(elem.id, settings[elem.id]);
+                        setSetting(elem.id, settings[elem.id], true);
                         break;
                     }
                     case "number": {
@@ -2852,7 +2856,7 @@
                             }
                         );
 
-                        setSetting(elem.id, settings[elem.id]);
+                        setSetting(elem.id, settings[elem.id], true);
                         break;
                     }
                 }
@@ -2874,7 +2878,7 @@
                     }
                 );
 
-                setSetting(select.id, settings[select.id]);
+                setSetting(select.id, settings[select.id], true);
             });
 
             /** @type {HTMLInputElement} */
