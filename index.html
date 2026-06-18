@@ -1747,6 +1747,26 @@
         /* element factory methods */
 
         /**
+         * Returns an estimate on what year a sketch was swapped based on its
+         * ID. This won't work for sketches after 7300000, since those sketches
+         * already have public timestamps.
+         * 
+         * @param {number} id
+         */
+        function getEstimatedYear(id) {
+            if(id < 6824850) {
+                return 2020;
+            }
+            if(id >= 6824850 && id <= 7048600) {
+                return 2021;
+            }
+            if(id >= 7048600 && id <= 7300000) {
+                return 2022;
+            }
+            return null;
+        }
+
+        /**
          * @param {SketchDetails} details The sketch's details.
          */
         function createTile(details) {
@@ -1888,6 +1908,13 @@
             timestamp = timestamp
                 .replace(today.toLocaleString("default", dateOptions), "Today")
                 .replace(yesterday.toLocaleString("default", dateOptions), "Yesterday");
+
+            if(!details.timestamp && bunker) {
+                const estYear = getEstimatedYear(details.id);
+                if(estYear !== null) {
+                    timestamp = `...somewhere around ${estYear}`;
+                }
+            }
 
             const captionL = [
                 `<i><a href=${link}>${linkWBR}</a></i>`,
