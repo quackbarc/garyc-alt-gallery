@@ -366,6 +366,10 @@
             margin: 0.3em 0.5em;
         }
 
+        .note span[title] {
+            text-decoration: underline dotted #999;
+        }
+
         #prelude details > ul {
             margin-top: 0.5em;
         }
@@ -2993,6 +2997,13 @@
                 }
             });
 
+            /** @type {HTMLSpanElement} */
+            const offlineText = document.querySelector(".garyc-offline-date");
+            const offlineDate = new Date("2025-12-17T00:00:00");
+            const diff = (new Date()).getTime() - offlineDate.getTime();
+            const days = Math.floor(diff / (1000*60*60*24));
+            offlineText.title = `that's ${days} days ago`;
+
             // Stats fetching, and updating anything that relies on it
 
             await switchGallerySource(settings.gallery, true);
@@ -3406,7 +3417,8 @@
                 <p>
                     The gallery is currently showing sketches from a backup website,
                     <a href="https://noz.rip/sketch/gallery.php">noz.rip/sketch</a>.
-                    The main garyc.me gallery has been suffering some downtime since December 17th.
+                    The main garyc.me gallery has been suffering some downtime since
+                    <span class="garyc-offline-date">December 17th, 2025</span>.
                 </p>
             </fieldset>
 
