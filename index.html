@@ -1761,9 +1761,12 @@
             const tileActions = document.createElement("div");
             const tileStatus = document.createElement("div");
 
-            const bunker = settings.gallery == "garyc.me"
-                && settings.fallbackToBunker
-                && details.id < galleryMin;
+            const bunker = (
+                (settings.gallery == "garyc.me"
+                    && settings.fallbackToBunker
+                    && details.id < galleryMin)
+                || settings.gallery == "noz.rip-bunker"
+            );
 
             tileDot.classList.add("tile-dot");
             tileDot.title = details.origin || "no one knows...";
