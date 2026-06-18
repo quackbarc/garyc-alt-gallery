@@ -658,6 +658,12 @@
 
         /* other #tiles formats */
 
+        .switching #tiles {
+            pointer-events: none;
+            opacity: 40%;
+            transition: 0.2s opacity ease;
+        }
+
         #tiles.block.gapless .tile {
             padding: 0px;
         }
@@ -1097,7 +1103,6 @@
          *
          * @type {number?} */
         let galleryMin = null;
-
         /**
          * The last `max` before the gallery was marked as read.
          *
@@ -1115,6 +1120,8 @@
          *
          * @type {number?} */
         let lastSeenMax = null;
+        /** @type {number?} */
+        let maxLoopIntervalID = null;
 
         // animation state
 
@@ -2067,6 +2074,14 @@
         }
 
         /**
+         * @param {boolean} unread
+         */
+        function updateTitleSymbol(unread) {
+            const symbol = document.querySelector("#title-symbol");
+            symbol.innerHTML = unread ? "*" : "!";
+        }
+
+        /**
          * @param {Stats} stats
          */
         function updateStats(stats) {
@@ -2188,7 +2203,85 @@
             document.title = title;
         }
 
-        /* gallery extension methods */
+        /* gallery manipulation methods */
+
+        /**
+         * Switches the gallery source and refreshes the gallery
+         * tiles afterwards.
+         * 
+         * FIXME: this func also assigns settings.gallery.
+         * setSetting() sets the settings AFTER these calls, so
+         * this might feel a bit inconsistent.
+         * 
+         * @param {GallerySource} gallery
+         * @param {boolean} init
+         */
+        async function switchGallerySource(gallery, init=false) {
+            const refreshText = document.querySelector(".refresh-text");
+
+            if(!init) {
+                document.body.classList.add("switching");
+                refreshText.classList.add("show");
+                settings.gallery = gallery;
+                restoreStorageState();
+
+                if(maxLoopIntervalID !== null) {
+                    clearInterval(maxLoopIntervalID);
+                }
+            }
+
+            const stats = await getStats();
+            if(settings.gallery == "garyc.me" && settings.fallbackToBunker) {
+                galleryMin = stats.minID;
+                min = bunkerMin;
+                max = stats.maxID;
+            }
+            else {
+                min = stats.minID;
+                max = stats.maxID;
+            }
+
+            const states = JSON.parse(localStorage.getItem("tilegallery-state")) || {};
+            const state = states[settings.gallery];
+            if(state) {
+                const hasUnreads = max > lastmax;
+                updateTitleSymbol(hasUnreads);
+
+                if(!settings.showUnreads) {
+                    markGalleryAsRead();
+                }
+            }
+            if(!state) {
+                lastmax = max;
+                lastmaxDate = new Date();
+                updateStorageState();
+            }
+
+            /** @type {HTMLInputElement} */
+            const maxInputElem = document.querySelector("input#maxid");
+            maxInputElem.min = min.toString();
+            maxInputElem.max = max.toString();
+            updateStats(stats);
+
+            lastSeenMax = lastmax;
+            maxLoopIntervalID = setInterval(maxLoop, 30000);
+
+            if(!init) {
+                // Reset the URL hash.
+                // If the current URL hash is already blank, re-fire the
+                // `hashchange` event just so we don't have duplicates of
+                // the same hash on browser history.
+                if(window.location.hash == "") {
+                    window.dispatchEvent(new HashChangeEvent("hashchange"));
+                }
+                else {
+                    window.location.hash = "";
+                }
+
+                document.body.classList.remove("switching");
+                refreshText.classList.remove("show");
+            }
+        }
 
         /**
          * Extends the bottom of the tile list.
@@ -2474,6 +2567,40 @@
         /* settings and state */
 
         /**
+         * Restores the last state of the gallery, from localStorage.
+         * 
+         * If the state uses an older state format (i.e. back when multiple
+         * gallery sources weren't supported), it would be implicitly
+         * upgraded here.
+         */
+        function restoreStorageState() {
+            /** @type {MultiGalleryState} */
+            let states = {};
+
+            const storedState = JSON.parse(localStorage.getItem("tilegallery-state"));
+            if(storedState) {
+                const isSingleState = "last_max" in storedState;
+                if(isSingleState) {
+                    // This type of state was made from v0.8.5 or earlier, when
+                    // multiple gallery sources weren't supported yet.
+                    // This used to just be the state for the garyc.me gallery.
+                    // We're upgrading this while we're still here.
+                    states["garyc.me"] = storedState;
+                    localStorage.setItem("tilegallery-state", JSON.stringify(states));
+                }
+                else {
+                    states = storedState;
+                }
+            }
+
+            const state = states[settings.gallery];
+            if(state) {
+                lastmax = state["last_max"];
+                lastmaxDate = new Date(state["last_updated"]);
+            }
+        }
+
+        /**
          * Updates the localStorage state with the current state of the gallery.
          */
         function updateStorageState() {
@@ -2657,6 +2784,8 @@
                     /** @type {HTMLInputElement} */
                     const inkFilterInput = document.querySelector("input#inkFilterThreshold");
                     inkFilterInput.step = value == "noz.rip" ? "2" : "5";
+
+                    switchGallerySource(value);
                     break;
                 }
                 case "animationSpeed":
@@ -2678,30 +2807,7 @@
         /* main */
 
         function JSmain() {
-            /** @type {MultiGalleryState} */
-            let states = {};
-
-            const storedState = JSON.parse(localStorage.getItem("tilegallery-state"));
-            if(storedState) {
-                const isSingleState = "last_max" in storedState;
-                if(isSingleState) {
-                    // This type of state was made from v0.8.5 or earlier, when
-                    // multiple gallery sources weren't supported yet.
-                    // This used to just be the state for the garyc.me gallery.
-                    // We're upgrading this while we're still here.
-                    states["garyc.me"] = storedState;
-                    localStorage.setItem("tilegallery-state", JSON.stringify(states));
-                }
-                else {
-                    states = storedState;
-                }
-            }
-
-            const state = states[settings.gallery];
-            if(state) {
-                lastmax = state["last_max"];
-                lastmaxDate = new Date(state["last_updated"]);
-            }
+            restoreStorageState();
 
             // Apply settings that need to be applied before the DOM is ready,
             // e.g. changing the theme on <html>.
@@ -2890,49 +2996,12 @@
 
             // Stats fetching, and updating anything that relies on it
 
-            const refreshText = document.querySelector(".refresh-text");
-            refreshText.classList.add("show");
+            await switchGallerySource(settings.gallery, true);
 
-            const stats = await getStats();
-            if(settings.gallery == "garyc.me" && settings.fallbackToBunker) {
-                galleryMin = stats.minID;
-                min = bunkerMin;
-                max = stats.maxID;
-            }
-            else {
-                min = stats.minID;
-                max = stats.maxID;
-            }
-
-            const states = JSON.parse(localStorage.getItem("tilegallery-state")) || {};
-            const state = states[settings.gallery];
-            if(!state) {
-                lastmax = max;
-                lastmaxDate = new Date();
-                updateStorageState();
-            }
-
-            if(max > lastmax) {
-                const symbol = document.querySelector("#title-symbol");
-                symbol.innerHTML = "*";
-            }
-
-            if(!settings.showUnreads) {
-                markGalleryAsRead();
-            }
-
-            lastSeenMax = lastmax;
-
-            updateStats(stats);
-            maxInputElem.min = min.toString();  // ...why does this have to be a string?
-            maxInputElem.max = max.toString();
-
-            // let the hashchange handler do the ID handling work.
-            // hugely inspired from sketch.rip.
+            // ID handling in the URL;
+            // Let the `hashchange` handler do the grunt work.
+            // Greatly inspired from how sketch.rip did it.
             window.dispatchEvent(new HashChangeEvent("hashchange"));
-
-            refreshText.classList.remove("show");
-            setInterval(maxLoop, 30000);
         }
 
         JSmain();
