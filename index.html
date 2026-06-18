@@ -2162,10 +2162,8 @@
             lastmaxDate = new Date();
             updateStorageState();
 
+            updateTitleSymbol(false);
             markSTTAsRead();
-
-            const symbol = document.querySelector("#title-symbol");
-            symbol.innerHTML = "!";
 
             const unseenSection = document.querySelector("#unseen-section");
             if(unseenSection) {
@@ -2529,8 +2527,7 @@
                         updateTabTitle(true);
                     }
 
-                    const symbol = document.querySelector("#title-symbol");
-                    symbol.innerHTML = "*";
+                    updateTitleSymbol(true);
                 }
 
                 const stt = document.querySelector("#scroll-to-top");
@@ -2763,10 +2760,8 @@
                     const toggled = value;
                     const unread = max > lastmax;
                     const tilesE = document.querySelector("#tiles");
-                    const titleSymbol = document.querySelector("#title-symbol");
-
                     tilesE.classList.toggle("hide-unreads", !toggled);
-                    titleSymbol.textContent = (toggled && unread) ? "*" : "!";
+                    updateTitleSymbol(toggled && unread);
                     break;
                 }
                 case "thumbClickAction": {
