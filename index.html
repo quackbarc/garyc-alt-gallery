@@ -1413,12 +1413,12 @@
                 const maxIDRaw = await maxResp.text();
                 const maxID = parseInt(maxIDRaw);
 
-                const sketches = Math.floor(Math.random() * 21);  // (0 tp 20)
-                const artists = Math.floor(Math.random() * (sketches + 1));
-                const peekers = Math.floor(Math.random() * 26);  // (0 to 25)
+                const sketches = 0;
+                const artists = 0;
+                const peekers = 0;
+                const minID = bunkerMin;
                 return {
-                    sketches, artists, peekers, maxID,
-                    minID: bunkerMin,
+                    sketches, artists, peekers, maxID, minID,
                 };
             }
 
