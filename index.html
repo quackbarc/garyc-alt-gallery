@@ -1352,6 +1352,14 @@
         /* canvas utilities */
 
         /**
+         * Waits for the next browser animation frame to load. May help with
+         * reducing jank from loading many images at once.
+         */
+        async function waitForBrowserFrame() {
+            await new Promise((res) => window.requestAnimationFrame(res));
+        }
+
+        /**
          * Waits for the OffscreenCanvas's context to be restored if the browser
          * recognizes it to be lost. If not, then returns immediately.
          */
@@ -2425,6 +2433,8 @@
 
                 first = first || id;
                 last = id;
+
+                await waitForBrowserFrame();
             }
 
             sketchesLoading = false;
@@ -2511,6 +2521,8 @@
 
                 first = id;
                 last = last || id;
+
+                await waitForBrowserFrame();
             }
 
             sketchesLoading = false;
