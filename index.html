@@ -781,6 +781,29 @@
             height: 100%;
         }
 
+        #animator .animator-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #animator .animator-dot {
+            display: inline-block;
+            height: 0.8em;
+            width: 0.8em;
+            border-radius: 50%;
+            background-color: #0000;
+            border: 2px solid #fff;
+        }
+
+        #animator .animator-dot:not(.show) {
+            display: none;
+        }
+
+        #animator .animator-dot.loading {
+            border-style: dotted;
+        }
+
         #animator .speed-settings {
             flex: 1;
 
@@ -1550,11 +1573,16 @@
             const dialog = document.querySelector("#animator");
             /** @type {HTMLInputElement} */
             const slider = dialog.querySelector("#animator-slider");
-            const animatorText = dialog.querySelector(".animator-info");
+            /** @type {HTMLDivElement} */
+            const animatorDot = dialog.querySelector(".animator-dot");
+            const animatorText = dialog.querySelector(".animator-info-text");
             const pauseText = dialog.querySelector(".pause-text");
 
             dialog.showModal();
             slider.valueAsNumber = 0;
+            animatorDot.classList.add("loading");
+            animatorDot.classList.toggle("show", settings.showClientMarkers);
+            animatorDot.style.backgroundColor = "";
             animatorText.textContent = "...";
             pauseText.classList.remove("show");
 
@@ -1572,8 +1600,12 @@
             const linesLookup = getSeparatedPositions(lines);
             const ink = Math.floor(data.length * 100 / inkLimit);
             const points = linesLookup.length;
+            const originColor = getOriginDotColor(details.origin);
 
             slider.max = points.toString();
+            animatorDot.title = details.origin || "no one knows...";
+            animatorDot.style.backgroundColor = originColor;
+            animatorDot.classList.remove("loading");
             animatorText.textContent = `#${details.id}, ${ink}% ink`;
 
             animatorDialog = dialog;
@@ -3517,7 +3549,10 @@
     <dialog id="animator">
         <canvas id="animator-canvas" width="800" height="600"></canvas>
         <div class="dialog-bottom">
-            <span class="animator-info">#7270139, 55% ink</span>
+            <div class="animator-info">
+                <div class="animator-dot"></div>
+                <span class="animator-info-text">#7270139, 55% ink</span>
+            </div>
             <div class="separator"></div>
             <fieldset class="speed-settings">
                 <legend>Speed:</legend>
