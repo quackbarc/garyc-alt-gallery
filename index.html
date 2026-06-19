@@ -1070,14 +1070,8 @@
             missingSketch = url;
         });
 
-        /**
-         * The maximum possible length of a sketch's data, or in other words,
-         * the gallery's ink limit.
-         * 
-         * On garyc.me, this is (64kB - 1).
-         * On noz.rip, this is (128kB - 1).
-         */
-        const inkLimit = 128*1024 - 1;
+        const garycInkLimit = 64*1024 - 1;
+        const nozInkLimit = 128*1024 - 1;
 
         /**
          * The earliest sketch ID on the complete part of the noz.rip archive.
@@ -1128,6 +1122,11 @@
         let showingLatest = false;
         let wasWithinTiles = false;
 
+        /**
+         * The maximum possible length of a sketch's data.
+         * Different gallery sources would have different limits.
+         */
+        let inkLimit = garycInkLimit;
         /**
          * The latest sketch ID on the main gallery.
          * This must be updated when we're falling back to the Noz bunker,
@@ -2892,7 +2891,14 @@
                 case "gallery": {
                     /** @type {HTMLInputElement} */
                     const inkFilterInput = document.querySelector("input#inkFilterThreshold");
-                    inkFilterInput.step = value == "noz.rip" ? "2" : "5";
+                    if(value == "noz.rip") {
+                        inkFilterInput.step = "2";
+                        inkLimit = nozInkLimit;
+                    }
+                    else {
+                        inkFilterInput.step = "5";
+                        inkLimit = garycInkLimit;
+                    }
 
                     if(!init) {
                         switchGallerySource(value);
