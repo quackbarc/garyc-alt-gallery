@@ -1042,6 +1042,7 @@
          * @property {boolean} useImageURLs
          * @property {boolean} wideGridView
          * @property {boolean} gaplessGrid
+         * @property {boolean} fastLoading
          * @property {number} animationSpeed
          * @property {number} gridImageSize
          * @property {number} inkFilterThreshold
@@ -2365,11 +2366,25 @@
 
             updateMoreButtons(false);
 
+            /** @type {Object.<number, Promise<SketchDetails?>>} */
+            const promises = {};
+            if(settings.fastLoading) {
+                for(let id = last - 1; id >= newlast; id--) {
+                    promises[id] = getSketchDetails(id);
+                }
+            }
+
             const tilesE = document.querySelector("#tiles");
             for(let id = last - 1; id >= newlast; id--) {
                 let details;
                 try {
-                    details = await getSketchDetails(id);
+                    if(settings.fastLoading) {
+                        const request = promises[id];
+                        details = await request;
+                    }
+                    else {
+                        details = await getSketchDetails(id);
+                    }
                 }
                 catch {
                     break;
@@ -2434,13 +2449,27 @@
             const tilesE = document.querySelector("#tiles");
             let firstTile = tilesE.querySelector(".tile");
 
+            /** @type {Object.<number, Promise<SketchDetails?>>} */
+            const promises = {};
+            if(settings.fastLoading) {
+                for(let id = first + 1; id <= newfirst; id++) {
+                    promises[id] = getSketchDetails(id);
+                }
+            }
+
             // going from oldest -> latest, because seeing new sketches that way
             // is probably more satisfying than the other way around
 
             for(let id = first + 1; id <= newfirst; id++) {
                 let details;
                 try {
-                    details = await getSketchDetails(id);
+                    if(settings.fastLoading) {
+                        const request = promises[id];
+                        details = await request;
+                    }
+                    else {
+                        details = await getSketchDetails(id);
+                    }
                 }
                 catch {
                     break;
@@ -2698,6 +2727,7 @@
                 useImageURLs: false,
                 wideGridView: false,
                 gaplessGrid: false,
+                fastLoading: false,
                 animationSpeed: 4,
                 gridImageSize: 200,
                 inkFilterThreshold: 0,
@@ -2857,6 +2887,7 @@
                     }
                     break;
                 }
+                case "fastLoading":
                 case "animationSpeed":
                 case "endlessScroll": {
                     // These are expected values! We don't really have to do anything with these.
@@ -3452,6 +3483,10 @@
                 <div class="setting misc-setting">
                     <label for="showClientMarkers">Show client markers:</label>
                     <input type="checkbox" id="showClientMarkers">
+                </div>
+                <div class="setting misc-setting">
+                    <label for="fastLoading">Fast loading (experimental):</label>
+                    <input type="checkbox" id="fastLoading">
                 </div>
 
                 <hr class="grid-view-setting">
