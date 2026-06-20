@@ -1036,6 +1036,8 @@
          * @typedef {object} Settings
          * @property {boolean} endlessScroll
          * @property {boolean} fallbackToBunker
+         * @property {boolean} fastLoading
+         * @property {boolean} gaplessGrid
          * @property {boolean} gridView
          * @property {boolean} showClientMarkers
          * @property {boolean} showDateSections
@@ -1043,14 +1045,12 @@
          * @property {boolean} showUnreads
          * @property {boolean} useImageURLs
          * @property {boolean} wideGridView
-         * @property {boolean} gaplessGrid
-         * @property {boolean} fastLoading
          * @property {number} animationSpeed
          * @property {number} gridImageSize
          * @property {number} inkFilterThreshold
+         * @property {GallerySource} gallery
          * @property {"auto" | "dark" | "light"} pageTheme
          * @property {"animate" | "expand" | "save"} thumbClickAction
-         * @property {GallerySource} gallery
          */
 
         /**
@@ -2738,6 +2738,8 @@
             const defaultSettings = {
                 endlessScroll: true,
                 fallbackToBunker: false,
+                fastLoading: false,
+                gaplessGrid: false,
                 gridView: false,
                 showClientMarkers: false,
                 showDateSections: true,
@@ -2745,14 +2747,12 @@
                 showUnreads: true,
                 useImageURLs: false,
                 wideGridView: false,
-                gaplessGrid: false,
-                fastLoading: false,
                 animationSpeed: 4,
                 gridImageSize: 200,
                 inkFilterThreshold: 0,
+                gallery: "noz.rip",  // change to "garyc.me" once it comes back online
                 pageTheme: "auto",
                 thumbClickAction: "expand",
-                gallery: "noz.rip",  // change to "garyc.me" once it comes back online
             };
 
             const settings = JSON.parse(localStorage["tilegallery-settings"] || "{}");
