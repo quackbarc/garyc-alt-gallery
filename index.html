@@ -353,15 +353,30 @@
         }
 
         .note {
+            display: flow-root;
+            position: relative;
+
             border: 2px solid var(--note-border-color);
             border-top-color: #f2aa24;
             border-radius: 0px 0px 8px 8px;
+            padding: 12px;
         }
 
-        .note legend {
-            padding: 0em 0.5em;
+        .note:not([open]) {
+            border-width: 0px;
+            border-top-width: 2px;
+            /** 14px side padding = 12px regular side padding + 2px missing border */
+            padding: 0px 14px 4px;
+        }
+
+        .note summary {
+            position: absolute;
+            top: -0.8rem;
+
+            background-color: var(--main-background-color);
             color: #f2aa24;
             font-weight: bold;
+            padding: 0em 0.5em;
         }
 
         .note p {
@@ -862,6 +877,10 @@
 
             #prelude {
                 margin: 0.5em 0.5em 1em;
+            }
+
+            .note {
+                margin-top: 1.5em;
             }
 
             /* <dialog> styles */
@@ -3541,15 +3560,15 @@
                 <i>current version: <span id="version">v0.8.9</span></i>
             </details>
 
-            <fieldset class="note">
-                <legend>Note</legend>
+            <details class="note">
+                <summary>Note</summary>
                 <p>
                     The gallery is currently showing sketches from a backup website,
                     <a href="https://noz.rip/sketch/gallery.php">noz.rip/sketch</a>.
                     The main garyc.me gallery has been suffering some downtime since
                     <span class="garyc-offline-date">December 17th, 2025</span>.
                 </p>
-            </fieldset>
+            </details>
 
             <p>
                 An alternative gallery for
