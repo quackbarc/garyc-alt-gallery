@@ -1483,7 +1483,7 @@
          * @returns {Promise<Stats>}
          *      A promise that returns the current statistics of the
          *      gallery. If the current gallery is the bunker gallery,
-         *      the returned statistics would just be random numbers.
+         *      all statistics will always be 0.
          */
         async function getStats() {
             if(settings.gallery == "noz.rip-bunker") {
