@@ -352,6 +352,10 @@
             margin: 1em 0.5em 1em;
         }
 
+        #prelude.short .hide-on-short {
+            display: none;
+        }
+
         .note {
             display: flow-root;
             position: relative;
@@ -1058,6 +1062,7 @@
          * @property {boolean} fastLoading
          * @property {boolean} gaplessGrid
          * @property {boolean} gridView
+         * @property {boolean} shortenPrelude
          * @property {boolean} showClientMarkers
          * @property {boolean} showDateSections
          * @property {boolean} showMiscSettings
@@ -2760,6 +2765,7 @@
                 fastLoading: false,
                 gaplessGrid: false,
                 gridView: false,
+                shortenPrelude: false,
                 showClientMarkers: false,
                 showDateSections: true,
                 showMiscSettings: false,
@@ -2882,6 +2888,11 @@
                 case "useImageURLs": {
                     const toggled = value;
                     updateThumbnails(toggled);
+                    break;
+                }
+                case "shortenPrelude": {
+                    const toggled = value;
+                    document.querySelector("#prelude").classList.toggle("short", toggled);
                     break;
                 }
                 case "showClientMarkers": {
@@ -3530,6 +3541,10 @@
                     <input type="checkbox" id="showClientMarkers">
                 </div>
                 <div class="setting misc-setting">
+                    <label for="shortenPrelude">Shorten prelude text:</label>
+                    <input type="checkbox" id="shortenPrelude">
+                </div>
+                <div class="setting misc-setting">
                     <label for="fastLoading">Fast loading (experimental):</label>
                     <input type="checkbox" id="fastLoading">
                 </div>
@@ -3576,7 +3591,7 @@
                 Originally meant for viewing my sketch archives, but people started liking the layout.
             </p>
 
-            <ul>
+            <ul class="hide-on-short">
                 <li>
                     Clicking/tapping on the sketches
                     <span id="thumb-click-text">expands the sketch into full size.</span>
