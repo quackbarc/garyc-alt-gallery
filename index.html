@@ -1266,6 +1266,35 @@
         }
 
         /**
+         * Returns the delta between two dates in [years, days]. This takes leap
+         * years into account.
+         * 
+         * @param {Date} from
+         * @param {Date} to
+         * @returns {[number, number]}
+         */
+        function getYearDayDelta(from, to) {
+            const diff = to.getTime() - from.getTime();
+            const totalDays = Math.floor(diff / (1000*60*60*24));
+            const crossingLeapDay = from.getMonth() >= 2;  // March onwards
+
+            let years = 0;
+            let days = totalDays;
+            for(let year = from.getFullYear() + 1; year <= to.getFullYear(); year++) {
+                const check = crossingLeapDay ? year : year - 1;
+                const yearDays = check % 4 == 0 ? 366 : 365;
+                if(days < yearDays) {
+                    continue;
+                }
+
+                years++;
+                days -= yearDays;
+            }
+
+            return [years, days];
+        }
+
+        /**
          * Returns the full ID of a given shorthand ID.
          * 
          * A shorthand ID is an ID that's shortened to just its last few
@@ -3205,9 +3234,21 @@
             /** @type {HTMLSpanElement} */
             const offlineText = document.querySelector(".garyc-offline-date");
             const offlineDate = new Date("2025-12-17T00:00:00");
-            const diff = (new Date()).getTime() - offlineDate.getTime();
-            const days = Math.floor(diff / (1000*60*60*24));
-            offlineText.title = `that's ${days} days ago`;
+            const now = new Date();
+            const [offYears, offDays] = getYearDayDelta(offlineDate, now);
+
+            if(offYears >= 1 && offDays >= 1) {
+                const y = offYears != 1 ? "years" : "year";
+                const d = offDays != 1 ? "days" : "day";
+                offlineText.title = `that's ${offYears} ${y}, ${offDays} ${d} ago`;
+            }
+            else if(offYears >= 1) {
+                const y = offYears != 1 ? "years" : "year";
+                offlineText.title = `that's ${offYears} ${y} ago. happy anniversary 🍰`;
+            }
+            else {
+                offlineText.title = `that's ${offDays} days ago`;
+            }
 
             // Stats fetching, and updating anything that relies on it
 
