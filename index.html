@@ -3087,7 +3087,7 @@
 
             /** @type {HTMLInputElement} */
             const maxInputElem = document.querySelector("input#maxid");
-            maxInputElem.addEventListener("change", (event) => {
+            maxInputElem.addEventListener("change", () => {
                 const value = maxInputElem.value;
                 const parsedValue = parseInt(value);
 
