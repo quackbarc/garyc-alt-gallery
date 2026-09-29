@@ -3384,6 +3384,39 @@
                     event.preventDefault();
                     break;
                 }
+
+                case ",":
+                case ".": {
+                    if(!paused) {
+                        pause();
+                    }
+
+                    /** @type {HTMLInputElement} */
+                    const slider = document.querySelector("#animator-slider");
+
+                    const totalPoints = lineLookup.length;
+                    let newPosition = event.key == ","
+                        ? Math.max(position - 1, 0)
+                        : Math.min(position + 1, totalPoints);
+
+                    if(newPosition >= 0 && newPosition < totalPoints) {
+                        const [lineSeek, pointSeek] = lineLookup[newPosition];
+                        if(pointSeek == 1) {
+                            // Skip frames that wouldn't make any changes to the
+                            // animation, i.e. frames that draw [n, 1].
+                            newPosition = event.key == ","
+                                ? Math.max(position - 2, 0)
+                                : Math.min(position + 2, totalPoints);
+                        }
+                    }
+
+                    drawFrameAt(newPosition);
+                    slider.valueAsNumber = newPosition;
+                    position = newPosition;
+
+                    event.preventDefault();
+                    break;
+                }
             }
         }
 
@@ -3810,9 +3843,18 @@
                 <td><kbd>R</kbd></td>
                 <td>Jumps to a random sketch</td>
             </tr>
+        </table>
+
+        <hr>
+        <h2>Animator controls</h2>
+        <table>
             <tr>
                 <td><kbd>Space</kbd></td>
                 <td>Pauses/resumes animation</td>
+            </tr>
+            <tr>
+                <td><kbd>,</kbd> <kbd>.</kbd></td>
+                <td>Seeks animation by frames</td>
             </tr>
         </table>
 
