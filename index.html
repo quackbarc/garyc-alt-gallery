@@ -1297,6 +1297,24 @@
         }
 
         /**
+         * Returns the modifiers of a given key combo as a string, which,
+         * when combined with the combo's `key`, can be used as a prefix
+         * for the key combo -- e.g. "Ctrl+", "Alt+Shift+", "", etc.
+         * 
+         * @param {KeyboardEvent} event
+         **/
+        function getModifierPrefix(event) {
+            let modifiers = "";
+            if(event.ctrlKey)   modifiers += "Ctrl+";
+            if(event.altKey)    modifiers += "Alt+";
+            if(event.shiftKey)  modifiers += "Shift+";
+            if(event.metaKey)   modifiers += "Meta+";
+            return modifiers;
+        }
+
+        /* garyc-related utilities */
+
+        /**
          * Returns the full ID of a given shorthand ID.
          * 
          * A shorthand ID is an ID that's shortened to just its last few
@@ -1374,22 +1392,6 @@
             }
             const defaultColor = "oklch(50% 0% 0deg)";
             return index[origin] || defaultColor;
-        }
-
-        /**
-         * Returns the modifiers of a given key combo as a string, which,
-         * when combined with the combo's `key`, can be used as a prefix
-         * for the key combo -- e.g. "Ctrl+", "Alt+Shift+", "", etc.
-         * 
-         * @param {KeyboardEvent} event
-         **/
-        function getModifierPrefix(event) {
-            let modifiers = "";
-            if(event.ctrlKey)   modifiers += "Ctrl+";
-            if(event.altKey)    modifiers += "Alt+";
-            if(event.shiftKey)  modifiers += "Shift+";
-            if(event.metaKey)   modifiers += "Meta+";
-            return modifiers;
         }
 
         /**
