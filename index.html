@@ -41,6 +41,7 @@
             --toast-background-color: #fff;
             --dialog-background-color: var(--background-color);
             --dialog-backdrop-background-color: #0006;
+            --dialog-shadow-color: #0009;
 
             --note-border-color: #fff3;
 
@@ -65,6 +66,7 @@
             --toast-background-color: #000;
             --dialog-background-color: var(--background-color);
             --dialog-backdrop-background-color: #fff6;
+            --dialog-shadow-color: #0004;
 
             --note-border-color: #0003;
 
@@ -720,7 +722,7 @@
             background-color: var(--dialog-background-color);
             border: 2px solid #8884;
             border-radius: 12px;
-            box-shadow: 0px 3px 8px #0006;
+            box-shadow: 0px 3px 8px var(--dialog-shadow-color);
         }
 
         dialog::backdrop {
