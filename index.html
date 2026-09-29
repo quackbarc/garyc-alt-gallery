@@ -1788,8 +1788,16 @@
 
             // Animation
 
-            const lines = animationLines;
+            if(settings.animationSpeed != speed) {
+                const deltaUnit = Math.sign(settings.animationSpeed - speed);
+                speed += deltaUnit;
+            }
+
             const total = lineLookup.length;
+            position += speed;
+            position = Math.min(position, total);
+
+            const lines = animationLines;
             const finished = position >= total;
             const [lineSeek, pointSeek] = position >= total
                 ? [lines.length, 0]
@@ -1823,13 +1831,6 @@
                 return;
             }
 
-            if(settings.animationSpeed != speed) {
-                const deltaUnit = Math.sign(settings.animationSpeed - speed);
-                speed += deltaUnit;
-            }
-
-            position += speed;
-            position = Math.min(position, total);
             lineSeekLast = lineSeek;
 
             if(missedFrames) {
