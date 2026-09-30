@@ -484,6 +484,10 @@
             grid-area: capt;
         }
 
+        .tile .tile-caption .timestamp[title]:hover {
+            text-decoration: underline dotted #999;
+        }
+
         .tile .tile-actions {
             display: flex;
             gap: 8px;
@@ -1099,6 +1103,7 @@
          * @property {boolean} fastLoading
          * @property {boolean} gaplessGrid
          * @property {boolean} gridView
+         * @property {boolean} relativeTimestamps
          * @property {boolean} shortenPrelude
          * @property {boolean} showClientMarkers
          * @property {boolean} showDateSections
@@ -1150,6 +1155,25 @@
          * @type {AbortController?}
          */
         let fetchAbortController = null;
+
+        const defaultTimestampFormat = new Intl.DateTimeFormat("default", {
+            weekday: "short",
+            month: "long",
+            day: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+        const dateFormat = new Intl.DateTimeFormat("default", {
+            weekday: "short",
+            month: "long",
+            day: "2-digit",
+            year: "numeric",
+        });
+        const timeFormat = new Intl.DateTimeFormat("default", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
 
         // gallery settings
 
@@ -1216,6 +1240,8 @@
         let lastSeenMax = null;
         /** @type {number?} */
         let maxLoopIntervalID = null;
+        /** @type {Object.<string, [Date, string]>} */
+        let timestampCache = {};
 
         // animation state
 
@@ -1294,6 +1320,80 @@
             }
 
             return [years, days];
+        }
+
+        /**
+         * Returns a formatted date string.
+         * 
+         * If `relative` is True, then it would return a format relative to the
+         * current day and time, e.g. "50 seconds ago". Otherwise, it would
+         * return a slightly more detailed format depending on locale, e.g.
+         * "Today at 5:17PM".
+         * 
+         * Dates older than 30 days will always return absolute dates, whether
+         * `relative` is True or not.
+         * 
+         * @param {Date} date
+         * @param {boolean} relative
+         * @returns {string}
+         */
+        function getTimeString(date, relative=false) {
+            // Starting off with a UNIX timestamp, just so we don't use
+            // something intensive like .toLocaleString() right off the bat.
+            // This should not be returned.
+            let timestamp = date.getTime().toString();
+
+            if(relative) {
+                const now = new Date();
+                const diff = now.getTime() - date.getTime();
+                const seconds = Math.floor(diff / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+                const realDays = getComparableDay(now) - getComparableDay(date);
+
+                if(minutes < 1) {
+                    const s = seconds != 1 ? "s" : "";
+                    timestamp = `${seconds} second${s} ago`;
+                }
+                else if(hours < 1) {
+                    const s = minutes != 1 ? "s" : "";
+                    timestamp = `${minutes} minute${s} ago`;
+                }
+                else if(days < 1) {
+                    const modMinutes = minutes % 60;
+                    const s = hours != 1 ? "s" : "";
+                    const s2 = modMinutes != 1 ? "s" : "";
+                    timestamp = modMinutes == 0
+                        ? `${hours} hour${s} ago`
+                        : `${hours} hour${s}, ${modMinutes} minute${s2} ago`;
+                }
+                else if(days < 7) {
+                    const modHours = hours % 24;
+                    const s = days != 1 ? "s" : "";
+                    const s2 = modHours != 1 ? "s" : "";
+                    timestamp = modHours == 0
+                        ? `${days} day${s} ago`
+                        : `${days} day${s}, ${modHours} hour${s2} ago`;
+                }
+                else if(realDays <= 30) {
+                    const time = timeFormat.format(date);
+                    timestamp = `${realDays} days ago, ${time}`;
+                }
+                else {
+                    timestamp = defaultTimestampFormat.format(date);
+                }
+            }
+
+            else {
+                const today = new Date();
+                const yesterday = new Date(today.getTime() - 86_400_000);
+                timestamp = defaultTimestampFormat.format(date)
+                    .replace(dateFormat.format(today), "Today")
+                    .replace(dateFormat.format(yesterday), "Yesterday");
+            }
+
+            return timestamp;
         }
 
         /**
@@ -2023,28 +2123,15 @@
             const linkWBR = linkParts.join("<wbr>");
 
             const origin = details.origin || "(who knows?)";
+            const timestampDate = new Date(details.timestamp * 1000);
+            const timestampFull = getTimeString(timestampDate, false);
+            let timestamp = getTimeString(timestampDate, settings.relativeTimestamps);
+            let timestampTitle = "";
+            timestampCache[details.id] = [timestampDate, timestamp];
 
-            let timestamp = new Date(details.timestamp * 1000)
-                .toLocaleString("default", {
-                    weekday: "short",
-                    month: "long",
-                    day: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                });
-            const today = new Date();
-            const yesterday = new Date(today.getTime() - 86_400_000);
-            /** @type {Intl.DateTimeFormatOptions} */
-            const dateOptions = {
-                weekday: "short",
-                month: "long",
-                day: "2-digit",
-                year: "numeric",
-            };
-            timestamp = timestamp
-                .replace(today.toLocaleString("default", dateOptions), "Today")
-                .replace(yesterday.toLocaleString("default", dateOptions), "Yesterday");
+            if(timestampFull != timestamp) {
+                timestampTitle = timestampFull;
+            }
 
             if(!details.timestamp && bunker) {
                 const estYear = getEstimatedYear(details.id);
@@ -2053,11 +2140,16 @@
                 }
             }
 
+            let timestampHTML = `<i class="timestamp">${timestamp}</i>`;
+            if(timestampTitle) {
+                timestampHTML = `<i class="timestamp" title="${timestampTitle}">${timestamp}</i>`;
+            }
+
             const captionL = [
                 `<i><a href=${link}>${linkWBR}</a></i>`,
                 `${ink}% ink used`,
                 `<i>from ${origin}</i>`,
-                `<i>${timestamp}</i>`,
+                timestampHTML,
             ];
             const caption = captionL.join("<br>");
 
@@ -2329,6 +2421,45 @@
                             image.classList.remove("rendering");
                         });
                 }
+            }
+        }
+
+        /**
+         * @param {boolean} relative
+         *      Whether the timestamps should be relative (if possible), or not.
+         */
+        function updateTileTimestamps(relative) {
+            for(const [id, entry] of Object.entries(timestampCache)) {
+                const [date, cachedText] = entry;
+                const text = getTimeString(date, relative);
+                if(cachedText == text) {
+                    continue;
+                }
+
+                const tile = document.querySelector(`[sketch-id="${id}"]`);
+                if(!tile) {
+                    delete timestampCache[id];
+                    continue;
+                }
+
+                /** @type {HTMLImageElement} */
+                const tileImage = tile.querySelector(".tile-image");
+                const timestampE = tile.querySelector(".timestamp");
+                tileImage.title = `#${id}, ${text}`;
+                timestampE.textContent = text;
+
+                const fullText = getTimeString(date, false);
+                if(fullText != text) {
+                    timestampE.setAttribute("title", fullText);
+                }
+                else {
+                    // Using .removeAttribute() here because `.title = ""`
+                    // would've kept the `title` attribute on the elem.
+                    // Our CSS would show a hover underline in that case.
+                    timestampE.removeAttribute("title");
+                }
+
+                timestampCache[id] = [date, text];
             }
         }
 
@@ -2653,6 +2784,7 @@
                 lastDate = null;
                 first = null;
                 last = null;
+                timestampCache = {};
 
                 const section = createNotFoundSection(newfirst);
                 tilesE.append(section);
@@ -2679,6 +2811,7 @@
             lastDate = null;
             first = null;
             last = newfirst + 1;
+            timestampCache = {};
 
             const usingClientRenderer = !settings.useImageURLs;
             if(usingClientRenderer) {
@@ -2837,6 +2970,7 @@
                 fastLoading: false,
                 gaplessGrid: false,
                 gridView: false,
+                relativeTimestamps: false,
                 shortenPrelude: false,
                 showClientMarkers: false,
                 showDateSections: true,
@@ -3013,6 +3147,11 @@
                     if(!init) {
                         switchGallerySource(value);
                     }
+                    break;
+                }
+                case "relativeTimestamps": {
+                    const toggled = value;
+                    updateTileTimestamps(toggled);
                     break;
                 }
                 case "fastLoading":
@@ -3258,6 +3397,8 @@
             // Stats fetching, and updating anything that relies on it
 
             await switchGallerySource(settings.gallery, true);
+
+            setInterval(() => updateTileTimestamps(settings.relativeTimestamps), 1000);
 
             // ID handling in the URL;
             // Let the `hashchange` handler do the grunt work.
@@ -3780,6 +3921,10 @@
         <div class="setting">
             <label for="showClientMarkers">Show client markers:</label>
             <input type="checkbox" id="showClientMarkers">
+        </div>
+        <div class="setting">
+            <label for="relativeTimestamps">Show relative timestamps:</label>
+            <input type="checkbox" id="relativeTimestamps">
         </div>
         <div class="setting">
             <label for="shortenPrelude">Hide instruction text:</label>
