@@ -2164,10 +2164,10 @@
         function createNotFoundSection(id) {
             let sectionHTML;
             if(id < min) {
-                sectionHTML = `No sketches were found before #${min}.`;
+                sectionHTML = `The gallery only goes down to #${min}.`;
             }
             else if(id > max) {
-                sectionHTML = `No sketches were found after #${max}.`;
+                sectionHTML = `The gallery only goes up to #${max}.`;
             }
             else {
                 sectionHTML = `No sketches were found around #${id}.`;
