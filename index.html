@@ -1171,6 +1171,14 @@
          */
 
         /**
+         * Options for how a sketch should be rendered by `render()`.
+         * 
+         * @typedef {object} RenderOptions
+         * @property {boolean} [showFeatures]
+         * @property {number} [scale]
+         **/
+
+        /**
          * The parsed form of a sketch's data. This should be an array of lines
          * consisting of coordinate pairs on each.
          * 
@@ -1634,7 +1642,7 @@
             offctx.lineWidth = 3;
             offctx.fillStyle = "#fff";
             offctx.strokeStyle = "#000";
-            offctx.fillRect(0, 0, offcanv.width, offcanv.height);
+            offctx.fillRect(0, 0, 800, 600);
         }
 
         function initializeAnimationCanvas() {
@@ -1652,10 +1660,23 @@
          * @param {string} data
          * @param {number?} id
          *      For testing purposes.
+         * @param {RenderOptions} options
          * @returns {Promise<string>}
          *      The Blob URL of the rendered sketch.
          */
-        async function render(data, id=null) {
+        async function render(data, id=null, options={}) {
+            const scale = options.scale ?? 1;
+            const showFeatures = options.showFeatures ?? true;
+
+            const currentScale = Math.floor(offcanv.width / 800);
+            if(scale != currentScale) {
+                offcanv.width = 800 * scale;
+                offcanv.height = 600 * scale;
+
+                initializeCanvas();
+                offctx.scale(scale, scale);
+            }
+
             const lines = parseData(data);
 
             offctx.fillRect(0, 0, offcanv.width, offcanv.height);
@@ -2581,6 +2602,12 @@
             saveMenu.setAttribute("data-id", id.toString());
 
             if(renderPreview) {
+                /** @type {RenderOptions} */
+                const options = {
+                    scale,
+                    showFeatures: showFeaturesE.checked,
+                };
+
                 savePreview.classList.add("rendering");
                 saveButton.disabled = true;
 
@@ -2590,7 +2617,7 @@
                 }, {once: true});
 
                 getSketchDetails(id)
-                    .then((details) => render(details.data, id))
+                    .then((details) => render(details.data, id, options))
                     .then((url) => {
                         savePreview.src = url;
                     });
