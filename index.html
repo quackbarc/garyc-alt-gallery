@@ -42,6 +42,7 @@
             --dialog-background-color: var(--background-color);
             --dialog-backdrop-background-color: #0006;
             --dialog-shadow-color: #0009;
+            --rendering-filter: none;
 
             --note-border-color: #fff3;
 
@@ -67,6 +68,8 @@
             --dialog-background-color: var(--background-color);
             --dialog-backdrop-background-color: #fff6;
             --dialog-shadow-color: #0004;
+            /* Silly little trick just to achieve a darker gray */
+            --rendering-filter: invert(30%);
 
             --note-border-color: #0003;
 
@@ -461,6 +464,7 @@
         .tile img.loading {
             /* TODO: wait, shouldn't we just use a background instead? */
             opacity: 30%;
+            filter: var(--rendering-filter);
         }
 
         .tile .tile-dot {
@@ -578,11 +582,6 @@
 
             /* Same as .tile-section's padding-right. */
             margin-right: 12px;
-        }
-
-        :root[theme="light"] .tile img.rendering {
-            /* Silly little trick just to achieve a darker gray */
-            filter: invert(30%);
         }
 
         /* block-based format */
@@ -759,6 +758,12 @@
             text-align: right;
         }
 
+        dialog .dialog-buttons {
+            display: flex;
+            justify-content: end;
+            gap: 8px;
+        }
+
         #animator:open {
             /**
              * Using gridbox for this mainly because it's got established
@@ -875,6 +880,48 @@
         #big-settings .setting:has(> [disabled]) label {
             font-style: italic;
             color: var(--text-italic-color);
+        }
+
+        #save-menu img {
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0px 0px 2px #0004;
+            margin: 0.5rem 0;
+
+            transition: 0.1s opacity ease, 0.1s filter ease;
+        }
+
+        #save-menu img.rendering {
+            opacity: 60%;
+            transition-duration: 0s;
+            filter: var(--rendering-filter);
+        }
+
+        #save-menu fieldset {
+            all: unset;
+        }
+
+        #save-menu .setting {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+
+            padding: 4px 8px;
+            margin: 0;
+        }
+
+        #save-menu .setting label {
+            flex: 1;
+        }
+
+        #save-menu .radio-setting {
+            gap: 8px;
+        }
+
+        #save-menu .radio-setting legend {
+            float: inline-start;
+            flex: 1;
+            padding: 0;
         }
 
         /* other media queries */
@@ -1038,6 +1085,10 @@
                 width: 100%;
                 box-sizing: border-box;
             }
+
+            #save-menu img {
+                max-width: none;
+            }
         }
     </style>
 
@@ -1098,6 +1149,7 @@
          * The user configuration of the gallery. Settings, if you insist.
          *
          * @typedef {object} Settings
+         * @property {boolean} customSaving
          * @property {boolean} endlessScroll
          * @property {boolean} fallbackToBunker
          * @property {boolean} fastLoading
@@ -2056,6 +2108,7 @@
             tileImageA.addEventListener("click", (event) => {
                 if(settings.thumbClickAction == "save") {
                     // Do the default behavior of clicking a downloadable <a>.
+                    // todo: customSaving?
                     return;
                 }
 
@@ -2163,10 +2216,22 @@
             const tileGIFLink = `https://garyc2gif.neocities.org/?id=${details.id}`;
             tileAnimateButton.innerHTML = "play";
             tileSaveButton.innerHTML = "save";
+            tileSaveButton.classList.add("save");
             tileGIFButton.innerHTML = "show replay GIF &UpperRightArrow;";
             tileGIFButton.title = "redirects to garyc2gif.neocities.org ↗";
             tileAnimateButton.addEventListener("click", () => animate(details.id));
             tileSaveButton.addEventListener("click", () => {
+                if(!settings.useImageURLs && settings.customSaving) {
+                    /** @type {HTMLDialogElement} */
+                    const saveMenu = document.querySelector("#save-menu");
+                    /** @type {HTMLImageElement} */
+                    const preview = document.querySelector("#save-preview");
+                    preview.src = tileImage.src;
+                    updateSaveMenu(details.id, false, true);
+                    saveMenu.showModal();
+                    return;
+                }
+
                 // Can't use tileImageA directly because of how it's wired up to
                 // handle tile expansion; use a plain <a> instead.
                 const saveA = document.createElement("a");
@@ -2460,6 +2525,75 @@
                 }
 
                 timestampCache[id] = [date, text];
+            }
+        }
+
+        /**
+         * @param {number} id
+         *      The ID of the sketch.
+         * @param {boolean} renderPreview
+         *      Whether to re-render the preview or not.
+         *      Set this to false if the preview's source has already been set.
+         * @param {boolean} reset
+         *      Whether to reset the menu settings or not.
+         */
+        function updateSaveMenu(id, renderPreview, reset) {
+            /** @type {HTMLDialogElement} */
+            const saveMenu = document.querySelector("#save-menu");
+            const h1 = saveMenu.querySelector("h1");
+            /** @type {HTMLImageElement} */
+            const savePreview = saveMenu.querySelector("#save-preview");
+            const saveFilenameText = saveMenu.querySelector(".save-filename");
+            /** @type {NodeListOf<HTMLInputElement>} */
+            const scaleRadios = saveMenu.querySelectorAll("[name='scale']");
+            /** @type {HTMLInputElement} */
+            const showFeaturesE = saveMenu.querySelector("#showFeatures");
+            /** @type {HTMLButtonElement} */
+            const saveButton = saveMenu.querySelector("#menu-save-button");
+
+            if(reset) {
+                /** @type {[string, boolean][]} */
+                const inputs = [
+                    ["#scale-1", true],
+                    ["#showFeatures", true],
+                ];
+                for(const [inputID, state] of inputs) {
+                    /** @type {HTMLInputElement} */
+                    const input = saveMenu.querySelector(inputID);
+                    input.checked = state;
+                }
+            }
+
+            let scale = 1;
+            scaleRadios.forEach((radio) => {
+                if(radio.checked) {
+                    scale = parseInt(radio.value);
+                }
+            });
+
+            const filename = scale >= 2
+                ? `${id}_${scale}x.png`
+                : `${id}.png`;
+
+            h1.textContent = `Save (#${id})`;
+            savePreview.alt = `Save preview for #${id}`;
+            saveFilenameText.textContent = filename;
+            saveMenu.setAttribute("data-id", id.toString());
+
+            if(renderPreview) {
+                savePreview.classList.add("rendering");
+                saveButton.disabled = true;
+
+                savePreview.addEventListener("load", () => {
+                    saveButton.disabled = false;
+                    savePreview.classList.remove("rendering");
+                }, {once: true});
+
+                getSketchDetails(id)
+                    .then((details) => render(details.data, id))
+                    .then((url) => {
+                        savePreview.src = url;
+                    });
             }
         }
 
@@ -2965,6 +3099,7 @@
         function getSettings() {
             /** @type {Settings} */
             const defaultSettings = {
+                customSaving: false,
                 endlessScroll: true,
                 fallbackToBunker: false,
                 fastLoading: false,
@@ -3094,6 +3229,10 @@
                 case "useImageURLs": {
                     const toggled = value;
                     updateThumbnails(toggled);
+
+                    /** @type {HTMLInputElement} */
+                    const customSaveElem = document.querySelector("#customSaving");
+                    customSaveElem.disabled = toggled;
                     break;
                 }
                 case "shortenPrelude": {
@@ -3154,6 +3293,7 @@
                     updateTileTimestamps(toggled);
                     break;
                 }
+                case "customSaving":
                 case "fastLoading":
                 case "animationSpeed":
                 case "endlessScroll": {
@@ -3372,6 +3512,39 @@
             aniSlider.addEventListener("change", () => {
                 if(!paused) {
                     resume(position);
+                }
+            });
+
+            /** @type {HTMLDialogElement} */
+            const saveMenu = document.querySelector("#save-menu");
+            const saveMenuInputs = saveMenu.querySelectorAll("input");
+            saveMenuInputs.forEach((elem) => {
+                elem.addEventListener("change", () => {
+                    const id = parseInt(saveMenu.getAttribute("data-id"));
+                    updateSaveMenu(id, true, false);
+                });
+            });
+
+            /** @type {HTMLButtonElement} */
+            const saveButton = saveMenu.querySelector("#menu-save-button");
+            saveButton.addEventListener("click", () => {
+                const preview = saveMenu.querySelector("img");
+                const filenameE = saveMenu.querySelector(".save-filename");
+                const a = document.createElement("a");
+                a.href = preview.src;
+                a.download = filenameE.textContent;
+                a.click();
+
+                saveMenu.close();
+
+                // Fun lil' visual for showing the sketch is being saved on the tile
+                const id = parseInt(saveMenu.getAttribute("data-id"));
+                const tile = document.querySelector(`#tiles [sketch-id="${id}"]`);
+                if(tile) {
+                    /** @type {HTMLButtonElement} */
+                    const tileSaveButton = tile.querySelector(".save");
+                    tileSaveButton.disabled = true;
+                    setTimeout(() => tileSaveButton.disabled = false, 400);
                 }
             });
 
@@ -3931,6 +4104,10 @@
             <input type="checkbox" id="shortenPrelude">
         </div>
         <div class="setting">
+            <label for="customSaving">Custom saving:</label>
+            <input type="checkbox" id="customSaving">
+        </div>
+        <div class="setting">
             <label for="fastLoading">Fast loading (experimental):</label>
             <input type="checkbox" id="fastLoading">
         </div>
@@ -3962,6 +4139,47 @@
         <form action="" method="dialog">
             <button>close</button>
         </form>
+    </dialog>
+
+    <dialog id="save-menu">
+        <h1>Custom save</h1>
+
+        <p>
+            <img
+                id="save-preview"
+                src="https://upload.wikimedia.org/wikipedia/commons/a/aa/A._gigantea_Aldabra_Giant_Tortoise.jpg"
+                alt="big tortoise image">
+            <br>
+            <i class="save-filename">tortoise.jpg</i>
+        </p>
+
+        <fieldset class="setting radio-setting">
+            <legend>Scale:</legend>
+            <div class="radio-option">
+                <input type="radio" name="scale" id="scale-1" value="1" checked>
+                <label for="scale-1">1x</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" name="scale" id="scale-2" value="2">
+                <label for="scale-2">2x</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" name="scale" id="scale-4" value="4">
+                <label for="scale-4">4x</label>
+            </div>
+        </fieldset>
+        <div class="setting">
+            <label for="showFeatures">Show tones/fills:</label>
+            <input type="checkbox" id="showFeatures" checked>
+        </div>
+
+        <hr>
+        <div class="dialog-buttons">
+            <button id="menu-save-button">save</button>
+            <form action="" method="dialog">
+                <button>close</button>
+            </form>
+        </div>
     </dialog>
 
     <dialog id="controls">
