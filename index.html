@@ -2269,8 +2269,10 @@
             tileActions.classList.add("tile-actions");
             tileActions.append(tileAnimateButton);
             tileActions.append(tileSaveButton);
-            tileActions.append(tileGIFButton);
             tileCaption.append(tileActions);
+            if(settings.gallery == "garyc.me") {
+                tileActions.append(tileGIFButton);
+            }
 
             tileStatus.classList.add("tile-status");
 
