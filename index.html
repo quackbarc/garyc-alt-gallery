@@ -2391,10 +2391,10 @@
          */
         async function switchGallerySource(gallery, init=false) {
             const refreshText = document.querySelector(".refresh-text");
+            refreshText.classList.add("show");
 
             if(!init) {
                 document.body.classList.add("switching");
-                refreshText.classList.add("show");
                 settings.gallery = gallery;
                 restoreStorageState();
 
@@ -2452,8 +2452,9 @@
                 }
 
                 document.body.classList.remove("switching");
-                refreshText.classList.remove("show");
             }
+
+            refreshText.classList.remove("show");
         }
 
         /**
