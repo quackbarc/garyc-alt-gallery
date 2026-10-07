@@ -1583,6 +1583,44 @@
         }
 
         /**
+         * Returns the indices of tone and fill lines in a given sketch.
+         * 
+         * @param {ParsedSketch} lines
+         * @returns {Set<number>}
+         **/
+        function getFeaturePositions(lines) {
+            const ret = [];
+
+            // Using a patch-based algorithm;
+            // this is meant to sway away false some flags.
+            // We only want tones and fills, and their representing lines
+            // usually come in consecutive patches.
+            const minPatchSize = 5;
+            let patch = [];
+
+            for(const lineposRaw in lines) {
+                const linepos = parseInt(lineposRaw);
+                const line = lines[linepos];
+
+                if(line.length <= 2) {
+                    patch.push(linepos);
+                }
+                else {
+                    if(patch.length >= minPatchSize) {
+                        ret.push(...patch);
+                    }
+                    patch = [];
+                }
+            }
+
+            if(patch.length >= minPatchSize) {
+                ret.push(...patch);
+            }
+
+            return new Set(ret);
+        }
+
+        /**
          * Returns an array containing [line-#, point-#] pairs for every single
          * point on a given sketch.
          * 
@@ -1678,9 +1716,16 @@
             }
 
             const lines = parseData(data);
+            const featurePositions = getFeaturePositions(lines);
 
             offctx.fillRect(0, 0, offcanv.width, offcanv.height);
-            for(const line of lines) {
+            for(const lineposRaw in lines) {
+                const linepos = parseInt(lineposRaw);
+                const line = lines[linepos];
+                if(!showFeatures && featurePositions.has(linepos)) {
+                    continue;
+                }
+
                 for(const pos in line) {
                     const [x, y] = line[pos];
                     if(pos == "0") {
