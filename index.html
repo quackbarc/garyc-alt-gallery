@@ -1767,6 +1767,22 @@
             return blobURL;
         }
 
+        /* DOM utilities */
+
+        /**
+         * Revokes the URL of a save menu preview blob in order to free up
+         * some memory. If the URL is used as a thumbnail on #tiles, this is
+         * instead a no-op.
+         * 
+         * @param {string} url
+         */
+        async function destroySavePreviewURL(url) {
+            const tileImage = document.querySelector(`#tiles img[src="${url}"]`);
+            if(!tileImage) {
+                URL.revokeObjectURL(url);
+            }
+        }
+
         /* endpoints */
 
         /**
@@ -2292,7 +2308,9 @@
                     const saveMenu = document.querySelector("#save-menu");
                     /** @type {HTMLImageElement} */
                     const preview = document.querySelector("#save-preview");
+                    destroySavePreviewURL(preview.src);
                     preview.src = tileImage.src;
+
                     updateSaveMenu(details.id, false, true);
                     saveMenu.showModal();
                     return;
@@ -2654,6 +2672,7 @@
                     scale,
                     showFeatures: showFeaturesE.checked,
                 };
+                const lastPreviewSrc = savePreview.src;
 
                 savePreview.classList.add("rendering");
                 saveButton.disabled = true;
@@ -2661,6 +2680,7 @@
                 savePreview.addEventListener("load", () => {
                     saveButton.disabled = false;
                     savePreview.classList.remove("rendering");
+                    destroySavePreviewURL(lastPreviewSrc);
                 }, {once: true});
 
                 getSketchDetails(id)
