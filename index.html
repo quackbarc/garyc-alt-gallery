@@ -2309,10 +2309,13 @@
                     /** @type {HTMLImageElement} */
                     const preview = document.querySelector("#save-preview");
                     destroySavePreviewURL(preview.src);
-                    preview.src = tileImage.src;
+
+                    preview.addEventListener("load", () => {
+                        saveMenu.showModal();
+                    });
 
                     updateSaveMenu(details.id, false, true);
-                    saveMenu.showModal();
+                    preview.src = tileImage.src;
                     return;
                 }
 
