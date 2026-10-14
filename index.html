@@ -362,7 +362,7 @@
             margin: 1em 0.5em 1em;
         }
 
-        #prelude.short .hide-on-short {
+        :root.short-prelude #prelude .hide-on-short {
             display: none;
         }
 
@@ -3362,7 +3362,7 @@
                 }
                 case "shortenPrelude": {
                     const toggled = value;
-                    document.querySelector("#prelude").classList.toggle("short", toggled);
+                    document.documentElement.classList.toggle("short-prelude", toggled);
                     break;
                 }
                 case "showClientMarkers": {
@@ -3444,6 +3444,7 @@
             // Apply settings that need to be applied before the DOM is ready,
             // e.g. changing the theme on <html>.
             setSetting("pageTheme", settings.pageTheme, true);
+            setSetting("shortenPrelude", settings.shortenPrelude, true);
         }
 
         async function main() {
