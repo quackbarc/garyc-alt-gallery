@@ -2668,16 +2668,9 @@
             const saveButton = saveMenu.querySelector("#menu-save-button");
 
             if(reset) {
-                /** @type {[string, boolean][]} */
-                const inputs = [
-                    ["#scale-1", true],
-                    ["#showFeatures", true],
-                    ["#aliased", false],
-                ];
-                for(const [inputID, state] of inputs) {
-                    /** @type {HTMLInputElement} */
-                    const input = saveMenu.querySelector(inputID);
-                    input.checked = state;
+                const inputs = saveMenu.querySelectorAll("input");
+                for(const input of inputs) {
+                    input.checked = input.defaultChecked;
                 }
             }
 
