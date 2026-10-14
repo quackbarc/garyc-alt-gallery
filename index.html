@@ -151,6 +151,12 @@
             text-decoration: underline;
         }
 
+        .secret-elems {
+            /* Can't use display: none; it makes SVG filters inaccessible */
+            visibility: hidden;
+            position: fixed;
+        }
+
         #version {
             /**
              * Podkova tends to add kerning to decimal numbers like on "6.7"
@@ -1174,6 +1180,7 @@
          * Options for how a sketch should be rendered by `render()`.
          * 
          * @typedef {object} RenderOptions
+         * @property {boolean} [aliased]
          * @property {boolean} [showFeatures]
          * @property {number} [scale]
          **/
@@ -1703,8 +1710,9 @@
          *      The Blob URL of the rendered sketch.
          */
         async function render(data, id=null, options={}) {
-            const scale = options.scale ?? 1;
+            const aliased = options.aliased ?? false;
             const showFeatures = options.showFeatures ?? true;
+            const scale = options.scale ?? 1;
 
             const currentScale = Math.floor(offcanv.width / 800);
             if(scale != currentScale) {
@@ -1740,6 +1748,23 @@
                 if(line.length) {
                     offctx.stroke();
                 }
+            }
+
+            if(aliased) {
+                // https://issues.chromium.org/issues/41243557
+                // OffscreenCanvas contexts don't support `url()` as a filter;
+                // doing so would've been a no-op. We're transferring canvas
+                // content to an actual HTML <canvas> so we could do our
+                // filtering there.
+                const normcanv = document.createElement("canvas");
+                const normctx = normcanv.getContext("2d", {alpha: false});
+                normcanv.width = 800 * scale;
+                normcanv.height = 600 * scale;
+                normctx.scale(scale, scale);
+
+                normctx.filter = "url(#aliasing-filter)";
+                normctx.drawImage(offcanv, 0, 0, 800, 600);
+                offctx.drawImage(normcanv, 0, 0, 800, 600);
             }
 
             let blob;
@@ -2637,6 +2662,8 @@
             const scaleRadios = saveMenu.querySelectorAll("[name='scale']");
             /** @type {HTMLInputElement} */
             const showFeaturesE = saveMenu.querySelector("#showFeatures");
+            /** @type {HTMLInputElement} */
+            const aliasedE = saveMenu.querySelector("#aliased");
             /** @type {HTMLButtonElement} */
             const saveButton = saveMenu.querySelector("#menu-save-button");
 
@@ -2645,6 +2672,7 @@
                 const inputs = [
                     ["#scale-1", true],
                     ["#showFeatures", true],
+                    ["#aliased", false],
                 ];
                 for(const [inputID, state] of inputs) {
                     /** @type {HTMLInputElement} */
@@ -2674,6 +2702,7 @@
                 const options = {
                     scale,
                     showFeatures: showFeaturesE.checked,
+                    aliased: aliasedE.checked,
                 };
                 const lastPreviewSrc = savePreview.src;
 
@@ -3993,6 +4022,18 @@
     </script>
 </head>
 <body>
+    <section class="secret-elems">
+        <svg viewBox="0 0 0 0">
+            <filter id="aliasing-filter">
+                <feComponentTransfer>
+                    <feFuncR type="discrete" tableValues="0 0 1"></feFuncR>
+                    <feFuncG type="discrete" tableValues="0 0 1"></feFuncG>
+                    <feFuncB type="discrete" tableValues="0 0 1"></feFuncB>
+                </feComponentTransfer>
+            </filter>
+        </svg>
+    </section>
+
     <header>
         <h1>
             <a href="#">
@@ -4268,6 +4309,10 @@
         <div class="setting">
             <label for="showFeatures">Show tones/fills:</label>
             <input type="checkbox" id="showFeatures" checked>
+        </div>
+        <div class="setting">
+            <label for="aliased">1-bit:</label>
+            <input type="checkbox" id="aliased">
         </div>
 
         <hr>
