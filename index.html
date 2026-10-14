@@ -2675,11 +2675,11 @@
             }
 
             let scale = 1;
-            scaleRadios.forEach((radio) => {
+            for(const radio of scaleRadios) {
                 if(radio.checked) {
                     scale = parseInt(radio.value);
                 }
-            });
+            }
 
             const filename = scale >= 2
                 ? `${id}_${scale}x.png`
