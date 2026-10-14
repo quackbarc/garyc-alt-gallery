@@ -3255,6 +3255,12 @@
                 delete settings.clickSaving;
             }
 
+            // This was a mistake. I did not mean this one.
+            // Remove this by v0.10.0.
+            if(typeof settings.gridImageSize == "string") {
+                settings.gridImageSize = parseInt(settings.gridImageSize);
+            }
+
             return {...defaultSettings, ...settings};
         }
 
@@ -3489,6 +3495,7 @@
             const settingsSelects = document.querySelectorAll(
                 "#settings select, #big-settings select"
             );
+            const numberedSelects = ["gridImageSize"];
             settingsSelects.forEach((select) => {
                 const options = Array.from(select.options);
                 const selValue = settings[select.id];
@@ -3502,7 +3509,10 @@
                     "change",
                     (event) => {
                         const selected = select.options[select.selectedIndex];
-                        setSetting(select.id, selected.value);
+                        const value = numberedSelects.includes(select.id)
+                            ? parseInt(selected.value)
+                            : selected.value;
+                        setSetting(select.id, value);
                     }
                 );
 
